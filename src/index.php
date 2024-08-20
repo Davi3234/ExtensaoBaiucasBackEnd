@@ -1,3 +1,3 @@
 <?php
-    phpinfo();
-?>
+
+use User\Controller\UserController;
