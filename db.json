@@ -1,0 +1,35 @@
+{
+    "formularios":[
+        {
+          "id": 1,
+          "title": "Formulário de Login",
+          "lines":[
+            {
+              "fields": [
+                {
+                  "ref": "dsLogin",
+                  "width": 100,
+                  "label": "Login",
+                  "type": "text",
+                  "placeholder": "Digite o nome do usuário",
+                  "required": true
+                }
+              ]
+            },
+            {
+              "fields": [
+                {
+                  "ref": "dsSenha",
+                  "width": 100,
+                  "label": "Senha",
+                  "type": "password",
+                  "placeholder": "Digite a senha",
+                  "required": true
+                }
+              ]
+            }
+          ]
+        }
+          
+    ]
+  }
