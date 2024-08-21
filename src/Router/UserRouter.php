@@ -1,3 +1,3 @@
 <?php
 
-namespace User\Router;
+namespace Router;

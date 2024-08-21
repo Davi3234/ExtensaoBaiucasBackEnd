@@ -1,6 +1,9 @@
 <?php
 
-namespace Core\Components;
+namespace Server\Components;
 
 class Router {
+
+    static function get() {
+    }
 }
