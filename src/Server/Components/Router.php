@@ -3,6 +3,15 @@
 namespace App\Core\Components;
 
 class Router {
+
+    /**
+     * @var array<array{
+     * prefix: string,
+     * filePath: string 
+     * }>
+     */
+    protected static $routersGroup = [];
+
     /**
      * @var array{
      * GET: array<string, array{handlers: array}>,
@@ -17,6 +26,17 @@ class Router {
         'PUT' => [],
         'DELETE' => [],
     ];
+
+    /**
+     * @param array<array{
+     * prefix: string,
+     * filePath: string 
+     * }> ...$args
+     * @return void
+     */
+    static function writeRouter(...$args) {
+        array_push(self::$routersGroup, ...$args);
+    }
 
     static function get($path, ...$handlers) {
         self::createRouter('GET', $path, $handlers);
