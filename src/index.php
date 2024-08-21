@@ -1,10 +1,7 @@
 <?php
+require __DIR__ . '/vendor/autoload.php';
 
-spl_autoload_register(function ($class_name) {
-    include './' . str_replace('\\', '/', $class_name) . '.php';
-});
-
-use Server\App;
+use Core\App;
 
 App::Bootstrap();
 
