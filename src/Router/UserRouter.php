@@ -2,7 +2,9 @@
 
 namespace App\User\Router;
 
-use App\User\Controller\UserController;
 use App\Core\Components\Router;
+use App\User\Controller\UserController;
 
-Router::post('/create', [UserController::class, 'create']);
+$router = Router::maker('/users');
+
+$router->post('/create', [UserController::class, 'create']);

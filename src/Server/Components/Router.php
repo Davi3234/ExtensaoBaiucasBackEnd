@@ -4,13 +4,25 @@ namespace App\Core\Components;
 
 class Router {
 
+    private static $instance = null;
+
     /**
-     * @var array<array{
+     * @return Router
+     */
+    static function getInstance() {
+        if (!self::$instance)
+            self::$instance = new self();
+
+        return self::$instance;
+    }
+
+    /**
+     * @var array<string, array{
      * prefix: string,
      * filePath: string 
      * }>
      */
-    protected static $routersGroup = [];
+    protected $routersGroup = [];
 
     /**
      * @var array{
@@ -20,7 +32,7 @@ class Router {
      * DELETE: array<string, array{handlers: array}>,
      * }
      */
-    protected static $routers = [
+    protected $routers = [
         'GET' => [],
         'POST' => [],
         'PUT' => [],
@@ -34,29 +46,82 @@ class Router {
      * }> ...$args
      * @return void
      */
+    function addRouterGroup(...$args) {
+        foreach($args as $arg) {
+            if ($this->routersGroup[$arg['prefix']])
+                throw new \Exception("Prefix router group \"{$arg['prefix']}\" already defined");
+
+            $this->routersGroup[$arg['prefix']] = $arg;
+        }
+    }
+
+    protected function createRouter($method, $path, $handlers) {
+        $this->routers[$method][$path] = [
+            'handlers' => $handlers,
+        ];
+    }
+
+    function getRoutersGroup() {
+        return $this->routersGroup;
+    }
+
+    function getRoutersGroupByPrefix($prefix) {
+        return $this->routersGroup[$prefix] ?: null;
+    }
+
+    function getAllPrefixRouters() {
+        return array_keys($this->routersGroup);
+    }
+
+    function getRouters() {
+        return $this->routers;
+    }
+
     static function writeRouter(...$args) {
-        array_push(self::$routersGroup, ...$args);
+        self::getInstance()->addRouterGroup(...$args);
     }
 
     static function get($path, ...$handlers) {
-        self::createRouter('GET', $path, $handlers);
+        self::getInstance()->createRouter('GET', $path, ...$handlers);
     }
 
     static function post($path, ...$handlers) {
-        self::createRouter('POST', $path, $handlers);
+        self::getInstance()->createRouter('POST', $path, ...$handlers);
     }
 
     static function put($path, ...$handlers) {
-        self::createRouter('PUT', $path, $handlers);
+        self::getInstance()->createRouter('PUT', $path, ...$handlers);
     }
 
     static function delete($path, ...$handlers) {
-        self::createRouter('DELETE', $path, $handlers);
+        self::getInstance()->createRouter('DELETE', $path, ...$handlers);
     }
 
-    protected static function createRouter($method, $path, $handlers) {
-        self::$routers[$method][$path] = [
-            'handlers' => $handlers,
-        ];
+    static function maker($prefix = '') {
+        return new RouterMake($prefix);
+    }
+}
+
+class RouterMake {
+    private $prefix = '';
+
+    function __construct($prefix = '') {
+        $this->prefix = $prefix;
+    }
+
+    function get($path, ...$handlers) {
+        Router::get($this->prefix.$path, ...$handlers);
+    }
+
+    function post($path, ...$handlers) {
+        Router::post($this->prefix.$path, ...$handlers);
+    }
+
+    function put($path, ...$handlers) {
+        Router::put($this->prefix.$path, ...$handlers);
+    }
+
+    function delete($path, ...$handlers) {
+        Router::delete($this->prefix.$path, ...$handlers);
     }
 }
