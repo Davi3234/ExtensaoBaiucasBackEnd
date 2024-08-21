@@ -31,7 +31,7 @@ class App {
     }
 
     protected function resolveRequest() {
-
+        $this->router->getRouterByPrefixMath($this->path);
     }
 
     static function Bootstrap($request) {

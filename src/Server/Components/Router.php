@@ -48,7 +48,7 @@ class Router {
      */
     function addRouterGroup(...$args) {
         foreach($args as $arg) {
-            if ($this->routersGroup[$arg['prefix']])
+            if (isset($this->routersGroup[$arg['prefix']]))
                 throw new \Exception("Prefix router group \"{$arg['prefix']}\" already defined");
 
             $this->routersGroup[$arg['prefix']] = $arg;
@@ -56,9 +56,25 @@ class Router {
     }
 
     protected function createRouter($method, $path, $handlers) {
+        $path = str_replace('//', '/', trim("/$path"));
+
+        if (isset($this->routers[$method][$path]))
+            throw new \Exception("Router \"$method\" \"{$path}\" already defined");
+
         $this->routers[$method][$path] = [
             'handlers' => $handlers,
         ];
+    }
+
+    function getRouterByPrefixMath($prefix) {
+        $prefixPaths = $this->getAllPrefixRouters();
+
+        foreach($prefixPaths as $prefixPath) {
+            if (self::isMathRouterTemplate($prefix, $prefixPath))
+                return $this->getRoutersGroupByPrefix($prefixPath);
+        }
+
+        return null;
     }
 
     function getRoutersGroup() {
@@ -69,12 +85,21 @@ class Router {
         return $this->routersGroup[$prefix] ?: null;
     }
 
+    /**
+     * @return array<string>
+     */
     function getAllPrefixRouters() {
         return array_keys($this->routersGroup);
     }
 
     function getRouters() {
         return $this->routers;
+    }
+
+    static function isMathRouterTemplate($routerTemplate, $router) {
+        $rotaPattern = preg_replace('/:[a-zA-Z]+/', '([a-zA-Z0-9]+)', str_replace('/', '\/', $routerTemplate));
+
+        return (boolean) preg_match('/^'.$rotaPattern.'$/', $router);
     }
 
     static function writeRouter(...$args) {
