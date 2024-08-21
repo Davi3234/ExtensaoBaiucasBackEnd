@@ -1,16 +1,17 @@
 <?php
-namespace User\Model;
-class User{
+
+namespace App\User\Model;
+
+class User {
     private $id;
     private $login;
     private $senha;
 
-    function get($propName){
+    function get($propName) {
         return $this->$propName;
     }
 
-    function set($propName, $propValue){
+    function set($propName, $propValue) {
         $this->$propName = $propValue;
     }
-
 }

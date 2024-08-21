@@ -1,7 +1,7 @@
 <?php
 require '..\vendor\autoload.php';
 
-use Core\App;
+use App\Core\App;
 
 App::Bootstrap();
 
