@@ -5,7 +5,10 @@ namespace App\Core;
 use App\Core\Components\Middleware;
 use App\Core\Components\Request;
 use App\Core\Components\Response;
+use App\Core\Components\Result;
 use App\Core\Components\Router;
+use App\Exception\HttpException;
+use App\Exception\RouterNotFoundException;
 
 class App {
 
@@ -28,19 +31,39 @@ class App {
      * @var Router
      */
     protected $router = null;
+    protected $routerRequested = null;
 
     private function __construct() {
         $this->router = Router::getInstance();
     }
 
-    protected function resolveRequest() {
-        if (!$this->method)
-            exit('Not found');
+    protected function initialComponents() {
+        try {
+            $this->fetchRouterRequested();
+        }catch(\Exception $err) {
+            if ($err instanceof HttpException) {
+                Response::getInstance()->status($err->getStatusCode())->send(Result::failure(['message' => $err->getMessage()]));
+                exit;
+            }
+        }
+    }
 
+    function Run() {
+        try {
+            $this->resolveHandlers($this->routerRequested['handlers']);
+        }catch(\Exception $err) {
+            if ($err instanceof HttpException) {
+                Response::getInstance()->status($err->getStatusCode())->send(Result::failure(['message' => $err->getMessage()]));
+                exit;
+            }
+        }
+    }
+
+    protected function fetchRouterRequested() {
         $router = $this->router->getRouteRequested($this->method, $this->path);
 
         if (!$router)
-            exit('Not found');
+            throw new RouterNotFoundException("Router \"$this->method\" \"$this->path\" not found");
 
         $params = Router::getParamsFromRouter($router['router'], $this->path);
 
@@ -48,7 +71,7 @@ class App {
             Request::getInstance()->setParam($param, $value);
         }
 
-        $this->resolveHandlers($router['handlers']);
+        $this->routerRequested = $router;
     }
 
     protected function resolveHandlers($handlers) {
@@ -66,17 +89,19 @@ class App {
             else if (empty($methodAction) || !method_exists($controllerInstance, $methodAction))
                 continue;
 
-            try {
-                $controllerInstance->$methodAction(Request::getInstance(), Response::getInstance());
-            } catch(\Exception $err) {
+            $response = $controllerInstance->$methodAction(Request::getInstance(), Response::getInstance());
 
-            }
+            $this->resolveResponseHandler($response);
 
             unset($controllerInstance);
         }
     }
 
-    static function Run() {
+    protected function resolveResponseHandler($response) {
+
+    }
+
+    static function CreateApp() {
         $path = '/';
 
         isset($_GET['url']) && $path .= $_GET['url'];
@@ -86,7 +111,8 @@ class App {
         $method = isset($_SERVER['REQUEST_METHOD']) ? $_SERVER['REQUEST_METHOD'] : '';
 
         self::makeApp($path, $method);
-        self::$instance->resolveRequest();
+
+        return App::getInstance();
     }
 
     protected static function makeApp($path, $method) {
@@ -96,5 +122,7 @@ class App {
 
         self::$instance->method = $method;
         self::$instance->path = $path;
+
+        self::$instance->initialComponents();
     }
 }

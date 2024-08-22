@@ -8,4 +8,5 @@ use App\Core\App;
 
 $_GET['url'] = $_SERVER['REQUEST_URI'];
 
-App::Run();
+$app = App::CreateApp();
+$app->Run();
