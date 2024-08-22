@@ -1,7 +1,6 @@
 <?php
 
+use App\Controller\UserController;
 use App\Core\Components\Router;
 
-Router::writeRouter(
-  ['prefix' => '/users', 'filePath' => './Router/UserRouter']
-);
+Router::get('/hello', [UserController::class, 'hello']);

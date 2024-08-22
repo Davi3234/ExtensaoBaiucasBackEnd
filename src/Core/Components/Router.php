@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Server\Components;
+namespace App\Core\Components;
 
 class Router {
 
@@ -66,12 +66,12 @@ class Router {
         ];
     }
 
-    function getRouterByPrefixMath($prefix) {
-        $prefixPaths = $this->getAllPrefixRouters();
+    function getRouterByPrefixMath($method, $prefix) {
+        $prefixPaths = $this->getAllPrefixRouters($method);
 
         foreach ($prefixPaths as $prefixPath) {
             if (self::isMathRouterTemplate($prefix, $prefixPath))
-                return $this->getRoutersGroupByPrefix($prefixPath);
+                return $this->getRoutersByPrefix($method, $prefixPath);
         }
 
         return null;
@@ -81,25 +81,25 @@ class Router {
         return $this->routersGroup;
     }
 
-    function getRoutersGroupByPrefix($prefix) {
-        return $this->routersGroup[$prefix] ?: null;
-    }
-
     /**
      * @return array<string>
      */
-    function getAllPrefixRouters() {
-        return array_keys($this->routersGroup);
+    function getAllPrefixRouters($method) {
+        return array_keys($this->routers[$method]);
     }
 
     function getRouters() {
         return $this->routers;
     }
 
-    static function isMathRouterTemplate($routerTemplate, $router) {
-        $rotaPattern = preg_replace('/:[a-zA-Z]+/', '([a-zA-Z0-9]+)', str_replace('/', '\/', $routerTemplate));
+    function getRoutersByPrefix($method, $prefix) {
+        return $this->routers[$method][$prefix] ?: null;
+    }
 
-        return (bool) preg_match('/^' . $rotaPattern . '$/', $router);
+    static function isMathRouterTemplate($routerTemplate, $router) {
+        $pattern = preg_replace('/:[a-zA-Z]+/', '([a-zA-Z0-9]+)', str_replace('/', '\/', $routerTemplate));
+
+        return (bool) preg_match('/^' . $pattern . '$/', $router);
     }
 
     static function writeRouter(...$args) {
@@ -107,19 +107,19 @@ class Router {
     }
 
     static function get($path, ...$handlers) {
-        self::getInstance()->createRouter('GET', $path, ...$handlers);
+        self::getInstance()->createRouter('GET', $path, $handlers);
     }
 
     static function post($path, ...$handlers) {
-        self::getInstance()->createRouter('POST', $path, ...$handlers);
+        self::getInstance()->createRouter('POST', $path, $handlers);
     }
 
     static function put($path, ...$handlers) {
-        self::getInstance()->createRouter('PUT', $path, ...$handlers);
+        self::getInstance()->createRouter('PUT', $path, $handlers);
     }
 
     static function delete($path, ...$handlers) {
-        self::getInstance()->createRouter('DELETE', $path, ...$handlers);
+        self::getInstance()->createRouter('DELETE', $path, $handlers);
     }
 
     static function maker($prefix = '') {

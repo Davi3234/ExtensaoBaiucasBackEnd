@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Server;
+namespace App\Core;
 
-use App\Server\Components\Router;
+use App\Core\Components\Router;
 
 class App {
 
@@ -31,12 +31,25 @@ class App {
     }
 
     protected function resolveRequest() {
-        $this->router->getRouterByPrefixMath($this->path);
+        $router = $this->router->getRouterByPrefixMath($this->method, $this->path);
+
+        foreach ($router['handlers'] as $handler) {
+            $controller = $handler[0];
+            $methodAction = $handler[1];
+
+            if (!class_exists($controller))
+                continue;
+
+            if (empty($methodAction) || !method_exists($controller, $methodAction))
+                continue;
+
+            (new $controller)->$methodAction();
+        }
     }
 
-    static function Bootstrap($request) {
-        $path = explode('?', $request['REQUEST_URI'])[0];
-        $method = $request['REQUEST_METHOD'];
+    static function Bootstrap() {
+        $path = explode('?', $_GET['url'])[0];
+        $method = $_REQUEST['REQUEST_METHOD'];
 
         self::makeApp($path, $method);
         self::$instance->resolveRequest();

@@ -2,12 +2,8 @@
 
 declare(strict_types=1);
 
-use App\Server\App;
+require_once __DIR__ . '/routers.php';
 
-$uri = '/users/create';
-$method = 'POST';
+use App\Core\App;
 
-App::Bootstrap([
-    'REQUEST_URI' => $uri,
-    'REQUEST_METHOD' => $method,
-]);
+App::Bootstrap();

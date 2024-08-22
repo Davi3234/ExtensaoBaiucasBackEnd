@@ -1,4 +1,4 @@
 <?php
 
 require __DIR__ . '/vendor/autoload.php';
-require 'src/index.php';
+require_once 'src/index.php';
