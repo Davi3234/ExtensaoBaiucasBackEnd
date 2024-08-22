@@ -66,12 +66,24 @@ class Router {
         ];
     }
 
-    function getRouterByPrefixMath($method, $prefix) {
-        $prefixPaths = $this->getAllRoutersPaths($method);
+    function getRouteRequested($method, $routerRequest) {
+        $routerGroup = $this->getRouterGroupByRouter($routerRequest);
 
-        foreach ($prefixPaths as $prefixPath) {
-            if (self::isMathRouterTemplate($prefix, $prefixPath))
-                return $this->getRoutersByPrefix($method, $prefixPath);
+        if (!$routerGroup)
+            return null;
+
+        @include str_replace('\\', '/', __DIR__.'/../../'.$routerGroup['filePath']);
+
+        $router = $this->getRouterByMethodAndRouter($method, $routerRequest);
+
+        return $router;
+    }
+
+    function getRouterGroupByRouter($router) {
+        foreach($this->routersGroup as $prefix => $routerGroup) {
+            if (self::isMathPrefixRouterTemplate($prefix, $router)) {
+                return $routerGroup;
+            }
         }
 
         return null;
@@ -91,15 +103,45 @@ class Router {
     function getRouters() {
         return $this->routers;
     }
+    function getRouterByMethodAndRouter($method, $routerPath) {
+        foreach($this->routers[$method] as $prefix => $router) {
+            if (self::isMathRouterTemplate($prefix, $routerPath)) {
+                return $router;
+            }
+        }
+
+        return null;
+    }
 
     function getRoutersByPrefix($method, $prefix) {
         return $this->routers[$method][$prefix] ?: null;
     }
 
-    static function isMathRouterTemplate($routerTemplate, $router) {
-        $pattern = preg_replace('/:[a-zA-Z]+/', '([a-zA-Z0-9]+)', str_replace('/', '\/', $routerTemplate));
+    static function isMathPrefixRouterTemplate($routerTemplate, $router) {
+        $pattern = self::getPatternRouterMatching($routerTemplate);
+        
+        return preg_match('/^' . $pattern . '/', $router);
+    }
 
-        return (bool) preg_match('/^' . $pattern . '$/', $router);
+    static function isMathRouterTemplate($routerTemplate, $router) {
+        $pattern = self::getPatternRouterMatching($routerTemplate);
+        
+        return preg_match('/^' . $pattern . '$/', $router);
+    }
+
+    static function getParamsFromRouter($routerTemplate, $router) {
+        $pattern = self::getPatternRouterMatching($routerTemplate);
+
+        if (preg_match('/^' . $pattern . '$/', $router, $matches)) {
+            array_shift($matches);
+            return $matches;
+        }
+
+        return [];
+    }
+
+    static function getPatternRouterMatching($routerTemplate) {
+        return preg_replace('/:[a-zA-Z]+/', '([a-zA-Z0-9]+)', str_replace('/', '\/', $routerTemplate));
     }
 
     static function writeRouter(...$args) {

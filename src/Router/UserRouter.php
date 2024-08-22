@@ -7,4 +7,5 @@ use App\Controller\UserController;
 
 $router = Router::maker('/users');
 
-$router->post('/create', [UserController::class, 'create']);
+$router->get('/create', [UserController::class, 'create']);
+$router->get('/update', [UserController::class, 'update']);

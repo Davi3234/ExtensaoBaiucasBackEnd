@@ -5,6 +5,10 @@ namespace App\Controller;
 class UserController {
 
   function create() {
-    echo 'Hello';
+    echo 'create';
+  }
+
+  function update() {
+    echo 'update';
   }
 }

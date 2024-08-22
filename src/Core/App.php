@@ -2,6 +2,7 @@
 
 namespace App\Core;
 
+use App\Core\Components\Request;
 use App\Core\Components\Router;
 
 class App {
@@ -34,7 +35,7 @@ class App {
         if (!$this->method)
             exit('Not found');
 
-        $router = $this->router->getRouterByPrefixMath($this->method, $this->path);
+        $router = $this->router->getRouteRequested($this->method, $this->path);
 
         if (!$router)
             exit('Not found');
@@ -53,13 +54,16 @@ class App {
         }
     }
 
-    static function Bootstrap() {
+    static function Run() {
         $path = '/';
 
         isset($_GET['url']) && $path .= $_GET['url'];
 
+        $path = str_replace('//', '/', $path);
+
         $method = isset($_SERVER['REQUEST_METHOD']) ? $_SERVER['REQUEST_METHOD'] : '';
 
+        Request::getInstance($path, $method);
         self::makeApp($path, $method);
         self::$instance->resolveRequest();
     }
