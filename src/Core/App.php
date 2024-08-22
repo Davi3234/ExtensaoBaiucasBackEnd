@@ -2,7 +2,9 @@
 
 namespace App\Core;
 
+use App\Core\Components\Middleware;
 use App\Core\Components\Request;
+use App\Core\Components\Response;
 use App\Core\Components\Router;
 
 class App {
@@ -46,17 +48,31 @@ class App {
             Request::getInstance()->setParam($param, $value);
         }
 
-        foreach ($router['handlers'] as $handler) {
-            $controller = $handler[0];
-            $methodAction = $handler[1];
+        $this->resolveHandlers($router['handlers']);
+    }
+
+    protected function resolveHandlers($handlers) {
+        foreach ($handlers as $handler) {
+            $controller = isset($handler[0]) ? $handler[0] : null;
+            $methodAction = isset($handler[1]) ? $handler[1] : null;
 
             if (!class_exists($controller))
                 continue;
 
-            if (empty($methodAction) || !method_exists($controller, $methodAction))
+            $controllerInstance = new $controller;
+
+            if ($controllerInstance instanceof Middleware)
+                $methodAction = 'perform';
+            else if (empty($methodAction) || !method_exists($controllerInstance, $methodAction))
                 continue;
 
-            (new $controller)->$methodAction(Request::getInstance());
+            try {
+                $controllerInstance->$methodAction(Request::getInstance(), Response::getInstance());
+            } catch(\Exception $err) {
+
+            }
+
+            unset($controllerInstance);
         }
     }
 
@@ -69,13 +85,14 @@ class App {
 
         $method = isset($_SERVER['REQUEST_METHOD']) ? $_SERVER['REQUEST_METHOD'] : '';
 
-        Request::getInstance();
         self::makeApp($path, $method);
         self::$instance->resolveRequest();
     }
 
     protected static function makeApp($path, $method) {
         App::getInstance();
+        Request::getInstance();
+        Response::getInstance();
 
         self::$instance->method = $method;
         self::$instance->path = $path;

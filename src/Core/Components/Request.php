@@ -5,12 +5,6 @@ namespace App\Core\Components;
 class Request
 {
     private static $instance = null;
-    private $body = [];
-    private $params = [];
-    private $headers = [];
-    private $attributes = [];
-    private $router = '/';
-    private $method = '';
 
     static function getInstance($router = '', $method = '') {
         if (!isset(self::$instance))
@@ -18,6 +12,13 @@ class Request
 
         return self::$instance;
     }
+    
+    private $body = [];
+    private $params = [];
+    private $headers = [];
+    private $attributes = [];
+    private $router = '/';
+    private $method = '';
 
     private function __construct($router = '', $method = '') {
         $dataJson = file_get_contents('php://input');

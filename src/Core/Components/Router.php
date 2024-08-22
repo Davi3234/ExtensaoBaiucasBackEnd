@@ -58,6 +58,11 @@ class Router {
     protected function createRouter($method, $path, $handlers) {
         $path = str_replace('//', '/', trim("/$path"));
 
+        foreach($handlers as &$handler) {
+            if (!is_array($handler))
+                $handler = [$handler];
+        }
+
         if (isset($this->routers[$method][$path]))
             throw new \Exception("Router \"$method\" \"{$path}\" already defined");
 
