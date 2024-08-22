@@ -31,7 +31,13 @@ class App {
     }
 
     protected function resolveRequest() {
+        if (!$this->method)
+            exit('Not found');
+
         $router = $this->router->getRouterByPrefixMath($this->method, $this->path);
+
+        if (!$router)
+            exit('Not found');
 
         foreach ($router['handlers'] as $handler) {
             $controller = $handler[0];
@@ -48,8 +54,11 @@ class App {
     }
 
     static function Bootstrap() {
-        $path = explode('?', $_GET['url'])[0];
-        $method = $_REQUEST['REQUEST_METHOD'];
+        $path = '/';
+
+        isset($_GET['url']) && $path .= $_GET['url'];
+
+        $method = isset($_SERVER['REQUEST_METHOD']) ? $_SERVER['REQUEST_METHOD'] : '';
 
         self::makeApp($path, $method);
         self::$instance->resolveRequest();

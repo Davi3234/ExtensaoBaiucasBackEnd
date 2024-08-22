@@ -3,4 +3,4 @@ RewriteCond %{REQUEST_FILENAME} !-d
 RewriteCond %{REQUEST_FILENAME} !-f
 ErrorDocument 403 http://localhost:8080/
 Options -Indexes
-RewriteRule ^(.*)$ ./src/index.php?url=$1 [QSA]
+RewriteRule ^(.*)$ index.php?url=$1 [QSA]

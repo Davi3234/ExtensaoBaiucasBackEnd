@@ -67,7 +67,7 @@ class Router {
     }
 
     function getRouterByPrefixMath($method, $prefix) {
-        $prefixPaths = $this->getAllPrefixRouters($method);
+        $prefixPaths = $this->getAllRoutersPaths($method);
 
         foreach ($prefixPaths as $prefixPath) {
             if (self::isMathRouterTemplate($prefix, $prefixPath))
@@ -84,7 +84,7 @@ class Router {
     /**
      * @return array<string>
      */
-    function getAllPrefixRouters($method) {
+    function getAllRoutersPaths($method) {
         return array_keys($this->routers[$method]);
     }
 
