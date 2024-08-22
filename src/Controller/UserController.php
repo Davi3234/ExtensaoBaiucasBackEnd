@@ -1,10 +1,9 @@
 <?php
 
-namespace App\User\Controller;
+namespace App\Controller;
 
 class UserController {
 
   function create() {
-    
   }
 }

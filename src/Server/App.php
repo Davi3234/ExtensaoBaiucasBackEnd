@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Core;
+namespace App\Server;
 
-use App\Core\Components\Router;
+use App\Server\Components\Router;
 
 class App {
 
@@ -35,7 +35,7 @@ class App {
     }
 
     static function Bootstrap($request) {
-        $path = str_split('?', $request['REQUEST_URI'])[0];
+        $path = explode('?', $request['REQUEST_URI'])[0];
         $method = $request['REQUEST_METHOD'];
 
         self::makeApp($path, $method);

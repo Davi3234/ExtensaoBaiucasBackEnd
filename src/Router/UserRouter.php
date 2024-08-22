@@ -1,9 +1,9 @@
 <?php
 
-namespace App\User\Router;
+namespace App\Router;
 
 use App\Core\Components\Router;
-use App\User\Controller\UserController;
+use App\Controller\UserController;
 
 $router = Router::maker('/users');
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Core\Components;
+namespace App\Server\Components;
 
 class Router {
 
@@ -47,7 +47,7 @@ class Router {
      * @return void
      */
     function addRouterGroup(...$args) {
-        foreach($args as $arg) {
+        foreach ($args as $arg) {
             if (isset($this->routersGroup[$arg['prefix']]))
                 throw new \Exception("Prefix router group \"{$arg['prefix']}\" already defined");
 
@@ -69,7 +69,7 @@ class Router {
     function getRouterByPrefixMath($prefix) {
         $prefixPaths = $this->getAllPrefixRouters();
 
-        foreach($prefixPaths as $prefixPath) {
+        foreach ($prefixPaths as $prefixPath) {
             if (self::isMathRouterTemplate($prefix, $prefixPath))
                 return $this->getRoutersGroupByPrefix($prefixPath);
         }
@@ -99,7 +99,7 @@ class Router {
     static function isMathRouterTemplate($routerTemplate, $router) {
         $rotaPattern = preg_replace('/:[a-zA-Z]+/', '([a-zA-Z0-9]+)', str_replace('/', '\/', $routerTemplate));
 
-        return (boolean) preg_match('/^'.$rotaPattern.'$/', $router);
+        return (bool) preg_match('/^' . $rotaPattern . '$/', $router);
     }
 
     static function writeRouter(...$args) {
@@ -135,18 +135,18 @@ class RouterMake {
     }
 
     function get($path, ...$handlers) {
-        Router::get($this->prefix.$path, ...$handlers);
+        Router::get($this->prefix . $path, ...$handlers);
     }
 
     function post($path, ...$handlers) {
-        Router::post($this->prefix.$path, ...$handlers);
+        Router::post($this->prefix . $path, ...$handlers);
     }
 
     function put($path, ...$handlers) {
-        Router::put($this->prefix.$path, ...$handlers);
+        Router::put($this->prefix . $path, ...$handlers);
     }
 
     function delete($path, ...$handlers) {
-        Router::delete($this->prefix.$path, ...$handlers);
+        Router::delete($this->prefix . $path, ...$handlers);
     }
 }
