@@ -169,8 +169,20 @@ class Router {
         self::getInstance()->createRouter('PUT', $path, $handlers);
     }
 
+    static function patch($path, ...$handlers) {
+        self::getInstance()->createRouter('PATCH', $path, $handlers);
+    }
+
     static function delete($path, ...$handlers) {
         self::getInstance()->createRouter('DELETE', $path, $handlers);
+    }
+
+    static function head($path, ...$handlers) {
+        self::getInstance()->createRouter('HEAD', $path, $handlers);
+    }
+
+    static function options($path, ...$handlers) {
+        self::getInstance()->createRouter('OPTIONS', $path, $handlers);
     }
 
     static function maker($prefix = '') {
@@ -199,5 +211,18 @@ class RouterMake {
 
     function delete($path, ...$handlers) {
         Router::delete($this->prefix . $path, ...$handlers);
+    }
+
+    function patch($path, ...$handlers) {
+        Router::patch($path, $handlers);
+    }
+
+
+    function head($path, ...$handlers) {
+        Router::head($path, $handlers);
+    }
+
+    function options($path, ...$handlers) {
+        Router::options($path, $handlers);
     }
 }
