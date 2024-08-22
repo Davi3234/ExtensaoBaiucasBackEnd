@@ -37,21 +37,35 @@ class App {
         $this->router = Router::getInstance();
     }
 
+    static function CreateApp() {
+        $path = '/';
+
+        isset($_GET['url']) && $path .= $_GET['url'];
+
+        $path = str_replace('//', '/', $path);
+
+        $method = isset($_SERVER['REQUEST_METHOD']) ? $_SERVER['REQUEST_METHOD'] : '';
+
+        self::makeApp($path, $method);
+
+        return App::getInstance();
+    }
+
+    protected static function makeApp($path, $method) {
+        App::getInstance();
+        Request::getInstance();
+        Response::getInstance();
+
+        self::$instance->method = $method;
+        self::$instance->path = $path;
+
+        self::$instance->initialComponents();
+    }
+
     protected function initialComponents() {
         try {
             $this->fetchRouterRequested();
-        }catch(\Exception $err) {
-            if ($err instanceof HttpException) {
-                Response::getInstance()->status($err->getStatusCode())->send(Result::failure(['message' => $err->getMessage()]));
-                exit;
-            }
-        }
-    }
-
-    function Run() {
-        try {
-            $this->resolveHandlers($this->routerRequested['handlers']);
-        }catch(\Exception $err) {
+        } catch (\Exception $err) {
             if ($err instanceof HttpException) {
                 Response::getInstance()->status($err->getStatusCode())->send(Result::failure(['message' => $err->getMessage()]));
                 exit;
@@ -67,11 +81,22 @@ class App {
 
         $params = Router::getParamsFromRouter($router['router'], $this->path);
 
-        foreach($params as $param => $value) {
+        foreach ($params as $param => $value) {
             Request::getInstance()->setParam($param, $value);
         }
 
         $this->routerRequested = $router;
+    }
+
+    function Run() {
+        try {
+            $this->resolveHandlers($this->routerRequested['handlers']);
+        } catch (\Exception $err) {
+            if ($err instanceof HttpException) {
+                Response::getInstance()->status($err->getStatusCode())->send(Result::failure(['message' => $err->getMessage()]));
+                exit;
+            }
+        }
     }
 
     protected function resolveHandlers($handlers) {
@@ -98,31 +123,5 @@ class App {
     }
 
     protected function resolveResponseHandler($response) {
-
-    }
-
-    static function CreateApp() {
-        $path = '/';
-
-        isset($_GET['url']) && $path .= $_GET['url'];
-
-        $path = str_replace('//', '/', $path);
-
-        $method = isset($_SERVER['REQUEST_METHOD']) ? $_SERVER['REQUEST_METHOD'] : '';
-
-        self::makeApp($path, $method);
-
-        return App::getInstance();
-    }
-
-    protected static function makeApp($path, $method) {
-        App::getInstance();
-        Request::getInstance();
-        Response::getInstance();
-
-        self::$instance->method = $method;
-        self::$instance->path = $path;
-
-        self::$instance->initialComponents();
     }
 }

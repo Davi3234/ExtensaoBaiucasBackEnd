@@ -9,6 +9,6 @@ use App\Core\Components\Response;
 class AuthenticationMiddleware extends Middleware {
 
   function perform(Request $request, Response $response) {
-    echo 11;
+    echo 'Middle<br>';
   }
 }
