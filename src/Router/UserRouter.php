@@ -8,4 +8,4 @@ use App\Controller\UserController;
 $router = Router::maker('/users');
 
 $router->get('/create', [UserController::class, 'create']);
-$router->get('/update', [UserController::class, 'update']);
+$router->get('/:id/update', [UserController::class, 'update']);

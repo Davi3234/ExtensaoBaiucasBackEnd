@@ -40,6 +40,12 @@ class App {
         if (!$router)
             exit('Not found');
 
+        $params = Router::getParamsFromRouter($router['router'], $this->path);
+
+        foreach($params as $param => $value) {
+            Request::getInstance()->setParam($param, $value);
+        }
+
         foreach ($router['handlers'] as $handler) {
             $controller = $handler[0];
             $methodAction = $handler[1];
@@ -50,7 +56,7 @@ class App {
             if (empty($methodAction) || !method_exists($controller, $methodAction))
                 continue;
 
-            (new $controller)->$methodAction();
+            (new $controller)->$methodAction(Request::getInstance());
         }
     }
 
@@ -63,7 +69,7 @@ class App {
 
         $method = isset($_SERVER['REQUEST_METHOD']) ? $_SERVER['REQUEST_METHOD'] : '';
 
-        Request::getInstance($path, $method);
+        Request::getInstance();
         self::makeApp($path, $method);
         self::$instance->resolveRequest();
     }

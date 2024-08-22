@@ -2,8 +2,6 @@
 
 namespace App\Core\Components;
 
-use function App\Util\remove_start_str;
-
 class Request
 {
     private static $instance = null;
@@ -26,7 +24,7 @@ class Request
         $data = json_decode($dataJson, true);
 
         $this->body = $data;
-        $this->params = $_REQUEST;
+        $this->params = $_GET;
         $this->headers = $_SERVER;
         $this->router = $router;
         $this->method = $method;
@@ -36,8 +34,8 @@ class Request
         $this->body = $body;
     }
 
-    function loadParams($params) {
-        $this->params = $params;
+    function setParam($param, $value) {
+        $this->params[$param] = $value;
     }
 
     function loadHeaders($headers) {
@@ -64,6 +62,14 @@ class Request
             return $this->getHeaders()[$name];
 
         return null;
+    }
+
+    function getRouter() {
+        return $this->router;
+    }
+
+    function getMethod() {
+        return $this->method;
     }
 
     function getAllBody() {

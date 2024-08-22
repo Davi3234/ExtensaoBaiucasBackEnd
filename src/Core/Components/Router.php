@@ -26,10 +26,10 @@ class Router {
 
     /**
      * @var array{
-     * GET: array<string, array{handlers: array}>,
-     * POST: array<string, array{handlers: array}>,
-     * PUT: array<string, array{handlers: array}>,
-     * DELETE: array<string, array{handlers: array}>,
+     * GET: array<string, array{router: string, handlers: array}>,
+     * POST: array<string, array{router: string, handlers: array}>,
+     * PUT: array<string, array{router: string, handlers: array}>,
+     * DELETE: array<string, array{router: string, handlers: array}>,
      * }
      */
     protected $routers = [
@@ -62,6 +62,7 @@ class Router {
             throw new \Exception("Router \"$method\" \"{$path}\" already defined");
 
         $this->routers[$method][$path] = [
+            'router' => $path,
             'handlers' => $handlers,
         ];
     }
@@ -130,11 +131,14 @@ class Router {
     }
 
     static function getParamsFromRouter($routerTemplate, $router) {
+        preg_match_all('/:([a-zA-Z]+)/', $routerTemplate, $params);
+        $params = $params[1];
+    
         $pattern = self::getPatternRouterMatching($routerTemplate);
 
         if (preg_match('/^' . $pattern . '$/', $router, $matches)) {
             array_shift($matches);
-            return $matches;
+            return array_combine($params, $matches);
         }
 
         return [];
