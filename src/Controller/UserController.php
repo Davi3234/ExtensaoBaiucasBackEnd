@@ -3,16 +3,22 @@
 namespace App\Controller;
 
 use App\Core\Components\Request;
+use App\Core\Components\Response;
+use App\Core\Components\Result;
+use App\Exception\BadRequestException;
 
 class UserController {
 
   function create(Request $request) {
-    var_dump($request->getParams());
-    echo 'create';
   }
 
-  function update(Request $request) {
-    var_dump($request->getParam('id'));
-    echo 'update';
+  function update(Request $request, Response $response) {
+    $response->send(
+      Result::success(
+        [
+          'id' => $request->getParam('id')
+        ]
+      )
+    );
   }
 }
