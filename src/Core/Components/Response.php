@@ -22,7 +22,7 @@ class Response {
     return $this;
   }
 
-  function sendJson(mixed $data, $status = null) {
+  function sendJson($data, $status = null) {
     if ($status)
       $this->status($status);
 

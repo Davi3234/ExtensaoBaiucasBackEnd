@@ -10,7 +10,7 @@ function formatterPath($path) {
     return str_replace('/', DIRECTORY_SEPARATOR, $path);
 }
 
-function log_message(mixed $message) {
+function log_message($message) {
     error_log(json_encode($message), 3, 'logs/log.txt');
 }
 

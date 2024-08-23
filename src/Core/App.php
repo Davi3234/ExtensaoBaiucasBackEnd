@@ -9,6 +9,7 @@ use App\Core\Components\Result;
 use App\Core\Components\Router;
 use App\Exception\HttpException;
 use App\Exception\RouterNotFoundException;
+use StatusCode;
 
 class App {
 
@@ -95,7 +96,11 @@ class App {
             if ($err instanceof HttpException) {
                 Response::getInstance()
                     ->sendJson(Result::failure(['message' => $err->getMessage()], $err->getStatusCode()));
+                return;
             }
+
+            Response::getInstance()
+                ->sendJson(Result::failure(['message' => $err->getMessage()], StatusCode::INTERNAL_SERVER_ERROR));
         }
     }
 
@@ -104,22 +109,33 @@ class App {
             $controller = isset($handler[0]) ? $handler[0] : null;
             $methodAction = isset($handler[1]) ? $handler[1] : null;
 
-            if (!class_exists($controller))
-                continue;
-
-            $controllerInstance = new $controller;
-
-            if ($controllerInstance instanceof Middleware)
-                $methodAction = 'perform';
-            else if (empty($methodAction) || !method_exists($controllerInstance, $methodAction))
-                continue;
-
-            $response = $controllerInstance->$methodAction(Request::getInstance(), Response::getInstance());
-
+            $response = $this->resolveCallHandler($controller, $methodAction);
             $this->resolveResponseHandler($response);
-
-            unset($controllerInstance);
         }
+
+        Response::getInstance()
+            ->sendJson(Result::success('No response', StatusCode::NO_CONTENT));
+    }
+
+    protected function resolveCallHandler($controller, $methodAction) {
+        if (!$controller)
+            return;
+
+        if (!is_string($controller) || !class_exists($controller)) {
+            if (!is_callable($controller))
+                return;
+
+            return $controller(Request::getInstance(), Response::getInstance());
+        }
+
+        $controllerInstance = new $controller;
+
+        if ($controllerInstance instanceof Middleware)
+            $methodAction = 'perform';
+        else if (empty($methodAction) || !method_exists($controllerInstance, $methodAction))
+            return;
+
+        return $controllerInstance->$methodAction(Request::getInstance(), Response::getInstance());
     }
 
     protected function resolveResponseHandler($response) {
@@ -132,6 +148,6 @@ class App {
         }
 
         Response::getInstance()
-            ->sendJson(Result::success('No response', 204));
+            ->sendJson(Result::success($response, StatusCode::OK));
     }
 }

@@ -32,6 +32,9 @@ class Router {
      * POST: array<string, array{router: string, handlers: array}>,
      * PUT: array<string, array{router: string, handlers: array}>,
      * DELETE: array<string, array{router: string, handlers: array}>,
+     * PATCH: array<string, array{router: string, handlers: array}>,
+     * HEAD: array<string, array{router: string, handlers: array}>,
+     * OPTIONS: array<string, array{router: string, handlers: array}>,
      * }
      */
     protected $routers = [
@@ -39,6 +42,9 @@ class Router {
         'POST' => [],
         'PUT' => [],
         'DELETE' => [],
+        'PATCH' => [],
+        'HEAD' => [],
+        'OPTIONS' => [],
     ];
 
     /**
@@ -60,6 +66,9 @@ class Router {
     protected function createRouter($method, $path, $handlers) {
         $path = str_replace('//', '/', trim("/$path"));
 
+        if (!$path)
+            $path = '/';
+
         foreach ($handlers as &$handler) {
             if (!is_array($handler))
                 $handler = [$handler];
@@ -77,10 +86,8 @@ class Router {
     function getRouteRequested($method, $routerRequest) {
         $routerGroup = $this->getRouterGroupByRouter($routerRequest);
 
-        if (!$routerGroup)
-            return null;
-
-        @include str_replace('\\', '/', __DIR__ . '/../../' . $routerGroup['filePath']);
+        if ($routerGroup)
+            @include str_replace('\\', '/', __DIR__ . '/../../' . $routerGroup['filePath']);
 
         $router = $this->getRouterByMethodAndRouter($method, $routerRequest);
 

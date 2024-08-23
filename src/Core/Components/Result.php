@@ -17,22 +17,22 @@ class Result implements ResultModel {
     private $value = null;
     private $error = null;
 
-    private function __construct($ok, $status, mixed $value = null, mixed $error = null) {
+    private function __construct($ok, $status, $value = null, $error = null) {
         $this->ok = $ok;
         $this->status = $status;
         $this->value = $value;
         $this->error = $error;
     }
 
-    static function success(mixed $value, $status = 200) {
+    static function success($value, $status = 200) {
         return new Result(true, $status, $value);
     }
 
-    static function failure(mixed $error, $status = 400) {
+    static function failure($error, $status = 400) {
         return new Result(false, $status, null, $error);
     }
 
-    static function inherit($ok = true, $status = 200, mixed $value = null, mixed $error = null) {
+    static function inherit($ok = true, $status = 200, $value = null, $error = null) {
         return new Result($ok, $status, $value, $error);
     }
 
