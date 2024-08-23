@@ -2,8 +2,7 @@
 
 namespace App\Core\Components;
 
-class Request
-{
+class Request {
     private static $instance = null;
 
     static function getInstance($router = '', $method = '') {
@@ -12,7 +11,7 @@ class Request
 
         return self::$instance;
     }
-    
+
     private $body = [];
     private $params = [];
     private $headers = [];
@@ -89,10 +88,7 @@ class Request
     }
 
     function getAttribute($name) {
-        if (isset($this->getAttributes()[$name]))
-            return $this->getAttributes()[$name];
-
-        return null;
+        return isset($this->attributes[$name]) ? $this->attributes[$name] : null;
     }
 
     function setAttribute($name, $value) {

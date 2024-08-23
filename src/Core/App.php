@@ -67,8 +67,8 @@ class App {
             $this->fetchRouterRequested();
         } catch (\Exception $err) {
             if ($err instanceof HttpException) {
-                Response::getInstance()->status($err->getStatusCode())->send(Result::failure(['message' => $err->getMessage()]));
-                exit;
+                Response::getInstance()
+                    ->sendJson(Result::failure(['message' => $err->getMessage()], $err->getStatusCode()));
             }
         }
     }
@@ -93,8 +93,8 @@ class App {
             $this->resolveHandlers($this->routerRequested['handlers']);
         } catch (\Exception $err) {
             if ($err instanceof HttpException) {
-                Response::getInstance()->status($err->getStatusCode())->send(Result::failure(['message' => $err->getMessage()]));
-                exit;
+                Response::getInstance()
+                    ->sendJson(Result::failure(['message' => $err->getMessage()], $err->getStatusCode()));
             }
         }
     }
@@ -123,5 +123,15 @@ class App {
     }
 
     protected function resolveResponseHandler($response) {
+        if ($response === null)
+            return;
+
+        if ($response instanceof Result) {
+            Response::getInstance()
+                ->sendJson($response);
+        }
+
+        Response::getInstance()
+            ->sendJson(Result::success('No response', 204));
     }
 }

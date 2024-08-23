@@ -2,6 +2,8 @@
 
 namespace App\Core\Components;
 
+use App\Exception\InternalServerErrorException;
+
 class Router {
 
     private static $instance = null;
@@ -49,7 +51,7 @@ class Router {
     function addRouterGroup(...$args) {
         foreach ($args as $arg) {
             if (isset($this->routersGroup[$arg['prefix']]))
-                throw new \Exception("Prefix router group \"{$arg['prefix']}\" already defined");
+                throw new InternalServerErrorException("Prefix router group \"{$arg['prefix']}\" already defined");
 
             $this->routersGroup[$arg['prefix']] = $arg;
         }
@@ -58,13 +60,13 @@ class Router {
     protected function createRouter($method, $path, $handlers) {
         $path = str_replace('//', '/', trim("/$path"));
 
-        foreach($handlers as &$handler) {
+        foreach ($handlers as &$handler) {
             if (!is_array($handler))
                 $handler = [$handler];
         }
 
         if (isset($this->routers[$method][$path]))
-            throw new \Exception("Router \"$method\" \"{$path}\" already defined");
+            throw new InternalServerErrorException("Router \"$method\" \"{$path}\" already defined");
 
         $this->routers[$method][$path] = [
             'router' => $path,
@@ -78,7 +80,7 @@ class Router {
         if (!$routerGroup)
             return null;
 
-        @include str_replace('\\', '/', __DIR__.'/../../'.$routerGroup['filePath']);
+        @include str_replace('\\', '/', __DIR__ . '/../../' . $routerGroup['filePath']);
 
         $router = $this->getRouterByMethodAndRouter($method, $routerRequest);
 
@@ -86,7 +88,7 @@ class Router {
     }
 
     function getRouterGroupByRouter($router) {
-        foreach($this->routersGroup as $prefix => $routerGroup) {
+        foreach ($this->routersGroup as $prefix => $routerGroup) {
             if (self::isMathPrefixRouterTemplate($prefix, $router)) {
                 return $routerGroup;
             }
@@ -110,7 +112,7 @@ class Router {
         return $this->routers;
     }
     function getRouterByMethodAndRouter($method, $routerPath) {
-        foreach($this->routers[$method] as $prefix => $router) {
+        foreach ($this->routers[$method] as $prefix => $router) {
             if (self::isMathRouterTemplate($prefix, $routerPath)) {
                 return $router;
             }
@@ -125,20 +127,20 @@ class Router {
 
     static function isMathPrefixRouterTemplate($routerTemplate, $router) {
         $pattern = self::getPatternRouterMatching($routerTemplate);
-        
+
         return preg_match('/^' . $pattern . '/', $router);
     }
 
     static function isMathRouterTemplate($routerTemplate, $router) {
         $pattern = self::getPatternRouterMatching($routerTemplate);
-        
+
         return preg_match('/^' . $pattern . '$/', $router);
     }
 
     static function getParamsFromRouter($routerTemplate, $router) {
         preg_match_all('/:([a-zA-Z]+)/', $routerTemplate, $params);
         $params = $params[1];
-    
+
         $pattern = self::getPatternRouterMatching($routerTemplate);
 
         if (preg_match('/^' . $pattern . '$/', $router, $matches)) {

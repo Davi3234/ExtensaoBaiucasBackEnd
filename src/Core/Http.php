@@ -10,7 +10,7 @@ enum RouterMethod: string {
     case OPTIONS = 'OPTIONS';
 }
 
-enum StatusCode: string {
+enum StatusCode: int {
     case CONTINUE = 100;
     case SWITCHING_PROTOCOLS = 101;
     case PROCESSING = 102;
