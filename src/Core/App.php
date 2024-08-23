@@ -9,7 +9,6 @@ use App\Core\Components\Result;
 use App\Core\Components\Router;
 use App\Exception\HttpException;
 use App\Exception\RouterNotFoundException;
-use StatusCode;
 
 class App {
 
@@ -100,7 +99,7 @@ class App {
             }
 
             Response::getInstance()
-                ->sendJson(Result::failure(['message' => $err->getMessage()], StatusCode::INTERNAL_SERVER_ERROR));
+                ->sendJson(Result::failure(['message' => $err->getMessage()], 500));
         }
     }
 
@@ -114,7 +113,7 @@ class App {
         }
 
         Response::getInstance()
-            ->sendJson(Result::success('No response', StatusCode::NO_CONTENT));
+            ->sendJson(Result::success('No response', 204));
     }
 
     protected function resolveCallHandler($controller, $methodAction) {
@@ -148,6 +147,6 @@ class App {
         }
 
         Response::getInstance()
-            ->sendJson(Result::success($response, StatusCode::OK));
+            ->sendJson(Result::success($response, 200));
     }
 }

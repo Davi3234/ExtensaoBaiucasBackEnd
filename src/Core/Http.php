@@ -1,5 +1,7 @@
 <?php
 
+namespace App\Core;
+
 enum RouterMethod: string {
     case GET = 'GET';
     case POST = 'POST';
