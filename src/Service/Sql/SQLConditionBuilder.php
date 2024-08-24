@@ -7,7 +7,7 @@ class SQLConditionBuilder extends SQLBuilder {
   /**
    * Method responsible to define WITH clausule
    * @param string|SQLConditionBuilder $sqlClausule Sql reference of the condiction
-   * @return self
+   * @return static
    */
   function with($sqlClausule) {
     if (!isset($this->clausules['WITH']))

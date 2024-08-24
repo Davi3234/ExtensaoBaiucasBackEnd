@@ -72,7 +72,7 @@ class SQL {
      * @return array{sql: string, clausule: string} SQL Statement for Join clausule
      */
     static function join($table, $alias, $on) {
-        return self::createjoin('', $table, $alias, $on);
+        return static::createJoin('', $table, $alias, $on);
     }
 
     /**
@@ -86,7 +86,7 @@ class SQL {
      * @return array{sql: string, clausule: string} SQL Statement for Left Join clausule
      */
     static function leftJoin($table, $alias, $on) {
-        return self::createjoin('LEFT', $table, $alias, $on);
+        return static::createJoin('LEFT', $table, $alias, $on);
     }
 
     /**
@@ -100,7 +100,7 @@ class SQL {
      * @return array{sql: string, clausule: string} SQL Statement for Right Join clausule
      */
     static function rightJoin($table, $alias, $on) {
-        return self::createjoin('RIGHT', $table, $alias, $on);
+        return static::createJoin('RIGHT', $table, $alias, $on);
     }
 
     /**
@@ -114,7 +114,7 @@ class SQL {
      * @return array{sql: string, clausule: string} SQL Statement for Inner Join clausule
      */
     static function innerJoin($table, $alias, $on) {
-        return self::createjoin('INNER', $table, $alias, $on);
+        return static::createJoin('INNER', $table, $alias, $on);
     }
 
     /**
@@ -128,7 +128,7 @@ class SQL {
      * @return array{sql: string, clausule: string} SQL Statement for Full Join clausule
      */
     static function fullJoin($table, $alias, $on) {
-        return self::createjoin('FULL', $table, $alias, $on);
+        return static::createJoin('FULL', $table, $alias, $on);
     }
 
     /**
@@ -142,7 +142,7 @@ class SQL {
      * @throws \Exception On not defined for clause "{clausule} table "{table}" "{alias}"
      * @return array{sql: string, clausule: string} SQL Statement for Join clausule
      */
-    private static function createjoin($prefix, $table, $alias, $on) {
+    private static function createJoin($prefix, $table, $alias, $on) {
         $clausule = trim("$prefix JOIN");
 
         if (!trim($table))
@@ -197,7 +197,7 @@ class SQL {
     }
 
     /**
-     * Clausule LIMIMT
+     * Clausule LIMIT
      * @param string|numeric $limitArgs Limit
      * @return array{sql: string, clausule: string} SQL Statement for Limit By clausule
      */
@@ -241,7 +241,7 @@ class SQL {
      * @return array{sql: string, clausule: string} SQL Statement for Where clausule
      */
     static function eq($field, $value) {
-        return self::condition("$field = $value");
+        return static::condition("$field = $value");
     }
 
     /**
@@ -255,7 +255,7 @@ class SQL {
      * @return array{sql: string, clausule: string} SQL Statement for Where clausule
      */
     static function dif($field, $value) {
-        return self::condition("$field <> $value");
+        return static::condition("$field <> $value");
     }
 
     /**
@@ -269,7 +269,7 @@ class SQL {
      * @return array{sql: string, clausule: string} SQL Statement for Where clausule
      */
     static function gt($field, $value) {
-        return self::condition("$field > $value");
+        return static::condition("$field > $value");
     }
 
     /**
@@ -283,7 +283,7 @@ class SQL {
      * @return array{sql: string, clausule: string} SQL Statement for Where clausule
      */
     static function gte($field, $value) {
-        return self::condition("$field >= $value");
+        return static::condition("$field >= $value");
     }
 
     /**
@@ -297,7 +297,7 @@ class SQL {
      * @return array{sql: string, clausule: string} SQL Statement for Where clausule
      */
     static function lt($field, $value) {
-        return self::condition("$field < $value");
+        return static::condition("$field < $value");
     }
 
     /**
@@ -311,7 +311,7 @@ class SQL {
      * @return array{sql: string, clausule: string} SQL Statement for Where clausule
      */
     static function lte($field, $value) {
-        return self::condition("$field <= $value");
+        return static::condition("$field <= $value");
     }
 
     /**
@@ -325,7 +325,7 @@ class SQL {
      * @return array{sql: string, clausule: string} SQL Statement for Where clausule
      */
     static function like($field, $value) {
-        return self::condition("$field LIKE $value");
+        return static::condition("$field LIKE $value");
     }
 
     /**
@@ -339,7 +339,7 @@ class SQL {
      * @return array{sql: string, clausule: string} SQL Statement for Where clausule
      */
     static function ilike($field, $value) {
-        return self::condition("$field ILIKE $value");
+        return static::condition("$field ILIKE $value");
     }
 
     /**
@@ -354,7 +354,7 @@ class SQL {
      * @return array{sql: string, clausule: string} SQL Statement for Where clausule
      */
     static function between($field, $valueLess, $valueGreater) {
-        return self::condition("$field BETWEEN $valueLess AND $valueGreater");
+        return static::condition("$field BETWEEN $valueLess AND $valueGreater");
     }
 
     /**
@@ -369,7 +369,7 @@ class SQL {
      * @return array{sql: string, clausule: string} SQL Statement for Where clausule
      */
     static function notBetween($field, $valueLess, $valueGreater) {
-        return self::condition("$field NOT BETWEEN $valueLess AND $valueGreater");
+        return static::condition("$field NOT BETWEEN $valueLess AND $valueGreater");
     }
 
     /**
@@ -383,7 +383,7 @@ class SQL {
      * @return array{sql: string, clausule: string} SQL Statement for Where clausule
      */
     static function in($field, ...$values) {
-        return self::condition("$field IN (" . implode(', ', $values) . ")");
+        return static::condition("$field IN (" . implode(', ', $values) . ")");
     }
 
     /**
@@ -397,7 +397,7 @@ class SQL {
      * @return array{sql: string, clausule: string} SQL Statement for Where clausule
      */
     static function notIn($field, ...$values) {
-        return self::condition("$field NOT IN (" . implode(', ', $values) . ")");
+        return static::condition("$field NOT IN (" . implode(', ', $values) . ")");
     }
 
     /**
@@ -410,7 +410,7 @@ class SQL {
      * @return array{sql: string, clausule: string} SQL Statement for Where clausule
      */
     static function isNull($field) {
-        return self::condition("$field IS NULL");
+        return static::condition("$field IS NULL");
     }
 
     /**
@@ -423,7 +423,7 @@ class SQL {
      * @return array{sql: string, clausule: string} SQL Statement for Where clausule
      */
     static function isNotNull($field) {
-        return self::condition("$field IS NOT NULL");
+        return static::condition("$field IS NOT NULL");
     }
 
     /**
@@ -436,7 +436,7 @@ class SQL {
      * @return array{sql: string, clausule: string} SQL Statement for Where clausule
      */
     static function isTrue($field) {
-        return self::condition("$field IS TRUE");
+        return static::condition("$field IS TRUE");
     }
 
     /**
@@ -449,7 +449,7 @@ class SQL {
      * @return array{sql: string, clausule: string} SQL Statement for Where clausule
      */
     static function isFalse($field) {
-        return self::condition("$field IS FALSE");
+        return static::condition("$field IS FALSE");
     }
 
     /**
@@ -462,7 +462,7 @@ class SQL {
      * @return array{sql: string, clausule: string} SQL Statement for Where clausule
      */
     static function isDistinctFrom($field, $value) {
-        return self::condition("$field IS DISTINCT FROM $value");
+        return static::condition("$field IS DISTINCT FROM $value");
     }
 
     /**
@@ -478,7 +478,7 @@ class SQL {
         if ($subSelect instanceof SelectSQLBuilder)
             $subSelect = $subSelect->toSql();
 
-        return self::condition("EXISTS ($subSelect)");
+        return static::condition("EXISTS ($subSelect)");
     }
 
     /**
@@ -494,7 +494,7 @@ class SQL {
         if ($subSelect instanceof SelectSQLBuilder)
             $subSelect = $subSelect->toSql();
 
-        return self::condition("NOT EXISTS ($subSelect)");
+        return static::condition("NOT EXISTS ($subSelect)");
     }
 
     /**
@@ -508,7 +508,7 @@ class SQL {
      * @return array{sql: string, clausule: string} SQL Statement for Where clausule
      */
     static function similarTo($field, $value) {
-        return self::condition("$field SIMILAR TO $value");
+        return static::condition("$field SIMILAR TO $value");
     }
 
     /**
@@ -522,7 +522,7 @@ class SQL {
      * @return array{sql: string, clausule: string} SQL Statement for Where clausule
      */
     static function notSimilarTo($field, $value) {
-        return self::condition("$field NOT SIMILAR TO $value");
+        return static::condition("$field NOT SIMILAR TO $value");
     }
 
     /**
@@ -535,7 +535,7 @@ class SQL {
      * @return array{sql: string, clausule: string} SQL Statement for Where clausule
      */
     static function sqlAnd(...$conditions) {
-        return self::logical('AND', $conditions);
+        return static::logical('AND', $conditions);
     }
 
     /**
@@ -548,7 +548,7 @@ class SQL {
      * @return array{sql: string, clausule: string} SQL Statement for Where clausule
      */
     static function sqlOr(...$conditions) {
-        return self::logical('OR', $conditions);
+        return static::logical('OR', $conditions);
     }
 
     /**
@@ -561,7 +561,7 @@ class SQL {
      * @return array{sql: string, clausule: string} SQL Statement for Where clausule
      */
     static function not(...$conditions) {
-        return self::logical('NOT', $conditions);
+        return static::logical('NOT', $conditions);
     }
 
     /**

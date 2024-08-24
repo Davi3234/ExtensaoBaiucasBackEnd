@@ -7,7 +7,7 @@ interface ISQLReturningBuilder {
   /**
    * Method responsible to define RETURNING clausule
    * @param string ...$fields Fields to be returned
-   * @return self
+   * @return static
    */
   function returning(...$fields);
 

@@ -16,7 +16,7 @@ class SQLFormat {
    * @return string The value converted to a string.
    */
   static function toString($value) {
-    return self::toStringFormat($value);
+    return static::toStringFormat($value);
   }
 
   /**
@@ -26,7 +26,7 @@ class SQLFormat {
    * @return string The value converted to a string or `NULL`.
    */
   static function toStringOrNull($value) {
-    return self::toStringFormatOrNull($value);
+    return static::toStringFormatOrNull($value);
   }
 
   /**
@@ -36,7 +36,7 @@ class SQLFormat {
    * @return string The value converted to a string or `DEFAULT`.
    */
   static function toStringOrDefault($value) {
-    return self::toStringFormatOrDefault($value);
+    return static::toStringFormatOrDefault($value);
   }
 
   /**
@@ -45,7 +45,7 @@ class SQLFormat {
    * @return string The value converted to a date string.
    */
   static function toDate($value) {
-    return self::toStringFormat($value);
+    return static::toStringFormat($value);
   }
 
   /**
@@ -55,7 +55,7 @@ class SQLFormat {
    * @return string The value converted to a date string or `NULL`.
    */
   static function toDateOrNull($value) {
-    return self::toStringFormatOrNull($value);
+    return static::toStringFormatOrNull($value);
   }
 
   /**
@@ -65,7 +65,7 @@ class SQLFormat {
    * @return string The value converted to a date string or `DEFAULT`.
    */
   static function toDateOrDefault($value) {
-    return self::toStringFormatOrDefault($value);
+    return static::toStringFormatOrDefault($value);
   }
 
   /**
@@ -74,7 +74,7 @@ class SQLFormat {
    * @return string The value converted to a time string.
    */
   static function toTime($value) {
-    return self::toStringFormat($value);
+    return static::toStringFormat($value);
   }
 
   /**
@@ -84,7 +84,7 @@ class SQLFormat {
    * @return string The value converted to a time string or `NULL`.
    */
   static function toTimeOrNull($value) {
-    return self::toStringFormatOrNull($value);
+    return static::toStringFormatOrNull($value);
   }
 
   /**
@@ -94,7 +94,7 @@ class SQLFormat {
    * @return string The value converted to a time string or `DEFAULT`.
    */
   static function toTimeOrDefault($value) {
-    return self::toStringFormatOrDefault($value);
+    return static::toStringFormatOrDefault($value);
   }
 
   /**
@@ -103,7 +103,7 @@ class SQLFormat {
    * @return string The value converted to a timestamp string.
    */
   static function toTimestamp($value) {
-    return self::toStringFormat($value);
+    return static::toStringFormat($value);
   }
 
   /**
@@ -113,7 +113,7 @@ class SQLFormat {
    * @return string The value converted to a timestamp string or `NULL`.
    */
   static function toTimestampOrNull($value) {
-    return self::toStringFormatOrNull($value);
+    return static::toStringFormatOrNull($value);
   }
 
   /**
@@ -123,7 +123,7 @@ class SQLFormat {
    * @return string The value converted to a timestamp string or `DEFAULT`.
    */
   static function toTimestampOrDefault($value) {
-    return self::toStringFormatOrDefault($value);
+    return static::toStringFormatOrDefault($value);
   }
 
   /**
@@ -144,9 +144,9 @@ class SQLFormat {
    */
   static function toStringFormatOrNull($value) {
     if (!$value)
-      return self::sqlNull();
+      return static::sqlNull();
 
-    return self::toStringFormat($value);
+    return static::toStringFormat($value);
   }
 
   /**
@@ -157,9 +157,9 @@ class SQLFormat {
    */
   static function toStringFormatOrDefault($value) {
     if (!$value)
-      return self::sqlDefault();
+      return static::sqlDefault();
 
-    return self::toStringFormat($value);
+    return static::toStringFormat($value);
   }
 
   /**
@@ -194,7 +194,7 @@ class SQLFormat {
    * @return string The value cast to the specified type in SQL.
    */
   static function cast($value, $target) {
-    if (!in_array(strtolower($target), self::$TYPES_CAST))
+    if (!in_array(strtolower($target), static::$TYPES_CAST))
       return $value;
 
     return $value . '::' . strtoupper($target);

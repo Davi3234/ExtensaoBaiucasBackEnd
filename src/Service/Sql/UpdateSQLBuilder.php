@@ -7,7 +7,7 @@ class UpdateSQLBuilder extends SQLConditionBuilder implements ISQLReturningBuild
   /**
    * Method responsible to define UPDATE clausule
    * @param string $table Table name
-   * @return self
+   * @return static
    */
   function update($table) {
     $this->clausules['UPDATE'] = SQL::update($table);
@@ -17,7 +17,7 @@ class UpdateSQLBuilder extends SQLConditionBuilder implements ISQLReturningBuild
   /**
    * Method responsible to define UPDATE clausule
    * @param array<string, mixed> $raw Values to set clausule
-   * @return self
+   * @return static
    */
   function setValue($raw) {
     if (in_array('', array_keys($raw)))
@@ -33,7 +33,7 @@ class UpdateSQLBuilder extends SQLConditionBuilder implements ISQLReturningBuild
   /**
    * Method responsible to define RETURNING clausule
    * @param string ...$fields Fields to be returned
-   * @return self
+   * @return static
    */
   function returning(...$fields) {
     if (!isset($this->clausules["RETURNING"]))

@@ -44,3 +44,7 @@ function set_env($name, $value) {
 function get_env($name) {
   return getenv($name) ?: null;
 }
+
+function uuid() {
+  return time() . '-' . mt_rand();
+}

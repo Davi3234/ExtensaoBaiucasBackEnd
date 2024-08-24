@@ -6,10 +6,10 @@ class Request {
   private static $instance = null;
 
   static function getInstance($router = '', $method = '') {
-    if (!isset(self::$instance))
-      self::$instance = new self($router, $method);
+    if (!isset(static::$instance))
+      static::$instance = new static($router, $method);
 
-    return self::$instance;
+    return static::$instance;
   }
 
   private $body = [];

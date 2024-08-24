@@ -7,7 +7,7 @@ class SelectSQLBuilder extends SQLConditionBuilder {
   /**
    * Method responsible to define SELECT clausule
    * @param string ...$fields Fields to be selected
-   * @return self
+   * @return static
    */
   function select(...$fields) {
     $this->clausules['SELECT'] = SQL::select(...$fields);
@@ -19,7 +19,7 @@ class SelectSQLBuilder extends SQLConditionBuilder {
    * Method responsible to define FROM clausule
    * @param string $table Table name
    * @param string $alias Alias name
-   * @return self
+   * @return static
    */
   function from($table, $alias = '') {
     if (!isset($this->clausules['FROM']))
@@ -35,7 +35,7 @@ class SelectSQLBuilder extends SQLConditionBuilder {
    * @param string $table Table name
    * @param string $alias Alias name
    * @param string $on On Condition of the relation
-   * @return self
+   * @return static
    */
   function join($table, $alias, $on) {
     return $this->createjoin(SQL::join($table, $alias, $on));
@@ -46,7 +46,7 @@ class SelectSQLBuilder extends SQLConditionBuilder {
    * @param string $table Table name
    * @param string $alias Alias name
    * @param string $on On Condition of the relation
-   * @return self
+   * @return static
    */
   function leftJoin($table, $alias, $on) {
     return $this->createjoin(SQL::leftJoin($table, $alias, $on));
@@ -57,7 +57,7 @@ class SelectSQLBuilder extends SQLConditionBuilder {
    * @param string $table Table name
    * @param string $alias Alias name
    * @param string $on On Condition of the relation
-   * @return self
+   * @return static
    */
   function rightJoin($table, $alias, $on) {
     return $this->createjoin(SQL::rightJoin($table, $alias, $on));
@@ -68,7 +68,7 @@ class SelectSQLBuilder extends SQLConditionBuilder {
    * @param string $table Table name
    * @param string $alias Alias name
    * @param string $on On Condition of the relation
-   * @return self
+   * @return static
    */
   function innerJoin($table, $alias, $on) {
     return $this->createjoin(SQL::innerJoin($table, $alias, $on));
@@ -79,7 +79,7 @@ class SelectSQLBuilder extends SQLConditionBuilder {
    * @param string $table Table name
    * @param string $alias Alias name
    * @param string $on On Condition of the relation
-   * @return self
+   * @return static
    */
   function fullJoin($table, $alias, $on) {
     return $this->createjoin(SQL::fullJoin($table, $alias, $on));
@@ -88,7 +88,7 @@ class SelectSQLBuilder extends SQLConditionBuilder {
   /**
    * Prepare data sql to JOIN clausule
    * @param string $sql Sql of the relation
-   * @return self
+   * @return static
    */
   private function createjoin($sqlClausule) {
     if (!isset($this->clausules['JOIN']))
@@ -102,7 +102,7 @@ class SelectSQLBuilder extends SQLConditionBuilder {
   /**
    * Method responsible to define ORDER BY clausule
    * @param string|numeric ...$orderByArgs Order by arguments
-   * @return self
+   * @return static
    */
   function orderBy(...$orderByArgs) {
     if (!isset($this->clausules['ORDERBY']))
@@ -116,7 +116,7 @@ class SelectSQLBuilder extends SQLConditionBuilder {
   /**
    * Method responsible to define GROUP BY clausule
    * @param string|numeric ...$groupByArgs Group by arguments
-   * @return self
+   * @return static
    */
   function groupBy(...$groupByArgs) {
     if (!isset($this->clausules['GROUPBY']))
@@ -130,7 +130,7 @@ class SelectSQLBuilder extends SQLConditionBuilder {
   /**
    * Method responsible to define LIMIT clausule
    * @param string|numeric $limit Limit argument
-   * @return self
+   * @return static
    */
   function limit($limit) {
     $this->clausules['LIMIT'] = $limit;
@@ -141,7 +141,7 @@ class SelectSQLBuilder extends SQLConditionBuilder {
   /**
    * Method responsible to define OFFSET clausule
    * @param string|numeric $offset Offset argument
-   * @return self
+   * @return static
    */
   function offset($offset) {
     $this->clausules['OFFSET'] = $offset;
@@ -152,7 +152,7 @@ class SelectSQLBuilder extends SQLConditionBuilder {
   /**
    * Method responsible to define HAVING clausule
    * @param string|SQLConditionBuilder ...$conditions Condictions arguments
-   * @return self
+   * @return static
    */
   function having(...$conditions) {
     if (!isset($this->clausules['HAVIING']))

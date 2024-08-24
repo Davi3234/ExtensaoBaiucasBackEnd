@@ -7,7 +7,7 @@ class InsertSQLBuilder extends SQLBuilder implements ISQLReturningBuilder {
   /**
    * Method responsible to define INSERT clausule
    * @param string $table Table name
-   * @return self
+   * @return static
    */
   function insert($table) {
     $this->clausules['INSERT'] = SQL::insert($table);
@@ -17,7 +17,7 @@ class InsertSQLBuilder extends SQLBuilder implements ISQLReturningBuilder {
   /**
    * Method responsible to define PARAMS clausule
    * @param string ...$params Parameters to insert
-   * @return self
+   * @return static
    */
   function params(...$params) {
     $this->clausules["PARAMS"] = $params;
@@ -27,7 +27,7 @@ class InsertSQLBuilder extends SQLBuilder implements ISQLReturningBuilder {
   /**
    * Method responsible to define VALUES clausule
    * @param array<string, string|numeric|boolean> ...$fields Values of the parameters
-   * @return self
+   * @return static
    */
   function value(...$values) {
     if (!isset($this->clausules["VALUES"]))
@@ -45,7 +45,7 @@ class InsertSQLBuilder extends SQLBuilder implements ISQLReturningBuilder {
   /**
    * Method responsible to define RETURNING clausule
    * @param string ...$fields Fields to be returned
-   * @return self
+   * @return static
    */
   function returning(...$fields) {
     if (!isset($this->clausules["RETURNING"]))

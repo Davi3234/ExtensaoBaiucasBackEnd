@@ -2,7 +2,7 @@
 
 use App\Core\Components\Router;
 
-Router::get('/', function() {
+Router::get('/status', function () {
   return true;
 });
 

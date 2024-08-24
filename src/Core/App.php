@@ -18,10 +18,10 @@ class App {
    * @return App
    */
   static function getInstance() {
-    if (!self::$instance)
-      self::$instance = new self();
+    if (!static::$instance)
+      static::$instance = new static();
 
-    return self::$instance;
+    return static::$instance;
   }
 
   protected $path = '';
@@ -46,7 +46,7 @@ class App {
 
     $method = isset($_SERVER['REQUEST_METHOD']) ? $_SERVER['REQUEST_METHOD'] : '';
 
-    self::makeApp($path, $method);
+    static::makeApp($path, $method);
 
     return App::getInstance();
   }
@@ -56,10 +56,10 @@ class App {
     Request::getInstance();
     Response::getInstance();
 
-    self::$instance->method = $method;
-    self::$instance->path = $path;
+    static::$instance->method = $method;
+    static::$instance->path = $path;
 
-    self::$instance->initialComponents();
+    static::$instance->initialComponents();
   }
 
   protected function initialComponents() {

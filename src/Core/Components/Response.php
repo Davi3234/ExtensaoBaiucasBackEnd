@@ -7,10 +7,10 @@ class Response {
   private static $instance = null;
 
   static function getInstance() {
-    if (!isset(self::$instance))
-      self::$instance = new self();
+    if (!isset(static::$instance))
+      static::$instance = new static();
 
-    return self::$instance;
+    return static::$instance;
   }
 
   private function __construct() {

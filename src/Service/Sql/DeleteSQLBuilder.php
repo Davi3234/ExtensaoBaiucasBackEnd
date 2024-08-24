@@ -7,7 +7,7 @@ class DeleteSQLBuilder extends SQLConditionBuilder implements ISQLReturningBuild
   /**
    * Method responsible to define DELETE clausule
    * @param string $table Table name
-   * @return self
+   * @return static
    */
   function delete($table) {
     $this->clausules['DELETE'] = SQL::delete($table);
@@ -18,7 +18,7 @@ class DeleteSQLBuilder extends SQLConditionBuilder implements ISQLReturningBuild
    * Method responsible to define USING clausule
    * @param string $table Table name
    * @param string $alias Alias name
-   * @return self
+   * @return static
    */
   function using($table, $alias = '') {
     if (!isset($this->clausules['USING']))
@@ -31,7 +31,7 @@ class DeleteSQLBuilder extends SQLConditionBuilder implements ISQLReturningBuild
   /**
    * Method responsible to define RETURNING clausule
    * @param string ...$fields Fields to be returned
-   * @return self
+   * @return static
    */
   function returning(...$fields) {
     if (!isset($this->clausules["RETURNING"]))
