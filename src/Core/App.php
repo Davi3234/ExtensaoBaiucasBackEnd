@@ -12,141 +12,141 @@ use App\Exception\RouterNotFoundException;
 
 class App {
 
-    private static $instance = null;
+  private static $instance = null;
 
-    /**
-     * @return App
-     */
-    static function getInstance() {
-        if (!self::$instance)
-            self::$instance = new self();
+  /**
+   * @return App
+   */
+  static function getInstance() {
+    if (!self::$instance)
+      self::$instance = new self();
 
-        return self::$instance;
-    }
+    return self::$instance;
+  }
 
-    protected $path = '';
-    protected $method = '';
+  protected $path = '';
+  protected $method = '';
 
-    /**
-     * @var Router
-     */
-    protected $router = null;
-    protected $routerRequested = null;
+  /**
+   * @var Router
+   */
+  protected $router = null;
+  protected $routerRequested = null;
 
-    private function __construct() {
-        $this->router = Router::getInstance();
-    }
+  private function __construct() {
+    $this->router = Router::getInstance();
+  }
 
-    static function CreateApp() {
-        $path = '/';
+  static function CreateApp() {
+    $path = '/';
 
-        isset($_GET['url']) && $path .= $_GET['url'];
+    isset($_GET['url']) && $path .= $_GET['url'];
 
-        $path = str_replace('//', '/', $path);
+    $path = str_replace('//', '/', $path);
 
-        $method = isset($_SERVER['REQUEST_METHOD']) ? $_SERVER['REQUEST_METHOD'] : '';
+    $method = isset($_SERVER['REQUEST_METHOD']) ? $_SERVER['REQUEST_METHOD'] : '';
 
-        self::makeApp($path, $method);
+    self::makeApp($path, $method);
 
-        return App::getInstance();
-    }
+    return App::getInstance();
+  }
 
-    protected static function makeApp($path, $method) {
-        App::getInstance();
-        Request::getInstance();
-        Response::getInstance();
+  protected static function makeApp($path, $method) {
+    App::getInstance();
+    Request::getInstance();
+    Response::getInstance();
 
-        self::$instance->method = $method;
-        self::$instance->path = $path;
+    self::$instance->method = $method;
+    self::$instance->path = $path;
 
-        self::$instance->initialComponents();
-    }
+    self::$instance->initialComponents();
+  }
 
-    protected function initialComponents() {
-        try {
-            $this->fetchRouterRequested();
-        } catch (\Exception $err) {
-            if ($err instanceof HttpException) {
-                Response::getInstance()
-                    ->sendJson(Result::failure(['message' => $err->getMessage()], $err->getStatusCode()));
-            }
-        }
-    }
-
-    protected function fetchRouterRequested() {
-        $router = $this->router->getRouteRequested($this->method, $this->path);
-
-        if (!$router)
-            throw new RouterNotFoundException("Router \"$this->method\" \"$this->path\" not found");
-
-        $params = Router::getParamsFromRouter($router['router'], $this->path);
-
-        foreach ($params as $param => $value) {
-            Request::getInstance()->setParam($param, $value);
-        }
-
-        $this->routerRequested = $router;
-    }
-
-    function Run() {
-        try {
-            $this->resolveHandlers($this->routerRequested['handlers']);
-        } catch (\Exception $err) {
-            if ($err instanceof HttpException) {
-                Response::getInstance()
-                    ->sendJson(Result::failure(['message' => $err->getMessage()], $err->getStatusCode()));
-                return;
-            }
-
-            Response::getInstance()
-                ->sendJson(Result::failure(['message' => $err->getMessage()], 500));
-        }
-    }
-
-    protected function resolveHandlers($handlers) {
-        foreach ($handlers as $handler) {
-            $controller = isset($handler[0]) ? $handler[0] : null;
-            $methodAction = isset($handler[1]) ? $handler[1] : null;
-
-            $response = $this->resolveCallHandler($controller, $methodAction);
-            $this->resolveResponseHandler($response);
-        }
-
+  protected function initialComponents() {
+    try {
+      $this->fetchRouterRequested();
+    } catch (\Exception $err) {
+      if ($err instanceof HttpException) {
         Response::getInstance()
-            ->sendJson(Result::success('No response', 204));
+          ->sendJson(Result::failure(['message' => $err->getMessage()], $err->getStatusCode()));
+      }
+    }
+  }
+
+  protected function fetchRouterRequested() {
+    $router = $this->router->getRouteRequested($this->method, $this->path);
+
+    if (!$router)
+      throw new RouterNotFoundException("Router \"$this->method\" \"$this->path\" not found");
+
+    $params = Router::getParamsFromRouter($router['router'], $this->path);
+
+    foreach ($params as $param => $value) {
+      Request::getInstance()->setParam($param, $value);
     }
 
-    protected function resolveCallHandler($controller, $methodAction) {
-        if (!$controller)
-            return;
+    $this->routerRequested = $router;
+  }
 
-        if (!is_string($controller) || !class_exists($controller)) {
-            if (!is_callable($controller))
-                return;
-
-            return $controller(Request::getInstance(), Response::getInstance());
-        }
-
-        $controllerInstance = new $controller;
-
-        if ($controllerInstance instanceof Middleware)
-            $methodAction = 'perform';
-        else if (empty($methodAction) || !method_exists($controllerInstance, $methodAction))
-            return;
-
-        return $controllerInstance->$methodAction(Request::getInstance(), Response::getInstance());
-    }
-
-    protected function resolveResponseHandler($response) {
-        if ($response === null)
-            return;
-
-        if ($response instanceof Result) {
-            Response::getInstance()
-                ->sendJson($response);
-        }
-
+  function Run() {
+    try {
+      $this->resolveHandlers($this->routerRequested['handlers']);
+    } catch (\Exception $err) {
+      if ($err instanceof HttpException) {
         Response::getInstance()
-            ->sendJson(Result::success($response, 200));
+          ->sendJson(Result::failure(['message' => $err->getMessage()], $err->getStatusCode()));
+        return;
+      }
+
+      Response::getInstance()
+        ->sendJson(Result::failure(['message' => $err->getMessage()], 500));
     }
+  }
+
+  protected function resolveHandlers($handlers) {
+    foreach ($handlers as $handler) {
+      $controller = isset($handler[0]) ? $handler[0] : null;
+      $methodAction = isset($handler[1]) ? $handler[1] : null;
+
+      $response = $this->resolveCallHandler($controller, $methodAction);
+      $this->resolveResponseHandler($response);
+    }
+
+    Response::getInstance()
+      ->sendJson(Result::success('No response', 204));
+  }
+
+  protected function resolveCallHandler($controller, $methodAction) {
+    if (!$controller)
+      return;
+
+    if (!is_string($controller) || !class_exists($controller)) {
+      if (!is_callable($controller))
+        return;
+
+      return $controller(Request::getInstance(), Response::getInstance());
+    }
+
+    $controllerInstance = new $controller;
+
+    if ($controllerInstance instanceof Middleware)
+      $methodAction = 'perform';
+    else if (empty($methodAction) || !method_exists($controllerInstance, $methodAction))
+      return;
+
+    return $controllerInstance->$methodAction(Request::getInstance(), Response::getInstance());
+  }
+
+  protected function resolveResponseHandler($response) {
+    if ($response === null)
+      return;
+
+    if ($response instanceof Result) {
+      Response::getInstance()
+        ->sendJson($response);
+    }
+
+    Response::getInstance()
+      ->sendJson(Result::success($response, 200));
+  }
 }

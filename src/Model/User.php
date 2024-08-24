@@ -3,15 +3,15 @@
 namespace App\Model;
 
 class User {
-    private $id;
-    private $login;
-    private $senha;
+  private $id;
+  private $login;
+  private $senha;
 
-    function get($propName) {
-        return $this->$propName;
-    }
+  function get($propName) {
+    return $this->$propName;
+  }
 
-    function set($propName, $propValue) {
-        $this->$propName = $propValue;
-    }
+  function set($propName, $propValue) {
+    $this->$propName = $propValue;
+  }
 }

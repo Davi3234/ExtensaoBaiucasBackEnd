@@ -3,7 +3,6 @@
 namespace App\Controller;
 
 use App\Core\Components\Request;
-use App\Core\Components\Response;
 
 class UserController {
 
