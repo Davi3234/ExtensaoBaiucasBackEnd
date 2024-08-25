@@ -66,8 +66,8 @@ class Router {
   protected function createRouter($method, $path, $handlers) {
     $path = str_replace('//', '/', trim("/$path"));
 
-    if (!$path)
-      $path = '/';
+    if (!$path || $path == '/')
+      $path = '';
 
     foreach ($handlers as &$handler) {
       if (!is_array($handler))
@@ -207,31 +207,38 @@ class RouterMake {
   }
 
   function get($path, ...$handlers) {
-    Router::get($this->prefix . $path, ...$handlers);
+    Router::get($this->createPath($path), ...$handlers);
   }
 
   function post($path, ...$handlers) {
-    Router::post($this->prefix . $path, ...$handlers);
+    Router::post($this->createPath($path), ...$handlers);
   }
 
   function put($path, ...$handlers) {
-    Router::put($this->prefix . $path, ...$handlers);
+    Router::put($this->createPath($path), ...$handlers);
   }
 
   function delete($path, ...$handlers) {
-    Router::delete($this->prefix . $path, ...$handlers);
+    Router::delete($this->createPath($path), ...$handlers);
   }
 
   function patch($path, ...$handlers) {
-    Router::patch($path, $handlers);
+    Router::patch($this->createPath($path), $handlers);
   }
 
 
   function head($path, ...$handlers) {
-    Router::head($path, $handlers);
+    Router::head($this->createPath($path), $handlers);
   }
 
   function options($path, ...$handlers) {
-    Router::options($path, $handlers);
+    Router::options($this->createPath($path), $handlers);
+  }
+
+  protected function createPath($path) {
+    if (!$path || $path == '/')
+      $path = '';
+
+    return $this->prefix . $path;
   }
 }

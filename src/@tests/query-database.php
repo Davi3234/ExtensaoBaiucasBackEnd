@@ -2,9 +2,8 @@
 
 declare(strict_types=1);
 
-require_once __DIR__ . '/Util/index.php';
-require_once __DIR__ . '/env.php';
-require_once __DIR__ . '/routers.php';
+require_once __DIR__ . '/../Util/index.php';
+require_once __DIR__ . '/../env.php';
 
 use App\Service\Sql\SelectSQLBuilder;
 use App\Service\Sql\SQL;

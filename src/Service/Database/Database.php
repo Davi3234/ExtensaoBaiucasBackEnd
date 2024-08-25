@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Service;
+namespace App\Service\Database;
 
 use App\Exception\InternalServerErrorException;
 
@@ -14,6 +14,9 @@ class DatabaseConnection implements IDatabaseConnection {
     $this->connection = $connection;
   }
 
+  /**
+   * @return static
+   */
   static function newConnection() {
     $database = new static();
     $database->connect();
@@ -36,10 +39,6 @@ class DatabaseConnection implements IDatabaseConnection {
       throw new InternalServerErrorException('Failed to connect to the database');
   }
 
-  function __destruct() {
-    $this->close();
-  }
-
   function close() {
     $result = pg_close($this->connection);
     return $result;
@@ -48,13 +47,17 @@ class DatabaseConnection implements IDatabaseConnection {
   function getConnection() {
     return $this->connection;
   }
+
+  function getError() {
+    return pg_last_error($this->connection);
+  }
 }
 
 class Database extends DatabaseConnection implements IDatabase {
   function exec(string $sql, $params = []) {
     $result = $this->sendPgQueryParam($sql, $params);
 
-    if ($result)
+    if ($result !== true)
       $result = pg_fetch_assoc($result);
 
     return $result ?: true;
@@ -73,7 +76,10 @@ class Database extends DatabaseConnection implements IDatabase {
 
   private function sendPgQueryParam(string $sql, $params = []) {
     try {
-      $result = pg_query_params($this->connection, $sql, $params);
+      $result = @pg_query_params($this->connection, $sql, $params);
+
+      if ($result === false)
+        throw new InternalServerErrorException($this->getError());
 
       return $result;
     } catch (\Exception $err) {
@@ -83,32 +89,5 @@ class Database extends DatabaseConnection implements IDatabase {
 
   function transaction() {
     return Transaction::fromDatabase($this);
-  }
-}
-
-class Transaction implements ITransaction {
-  /**
-   * @var IDatabase
-   */
-  protected $database = null;
-
-  function __construct(IDatabase $database) {
-    $this->database = $database;
-  }
-
-  static function fromDatabase(IDatabase $connection) {
-    return new static($connection);
-  }
-
-  function begin() {
-    $this->database->exec('BEGIN');
-  }
-
-  function commit() {
-    $this->database->exec('COMMIT');
-  }
-
-  function rollback() {
-    $this->database->exec('ROLLBACK');
   }
 }

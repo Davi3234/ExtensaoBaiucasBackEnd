@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Service;
+namespace App\Service\Database;
 
 interface IDatabaseConnection {
   function connect();
   function close();
+  function getError();
 }
 
 interface IDatabase extends IDatabaseConnection {
@@ -18,5 +19,8 @@ interface ITransaction {
   function commit();
 }
 
-interface ITransactionCheckpoint extends ITransaction {
+interface ITransactionCheckpoint {
+  function save();
+  function release();
+  function rollback();
 }
