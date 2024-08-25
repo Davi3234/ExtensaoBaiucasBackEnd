@@ -138,7 +138,7 @@ class InsertSQLBuilder extends SQLBuilder implements ISQLReturningBuilder {
    * @return string
    */
   function returningToSql() {
-    if (!isset($this->clausules["RETURNING"]))
+    if (!isset($this->clausules["RETURNING"]) || count($this->clausules["RETURNING"]) == 0)
       return '';
 
     return 'RETURNING ' . implode(', ', $this->clausules["RETURNING"]);

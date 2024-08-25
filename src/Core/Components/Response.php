@@ -29,9 +29,8 @@ class Response {
     if ($data instanceof Result)
       $data = $data->getResult();
 
-    if (is_object($data)) {
+    if (is_object($data))
       $data = (object)(array)$data;
-    }
 
     header('Content-Type: application/json');
     $data = json_encode($data);

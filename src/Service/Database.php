@@ -2,6 +2,8 @@
 
 namespace App\Service;
 
+use App\Exception\InternalServerErrorException;
+
 class DatabaseConnection implements IDatabaseConnection {
   /**
    * @var \PgSql\Connection
@@ -30,11 +32,17 @@ class DatabaseConnection implements IDatabaseConnection {
   function connect() {
     $this->connection = pg_connect(get_env('DATABASE_URL'));
 
-    return $this->connection !== false;
+    if ($this->connection === false)
+      throw new InternalServerErrorException('Failed to connect to the database');
+  }
+
+  function __destruct() {
+    $this->close();
   }
 
   function close() {
-    return pg_close($this->connection);
+    $result = pg_close($this->connection);
+    return $result;
   }
 
   function getConnection() {
@@ -44,11 +52,33 @@ class DatabaseConnection implements IDatabaseConnection {
 
 class Database extends DatabaseConnection implements IDatabase {
   function exec(string $sql, $params = []) {
-    return pg_query_params($this->connection, $sql, $params);
+    $result = $this->sendPgQueryParam($sql, $params);
+
+    if ($result)
+      $result = pg_fetch_assoc($result);
+
+    return $result ?: true;
   }
 
   function query(string $sql, $params = []) {
-    return pg_query_params($this->connection, $sql, $params);
+    $result = $this->sendPgQueryParam($sql, $params);
+
+    $raw = [];
+    while ($row = pg_fetch_assoc($result)) {
+      $raw[] = $row;
+    }
+
+    return $raw;
+  }
+
+  private function sendPgQueryParam(string $sql, $params = []) {
+    try {
+      $result = pg_query_params($this->connection, $sql, $params);
+
+      return $result;
+    } catch (\Exception $err) {
+      throw new InternalServerErrorException($err->getMessage());
+    }
   }
 
   function transaction() {
