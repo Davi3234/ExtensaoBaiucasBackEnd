@@ -5,12 +5,12 @@ namespace App\Service\Database;
 interface IDatabaseConnection {
   function connect();
   function close();
-  function getError();
+  function getError(): string;
 }
 
 interface IDatabase extends IDatabaseConnection {
-  function exec(string $sql, $params = []);
-  function query(string $sql, $params = []);
+  function exec(string $sql, $params = []): array|bool;
+  function query(string $sql, $params = []): array|bool;
 }
 
 interface ITransaction {

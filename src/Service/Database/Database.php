@@ -40,21 +40,20 @@ class DatabaseConnection implements IDatabaseConnection {
   }
 
   function close() {
-    $result = pg_close($this->connection);
-    return $result;
+    pg_close($this->connection);
   }
 
   function getConnection() {
     return $this->connection;
   }
 
-  function getError() {
+  function getError(): string {
     return pg_last_error($this->connection);
   }
 }
 
 class Database extends DatabaseConnection implements IDatabase {
-  function exec(string $sql, $params = []) {
+  function exec(string $sql, $params = []): array|bool {
     $result = $this->sendPgQueryParam($sql, $params);
 
     if ($result !== true)
@@ -63,7 +62,7 @@ class Database extends DatabaseConnection implements IDatabase {
     return $result ?: true;
   }
 
-  function query(string $sql, $params = []) {
+  function query(string $sql, $params = []): array|bool {
     $result = $this->sendPgQueryParam($sql, $params);
 
     $raw = [];
@@ -74,7 +73,7 @@ class Database extends DatabaseConnection implements IDatabase {
     return $raw;
   }
 
-  private function sendPgQueryParam(string $sql, $params = []) {
+  private function sendPgQueryParam(string $sql, $params = []): \PgSql\Result {
     try {
       $result = @pg_query_params($this->connection, $sql, $params);
 
