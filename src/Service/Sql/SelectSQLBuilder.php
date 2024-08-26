@@ -133,7 +133,7 @@ class SelectSQLBuilder extends SQLConditionBuilder {
    * @return static
    */
   function limit($limit) {
-    $this->clausules['LIMIT'] = $limit;
+    $this->clausules['LIMIT'] = SQL::limit($limit);
 
     return $this;
   }

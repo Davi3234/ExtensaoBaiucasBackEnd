@@ -8,7 +8,7 @@ use App\Core\Components\Response;
 use App\Core\Components\Result;
 use App\Core\Components\Router;
 use App\Exception\HttpException;
-use App\Exception\RouterNotFoundException;
+use App\Exception\NotFoundException;
 
 class App {
 
@@ -77,7 +77,7 @@ class App {
     $router = $this->router->getRouteRequested($this->method, $this->path);
 
     if (!$router)
-      throw new RouterNotFoundException("Router \"$this->method\" \"$this->path\" not found");
+      throw new NotFoundException("Router \"$this->method\" \"$this->path\" not found");
 
     $params = Router::getParamsFromRouter($router['router'], $this->path);
 
@@ -138,9 +138,6 @@ class App {
   }
 
   protected function resolveResponseHandler($response) {
-    if ($response === null)
-      return;
-
     if ($response instanceof Result) {
       Response::getInstance()
         ->sendJson($response);

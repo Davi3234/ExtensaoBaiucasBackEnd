@@ -3,26 +3,38 @@
 namespace App\Controller;
 
 use App\Core\Components\Request;
-use App\Service\IDatabase;
-use App\Service\Database;
+use App\Repository\UserRepository;
+use App\Service\Database\Database;
+use App\Service\Database\IDatabase;
 use App\Service\Sql\DeleteSQLBuilder;
 use App\Service\Sql\InsertSQLBuilder;
-use App\Service\Sql\SelectSQLBuilder;
 use App\Service\Sql\SQL;
 
 class UserController {
   private IDatabase $database;
+  private UserRepository $userRepository;
 
   function __construct() {
     $this->database = Database::newConnection();
+    $this->userRepository = new UserRepository($this->database);
   }
 
   function query() {
-    $queryBuilder = new SelectSQLBuilder;
+    $users = $this->userRepository->findMany();
 
-    $result = $this->database->query($queryBuilder->from('"user"')->toSql());
+    return $users;
+  }
 
-    return $result;
+  function getOne(Request $request) {
+    $id = $request->getParam('id');
+
+    $users = $this->userRepository->findFirstOrThrow([
+      'where' => [
+        SQL::eq('id', $id)
+      ]
+    ]);
+
+    return $users;
   }
 
   function create(Request $request) {
