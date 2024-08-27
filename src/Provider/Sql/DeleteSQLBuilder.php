@@ -39,9 +39,6 @@ class DeleteSQLBuilder extends SQLConditionBuilder implements ISQLReturningBuild
    * @return static
    */
   function returning(...$fields) {
-    if (!isset($this->clausules["RETURNING"]))
-      $this->clausules["RETURNING"] = [];
-
     $this->clausules["RETURNING"] = array_merge($this->clausules["RETURNING"], $fields);
     return $this;
   }

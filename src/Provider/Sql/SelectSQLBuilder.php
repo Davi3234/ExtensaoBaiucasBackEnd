@@ -4,6 +4,19 @@ namespace App\Provider\Sql;
 
 class SelectSQLBuilder extends SQLConditionBuilder {
 
+  function __construct() {
+    parent::__construct();
+
+    $this->clausules['SELECT'] = [];
+    $this->clausules['FROM'] = [];
+    $this->clausules['JOIN'] = [];
+    $this->clausules['ORDERBY'] = [];
+    $this->clausules['GROUPBY'] = [];
+    $this->clausules['LIMIT'] = '';
+    $this->clausules['OFFSET'] = '';
+    $this->clausules['HAVIING'] = [];
+  }
+
   /**
    * Method responsible to define SELECT clausule
    * @param string ...$fields Fields to be selected
@@ -22,9 +35,6 @@ class SelectSQLBuilder extends SQLConditionBuilder {
    * @return static
    */
   function from($table, $alias = '') {
-    if (!isset($this->clausules['FROM']))
-      $this->clausules['FROM'] = [];
-
     $this->clausules['FROM'] = SQL::from($table, $alias);
 
     return $this;
@@ -91,9 +101,6 @@ class SelectSQLBuilder extends SQLConditionBuilder {
    * @return static
    */
   private function createjoin($sqlClausule) {
-    if (!isset($this->clausules['JOIN']))
-      $this->clausules['JOIN'] = [];
-
     $this->clausules['JOIN'][] = $sqlClausule;
 
     return $this;
@@ -105,9 +112,6 @@ class SelectSQLBuilder extends SQLConditionBuilder {
    * @return static
    */
   function orderBy(...$orderByArgs) {
-    if (!isset($this->clausules['ORDERBY']))
-      $this->clausules['ORDERBY'] = [];
-
     $this->clausules['ORDERBY'] = array_merge($this->clausules['ORDERBY'], $orderByArgs);
 
     return $this;
@@ -119,9 +123,6 @@ class SelectSQLBuilder extends SQLConditionBuilder {
    * @return static
    */
   function groupBy(...$groupByArgs) {
-    if (!isset($this->clausules['GROUPBY']))
-      $this->clausules['GROUPBY'] = [];
-
     $this->clausules['GROUPBY'] = array_merge($this->clausules['GROUPBY'], $groupByArgs);
 
     return $this;
@@ -155,9 +156,6 @@ class SelectSQLBuilder extends SQLConditionBuilder {
    * @return static
    */
   function having(...$conditions) {
-    if (!isset($this->clausules['HAVIING']))
-      $this->clausules['HAVIING'] = [];
-
     $conditions = array_map(function ($condition) {
       if ($condition instanceof SelectSQLBuilder)
         return $condition->toSql();
@@ -200,7 +198,7 @@ class SelectSQLBuilder extends SQLConditionBuilder {
    * @return string
    */
   function selectFieldsToSql() {
-    if (!isset($this->clausules['SELECT']))
+    if (!$this->clausules['SELECT'])
       return 'SELECT *';
 
     return 'SELECT '.implode(', ', $this->clausules['SELECT']);
@@ -211,7 +209,7 @@ class SelectSQLBuilder extends SQLConditionBuilder {
    * @return string
    */
   function fromToSql() {
-    if (!isset($this->clausules['FROM']) || $this->clausules['FROM']['sql'] == '')
+    if (!$this->clausules['FROM'] || !$this->clausules['FROM']['sql'])
       throw new \Exception('Clausule "FROM" not defined');
 
     return $this->clausules['FROM']['sql'];
@@ -222,7 +220,7 @@ class SelectSQLBuilder extends SQLConditionBuilder {
    * @return string
    */
   function joinToSql() {
-    if (!isset($this->clausules['JOIN']) || count($this->clausules['JOIN']) == 0)
+    if (!$this->clausules['JOIN'])
       return '';
 
     $sql = array_map(function ($clausuleJoin) {
@@ -237,7 +235,7 @@ class SelectSQLBuilder extends SQLConditionBuilder {
    * @return string
    */
   function groupByToSql() {
-    if (!isset($this->clausules['GROUPBY']) || count($this->clausules['GROUPBY']) == 0)
+    if (!$this->clausules['GROUPBY'])
       return '';
 
     return 'GROUP BY ' . implode(', ', $this->clausules['GROUPBY']);
@@ -248,7 +246,7 @@ class SelectSQLBuilder extends SQLConditionBuilder {
    * @return string
    */
   function havingToSql() {
-    if (!isset($this->clausules['HAVING']))
+    if (!$this->clausules['HAVING'])
       return '';
 
     $conditions = array_map(function ($condition) {
@@ -265,7 +263,7 @@ class SelectSQLBuilder extends SQLConditionBuilder {
    * @return string
    */
   function orderByToSql() {
-    if (!isset($this->clausules['ORDERBY']) || count($this->clausules['ORDERBY']) == 0)
+    if (!$this->clausules['ORDERBY'])
       return '';
 
     return 'ORDER BY ' . implode(', ', $this->clausules['ORDERBY']);
@@ -276,7 +274,7 @@ class SelectSQLBuilder extends SQLConditionBuilder {
    * @return string
    */
   function limitToSql() {
-    if (!isset($this->clausules['LIMIT']) || $this->clausules['LIMIT']['sql'] == '')
+    if (!$this->clausules['LIMIT'] || !$this->clausules['LIMIT']['sql'])
       return '';
 
     return $this->clausules['LIMIT']['sql'];
@@ -287,7 +285,7 @@ class SelectSQLBuilder extends SQLConditionBuilder {
    * @return string
    */
   function offsetToSql() {
-    if (!isset($this->clausules['OFFSET']) || $this->clausules['OFFSET']['sql'] == '')
+    if (!$this->clausules['OFFSET'] || !$this->clausules['OFFSET']['sql'])
       return '';
 
     return $this->clausules['OFFSET']['sql'];

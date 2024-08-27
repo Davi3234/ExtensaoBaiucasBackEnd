@@ -88,7 +88,7 @@ class UpdateSQLBuilder extends SQLConditionBuilder implements ISQLReturningBuild
       return '';
 
     $setValues = array_map(function ($param, $value) {
-      if (!isset($value) || !$value)
+      if (!$value)
         throw new \Exception("Value to param \"$param\" not defined to clausule \"SET\"");
 
       return "$param = $value";

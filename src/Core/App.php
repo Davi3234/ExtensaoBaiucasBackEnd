@@ -105,8 +105,8 @@ class App {
 
   protected function resolveHandlers($handlers) {
     foreach ($handlers as $handler) {
-      $controller = isset($handler[0]) ? $handler[0] : null;
-      $methodAction = isset($handler[1]) ? $handler[1] : null;
+      $controller = $handler[0] ?? null;
+      $methodAction = $handler[1] ?? null;
 
       $response = $this->resolveCallHandler($controller, $methodAction);
       $this->resolveResponseHandler($response);

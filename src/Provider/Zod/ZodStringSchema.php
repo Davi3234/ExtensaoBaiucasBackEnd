@@ -102,35 +102,35 @@ class ZodStringSchema extends ZodSchema {
     if (strlen($value) == $this->length)
       return;
 
-    $this->addError(new ZodErrorValidator(isset($attributes['message']) ? $attributes['message'] : "Value must have $this->length characters"));
+    $this->addError(new ZodErrorValidator($attributes['message'] ?? "Value must have $this->length characters"));
   }
 
   protected function parseMin($value, $attributes) {
     if (strlen($value) >= $this->min)
       return;
 
-    $this->addError(new ZodErrorValidator(isset($attributes['message']) ? $attributes['message'] : "Value must have at least $this->min characters"));
+    $this->addError(new ZodErrorValidator($attributes['message'] ?? "Value must have at least $this->min characters"));
   }
 
   protected function parseMax($value, $attributes) {
     if (strlen($value) <= $this->max)
       return;
 
-    $this->addError(new ZodErrorValidator(isset($attributes['message']) ? $attributes['message'] : "Value must have a maximum of $this->max characters"));
+    $this->addError(new ZodErrorValidator($attributes['message'] ?? "Value must have a maximum of $this->max characters"));
   }
 
   protected function parseIncludes($value, $attributes) {
     if (strpos($value, $this->includes) !== false)
       return;
 
-    $this->addError(new ZodErrorValidator(isset($attributes['message']) ? $attributes['message'] : "Value must contain the text \"$this->includes\""));
+    $this->addError(new ZodErrorValidator($attributes['message'] ?? "Value must contain the text \"$this->includes\""));
   }
 
   protected function parseStartsWith($value, $attributes) {
     if (strpos($value, $this->startsWith) === 0)
       return;
 
-    $this->addError(new ZodErrorValidator(isset($attributes['message']) ? $attributes['message'] : "Value must starts with \"$this->startsWith\""));
+    $this->addError(new ZodErrorValidator($attributes['message'] ?? "Value must starts with \"$this->startsWith\""));
   }
 
   protected function parseEndsWith($value, $attributes) {
@@ -139,14 +139,14 @@ class ZodStringSchema extends ZodSchema {
     if (!$length || substr($value, -$length) === $this->endsWith)
       return;
 
-    $this->addError(new ZodErrorValidator(isset($attributes['message']) ? $attributes['message'] : "Value must ends with \"$this->endsWith\""));
+    $this->addError(new ZodErrorValidator($attributes['message'] ?? "Value must ends with \"$this->endsWith\""));
   }
 
   protected function parseRegex($value, $attributes) {
     if (preg_match($this->regex, $value))
       return;
 
-    $this->addError(new ZodErrorValidator(isset($attributes['message']) ? $attributes['message'] : 'Value invalid'));
+    $this->addError(new ZodErrorValidator($attributes['message'] ?? 'Value invalid'));
   }
 
   protected function isValueEmpty() {

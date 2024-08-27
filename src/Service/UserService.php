@@ -39,7 +39,7 @@ class UserService {
 
   function create($args) {
     $dto = Z::object([
-        'name' => Z::string(),
+        'name' => Z::string(['required' => '']),
         'login' => Z::string(),
       ])
       ->parse($args);

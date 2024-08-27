@@ -67,7 +67,7 @@ class ZodDateSchema extends ZodSchema {
     if (is_date_format($value, $this->format))
       return;
 
-    $this->addError(new ZodErrorValidator(isset($attributes['message']) ? $attributes['message'] : "Data must be in the format \"$this->format\""));
+    $this->addError(new ZodErrorValidator($attributes['message'] ?? "Data must be in the format \"$this->format\""));
     $this->stop();
   }
 
@@ -75,14 +75,14 @@ class ZodDateSchema extends ZodSchema {
     if ($value >= $this->min)
       return;
 
-    $this->addError(new ZodErrorValidator(isset($attributes['message']) ? $attributes['message'] : "Date must be greater than \"$this->min\""));
+    $this->addError(new ZodErrorValidator($attributes['message'] ?? "Date must be greater than \"$this->min\""));
   }
 
   protected function parseMax($value, $attributes) {
     if ($value <= $this->max)
       return;
 
-    $this->addError(new ZodErrorValidator(isset($attributes['message']) ? $attributes['message'] : "Date must be less than \"$this->max\""));
+    $this->addError(new ZodErrorValidator($attributes['message'] ?? "Date must be less than \"$this->max\""));
   }
 
   protected function parseToFormat($value, $attributes) {

@@ -47,10 +47,7 @@ class Request {
   }
 
   function getParam($name) {
-    if (isset($this->getParams()[$name]))
-      return $this->getParams()[$name];
-
-    return null;
+    return $this->params[$name] ?: null;
   }
 
   function getHeaders() {
@@ -58,10 +55,7 @@ class Request {
   }
 
   function getHeader($name) {
-    if (isset($this->getHeaders()[$name]))
-      return $this->getHeaders()[$name];
-
-    return null;
+    return $this->headers[$name] ?: null;
   }
 
   function getRouter() {
@@ -77,10 +71,7 @@ class Request {
   }
 
   function getBody($name) {
-    if (isset($this->getAllBody()[$name]))
-      return $this->getAllBody()[$name];
-
-    return null;
+    return $this->body[$name] ?: null;
   }
 
   function getAttributes() {
@@ -88,7 +79,7 @@ class Request {
   }
 
   function getAttribute($name) {
-    return isset($this->attributes[$name]) ? $this->attributes[$name] : null;
+    return $this->attributes[$name] ?: null;
   }
 
   function setAttribute($name, $value) {

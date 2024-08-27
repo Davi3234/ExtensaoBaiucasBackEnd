@@ -80,10 +80,10 @@ abstract class ZodSchema {
   protected function resolveHandleValidator($typeStack, $parser, $attributes) {
     $response = $this->resolveHandle($parser, $attributes);
 
-    if (!isset($response))
+    if (!$response)
       return null;
 
-    if (($response === false && $typeStack == 'REFINEEXTRA') || isset($response['message']))
+    if (($response === false && $typeStack == 'REFINEEXTRA') || $response['message'])
       return $response;
 
     return null;
@@ -100,7 +100,7 @@ abstract class ZodSchema {
 
   protected function resolveResultHandleValidator($response, $attributes) {
     if ($response === false)
-      $this->addError(new ZodErrorValidator(isset($attributes['message']) ? $attributes['message'] : 'Value invalid'));
+      $this->addError(new ZodErrorValidator($attributes['message'] ?? 'Value invalid'));
     else if ($response && isset($response['message']))
       $this->addError(new ZodErrorValidator($response['message']));
   }
@@ -174,7 +174,7 @@ abstract class ZodSchema {
 
     $type = gettype($value);
 
-    $this->addError(new ZodErrorValidator(isset($attributes['invalidType']) ? $attributes['invalidType'] : "Expect an \"$this->type\" received \"$type\""));
+    $this->addError(new ZodErrorValidator($attributes['invalidType'] ?? "Expect an \"$this->type\" received \"$type\""));
     $this->stop();
   }
 

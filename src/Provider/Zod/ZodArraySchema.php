@@ -64,30 +64,30 @@ class ZodArraySchema extends ZodSchema {
   }
 
   protected function parseNonempty($value, $attributes) {
-    if ($value && count($value) > 0)
+    if ($value)
       return;
 
-    $this->addError(new ZodErrorValidator(isset($attributes['message']) ? $attributes['message'] : "Array cannot be empty"));
+    $this->addError(new ZodErrorValidator($attributes['message'] ?? "Array cannot be empty"));
   }
 
     protected function parseMin($value, $attributes) {
     if (count($value) >= $this->min)
       return;
 
-    $this->addError(new ZodErrorValidator(isset($attributes['message']) ? $attributes['message'] : "Array must contain \"$this->min\" or more items"));
+    $this->addError(new ZodErrorValidator($attributes['message'] ?? "Array must contain \"$this->min\" or more items"));
   }
 
   protected function parseMax($value, $attributes) {
     if (count($value) <= $this->max)
       return;
 
-    $this->addError(new ZodErrorValidator(isset($attributes['message']) ? $attributes['message'] : "Array must contain \"$this->max\" or fewer items"));
+    $this->addError(new ZodErrorValidator($attributes['message'] ?? "Array must contain \"$this->max\" or fewer items"));
   }
 
   protected function parseLength($value, $attributes) {
     if (count($value) == $this->length)
       return;
 
-    $this->addError(new ZodErrorValidator(isset($attributes['message']) ? $attributes['message'] : "Array must contain \"$this->length\" items exactly"));
+    $this->addError(new ZodErrorValidator($attributes['message'] ?? "Array must contain \"$this->length\" items exactly"));
   }
 }

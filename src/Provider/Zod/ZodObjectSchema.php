@@ -47,7 +47,7 @@ class ZodObjectSchema extends ZodSchema {
     $valueRaw = [];
 
     foreach($this->fields as $key => $zodSchema) {
-      $value = isset($this->value->$key) ? $this->value->$key : null;
+      $value = $this->value->$key ?? null;
 
       $result = $zodSchema->parse($value);
 
