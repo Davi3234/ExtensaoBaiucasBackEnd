@@ -2,11 +2,11 @@
 
 namespace App\Core;
 
-use App\Core\Components\Middleware;
 use App\Core\Components\Request;
 use App\Core\Components\Response;
 use App\Core\Components\Result;
 use App\Core\Components\Router;
+use App\Core\Components\Middleware;
 use App\Exception\HttpException;
 use App\Exception\NotFoundException;
 
@@ -99,7 +99,7 @@ class App {
       }
 
       Response::getInstance()
-        ->sendJson(Result::failure(['message' => $err->getMessage()], 500));
+        ->sendJson(Result::failure(['message' => $err->getMessage()], StatusCode::INTERNAL_SERVER_ERROR));
     }
   }
 
@@ -113,7 +113,7 @@ class App {
     }
 
     Response::getInstance()
-      ->sendJson(Result::success('No response', 204));
+      ->sendJson(Result::success('No response', StatusCode::NO_CONTENT));
   }
 
   protected function resolveCallHandler($controller, $methodAction) {
@@ -144,6 +144,6 @@ class App {
     }
 
     Response::getInstance()
-      ->sendJson(Result::success($response, 200));
+      ->sendJson(Result::success($response, StatusCode::OK));
   }
 }

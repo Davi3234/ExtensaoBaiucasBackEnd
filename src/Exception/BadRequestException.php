@@ -2,9 +2,11 @@
 
 namespace App\Exception;
 
+use App\Core\StatusCode;
+
 class BadRequestException extends HttpException {
 
   function __construct($message) {
-    parent::__construct($message, 400);
+    parent::__construct($message, StatusCode::BAD_REQUEST);
   }
 }
