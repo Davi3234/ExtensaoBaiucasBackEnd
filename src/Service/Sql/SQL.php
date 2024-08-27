@@ -5,41 +5,39 @@ namespace App\Service\Sql;
 class SQL {
 
     /**
-     * Clausule WITH
-     * @param string $alias Alias name for With statement
-     * @param string $select Pre-query for With statement
-     * @throws \Exception Alias not defined for clause "WITH"
-     * @throws \Exception Select not defined for clause "WITH"
-     * @return array{sql: string, clausule: string} SQL Statement for With clausule
+     * Clausule SELECT
+     * @param string ...$fields Fields of query
+     * @return SelectSQLBuilder Select SQL Builder
      */
-    static function with($alias, $select) {
-        if (!trim($alias))
-            throw new \Exception('Alias not defined for clause "WITH"');
-
-        if (!trim($select))
-            throw new \Exception('Select not defined for clause "WITH"');
-
-        return [
-            'sql' => "WITH $alias ($select)",
-            'clausule' => 'WITH'
-        ];
+    static function select(...$fields) {
+        return (new SelectSQLBuilder)->select(...$fields);
     }
 
     /**
-     * Clausule SELECT
-     * @param mixed ...$fields Fields of query
-     * @return array{sql: string, clausule: string} SQL Statement for Select clausule
+     * Clausule INSERT
+     * @param string $table Table name
+     * @return InsertSQLBuilder Insert SQL Builder
      */
-    static function select(...$fields) {
-        $sql = implode(', ', $fields);
+    static function insert($table) {
+        return (new InsertSQLBuilder)->insert($table);
+    }
 
-        if (count($fields) == 0)
-            $sql = '*';
+    /**
+     * Clausule UPDATE
+     * @param string $table Table name
+     * @return UpdateSQLBuilder Update SQL Builder
+     */
+    static function update($table) {
+        return (new UpdateSQLBuilder)->update($table);
+    }
 
-        return [
-            'sql' => "SELECT $sql",
-            'clausule' => 'SELECT'
-        ];
+    /**
+     * Clausule Delete
+     * @param string $table Table name
+     * @return DeleteSQLBuilder Delete SQL Builder
+     */
+    static function delete($table) {
+        return (new DeleteSQLBuilder)->delete($table);
     }
 
     /**
@@ -587,51 +585,6 @@ class SQL {
             'type' => $type,
             'nested' => $nested,
             'clausule' => 'WHERE'
-        ];
-    }
-
-    /**
-     * Clausule INSERT
-     * @param string $table Table name
-     * @return array{sql: string, clausule: string} SQL Statement for Insert clausule
-     */
-    static function insert($table) {
-        if (!$table)
-            throw new \Exception('Table name not defined for clausule "INSERT"');
-
-        return [
-            'sql' => "INSERT INTO $table",
-            'clausule' => 'INSERT'
-        ];
-    }
-
-    /**
-     * Clausule UPDATE
-     * @param string $table Table name
-     * @return array{sql: string, clausule: string} SQL Statement for Update clausule
-     */
-    static function update($table) {
-        if (!$table)
-            throw new \Exception('Table name not defined for clausule "UPDATE"');
-
-        return [
-            'sql' => "UPDATE $table",
-            'clausule' => 'UPDATE'
-        ];
-    }
-
-    /**
-     * Clausule DELETE
-     * @param string $table Table name
-     * @return array{sql: string, clausule: string} SQL Statement for Delete clausule
-     */
-    static function delete($table) {
-        if (!$table)
-            throw new \Exception('Table name not defined for clausule "DELETE"');
-
-        return [
-            'sql' => "DELETE FROM $table",
-            'clausule' => 'DELETE'
         ];
     }
 }

@@ -3,6 +3,9 @@
 namespace App\Service\Sql;
 
 class SQLBuilder {
+
+  function __construct() {}
+
     /**
      * Summary of clausules
      * @var array<string,mixed>

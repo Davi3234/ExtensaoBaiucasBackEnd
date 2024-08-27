@@ -3,6 +3,14 @@
 namespace App\Service\Sql;
 
 class UpdateSQLBuilder extends SQLConditionBuilder implements ISQLReturningBuilder {
+  
+  function __construct() {
+    parent::__construct();
+
+    $this->clausules['UPDATE'] = '';
+    $this->clausules['SET'] = [];
+    $this->clausules['RETURNING'] = [];
+  }
 
   /**
    * Method responsible to define UPDATE clausule
@@ -10,7 +18,7 @@ class UpdateSQLBuilder extends SQLConditionBuilder implements ISQLReturningBuild
    * @return static
    */
   function update($table) {
-    $this->clausules['UPDATE'] = SQL::update($table);
+    $this->clausules['UPDATE'] = $table;
     return $this;
   }
 
@@ -23,8 +31,9 @@ class UpdateSQLBuilder extends SQLConditionBuilder implements ISQLReturningBuild
     if (in_array('', array_keys($raw)))
       throw new \Exception("Param name not defined to clausule \"SET\"");
 
-    if (!isset($this->clausules["SET"]))
-      $this->clausules["SET"] = [];
+    foreach($raw as $param => $value) {
+      $raw[$param] = $this->createParam($value);
+    }
 
     $this->clausules["SET"] = array_merge($this->clausules["SET"], $raw);
     return $this;
@@ -36,9 +45,6 @@ class UpdateSQLBuilder extends SQLConditionBuilder implements ISQLReturningBuild
    * @return static
    */
   function returning(...$fields) {
-    if (!isset($this->clausules["RETURNING"]))
-      $this->clausules["RETURNING"] = [];
-
     $this->clausules["RETURNING"] = array_merge($this->clausules["RETURNING"], $fields);
     return $this;
   }
@@ -67,10 +73,10 @@ class UpdateSQLBuilder extends SQLConditionBuilder implements ISQLReturningBuild
    * @return string
    */
   function updateToSql() {
-    if (!isset($this->clausules['UPDATE']) || $this->clausules['UPDATE']['sql'] == '')
+    if (!$this->clausules['UPDATE'])
       throw new \Exception('Table name not defined for clausule "UPDATE"');
 
-    return $this->clausules['UPDATE']['sql'];
+    return "UPDATE $this->clausules['UPDATE']";
   }
 
   /**
@@ -78,11 +84,11 @@ class UpdateSQLBuilder extends SQLConditionBuilder implements ISQLReturningBuild
    * @return string
    */
   function setValueToSql() {
-    if (!isset($this->clausules['SET']) || count($this->clausules['SET']) == 0)
+    if (!$this->clausules['SET'])
       return '';
 
     $setValues = array_map(function ($param, $value) {
-      if (!isset($value) || $value == '')
+      if (!isset($value) || !$value)
         throw new \Exception("Value to param \"$param\" not defined to clausule \"SET\"");
 
       return "$param = $value";
@@ -96,7 +102,7 @@ class UpdateSQLBuilder extends SQLConditionBuilder implements ISQLReturningBuild
    * @return string
    */
   function returningToSql() {
-    if (!isset($this->clausules["RETURNING"]))
+    if (!$this->clausules["RETURNING"])
       return '';
 
     return 'RETURNING ' . implode(', ', $this->clausules["RETURNING"]);

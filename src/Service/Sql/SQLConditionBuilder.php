@@ -4,15 +4,19 @@ namespace App\Service\Sql;
 
 class SQLConditionBuilder extends SQLBuilder {
 
+  function __construct() {
+    parent::__construct();
+
+    $this->clausules['WITH'] = '';
+    $this->clausules['WHERE'] = [];
+  }
+
   /**
    * Method responsible to define WITH clausule
    * @param string|SQLConditionBuilder $sqlClausule Sql reference of the condiction
    * @return static
    */
   function with($sqlClausule) {
-    if (!isset($this->clausules['WITH']))
-      $this->clausules['WITH'] = [];
-
     if ($sqlClausule instanceof SQLConditionBuilder)
       $sql = $sqlClausule->toSql();
     else
@@ -29,16 +33,13 @@ class SQLConditionBuilder extends SQLBuilder {
    * @return static
    */
   function where(...$conditions) {
-    if (!isset($this->clausules['WHERE']))
-      $this->clausules['WHERE'] = [];
-
     $this->clausules['WHERE'] = array_merge($this->clausules['WHERE'], $conditions);
 
     return $this;
   }
 
   function whereToSql() {
-    if (!isset($this->clausules['WHERE']) || count($this->clausules['WHERE']) == 0)
+    if (!$this->clausules['WHERE'])
       return 'WHERE 1 = 1';
 
     $conditions = array_map(function ($condition) {
@@ -51,7 +52,7 @@ class SQLConditionBuilder extends SQLBuilder {
   }
 
   function withToSql() {
-    if (!isset($this->clausules['WITH']) || count($this->clausules['WITH']) == 0)
+    if (!$this->clausules['WITH'])
       return '';
 
     $sql = array_map(function ($clausuleWith) {
@@ -67,9 +68,8 @@ class SQLConditionBuilder extends SQLBuilder {
         return $this->buildCondition($cond);
       }, $condition['nested']);
 
-      if ($condition['type'] == 'NOT') {
+      if ($condition['type'] == 'NOT')
         return 'NOT (' . implode(' AND ', $nestedConditions) . ')';
-      }
 
       return '(' . implode(' ' . $condition['type'] . ' ', $nestedConditions) . ')';
     }

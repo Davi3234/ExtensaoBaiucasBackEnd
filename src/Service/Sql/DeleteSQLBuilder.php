@@ -4,13 +4,21 @@ namespace App\Service\Sql;
 
 class DeleteSQLBuilder extends SQLConditionBuilder implements ISQLReturningBuilder {
 
+  function __construct() {
+    parent::__construct();
+
+    $this->clausules['DELETE'] = '';
+    $this->clausules['USING'] = [];
+    $this->clausules['RETURNING'] = [];
+  }
+
   /**
    * Method responsible to define DELETE clausule
    * @param string $table Table name
    * @return static
    */
   function delete($table) {
-    $this->clausules['DELETE'] = SQL::delete($table);
+    $this->clausules['DELETE'] = $table;
     return $this;
   }
 
@@ -21,9 +29,6 @@ class DeleteSQLBuilder extends SQLConditionBuilder implements ISQLReturningBuild
    * @return static
    */
   function using($table, $alias = '') {
-    if (!isset($this->clausules['USING']))
-      $this->clausules['USING'] = [];
-
     $this->clausules['USING'][] = trim("$table $alias");
     return $this;
   }
@@ -64,10 +69,10 @@ class DeleteSQLBuilder extends SQLConditionBuilder implements ISQLReturningBuild
    * @return string
    */
   function deleteToSql() {
-    if (!isset($this->clausules['DELETE']) || $this->clausules['DELETE']['sql'] == '')
+    if (!$this->clausules['DELETE'])
       throw new \Exception('Table name not defined for clausule "DELETE"');
 
-    return $this->clausules['DELETE']['sql'];
+    return "DELETE FROM $this->clausules['DELETE']";
   }
 
   /**
@@ -75,7 +80,7 @@ class DeleteSQLBuilder extends SQLConditionBuilder implements ISQLReturningBuild
    * @return string
    */
   function usingToSql() {
-    if (!isset($this->clausules['USING']))
+    if (!$this->clausules['USING'])
       return '';
 
     return 'USING ' . implode(', ', $this->clausules['USING']);
@@ -86,7 +91,7 @@ class DeleteSQLBuilder extends SQLConditionBuilder implements ISQLReturningBuild
    * @return string
    */
   function returningToSql() {
-    if (!isset($this->clausules["RETURNING"]))
+    if (!$this->clausules["RETURNING"])
       return '';
 
     return 'RETURNING ' . implode(', ', $this->clausules["RETURNING"]);

@@ -4,13 +4,22 @@ namespace App\Service\Sql;
 
 class InsertSQLBuilder extends SQLBuilder implements ISQLReturningBuilder {
 
+  function __construct() {
+    parent::__construct();
+
+    $this->clausules['INSERT'] = '';
+    $this->clausules['PARAMS'] = [];
+    $this->clausules['VALUES'] = [];
+    $this->clausules['RETURNING'] = [];
+  }
+
   /**
    * Method responsible to define INSERT clausule
    * @param string $table Table name
    * @return static
    */
   function insert($table) {
-    $this->clausules['INSERT'] = SQL::insert($table);
+    $this->clausules['INSERT'] = $table;
     return $this;
   }
 
@@ -30,9 +39,6 @@ class InsertSQLBuilder extends SQLBuilder implements ISQLReturningBuilder {
    * @return static
    */
   function value(...$values) {
-    if (!isset($this->clausules["VALUES"]))
-      $this->clausules["VALUES"] = [];
-
     foreach ($values as $key => $valueParams) {
       foreach ($valueParams as $param => $value)
         $values[$key][$param] = $this->createParam($value);
@@ -48,9 +54,6 @@ class InsertSQLBuilder extends SQLBuilder implements ISQLReturningBuilder {
    * @return static
    */
   function returning(...$fields) {
-    if (!isset($this->clausules["RETURNING"]))
-      $this->clausules["RETURNING"] = [];
-
     $this->clausules["RETURNING"] = array_merge($this->clausules["RETURNING"], $fields);
     return $this;
   }
@@ -79,10 +82,10 @@ class InsertSQLBuilder extends SQLBuilder implements ISQLReturningBuilder {
    * @return string
    */
   function insertToSql() {
-    if (!isset($this->clausules['INSERT']) || $this->clausules['INSERT']['sql'] == '')
+    if (!$this->clausules['INSERT'])
       throw new \Exception('Table name not defined for clausule "INSERT"');
 
-    return $this->clausules['INSERT']['sql'];
+    return "INSERT INTO $this->clausules['INSERT']";
   }
 
   /**
@@ -112,9 +115,6 @@ class InsertSQLBuilder extends SQLBuilder implements ISQLReturningBuilder {
    * @return array<array<string>>
    */
   private function getValuesParams() {
-    if (!isset($this->clausules["VALUES"]))
-      return [];
-
     $valuesList = [];
 
     foreach ($this->clausules["VALUES"] as $values) {
@@ -138,7 +138,7 @@ class InsertSQLBuilder extends SQLBuilder implements ISQLReturningBuilder {
    * @return string
    */
   function returningToSql() {
-    if (!isset($this->clausules["RETURNING"]) || count($this->clausules["RETURNING"]) == 0)
+    if (!$this->clausules["RETURNING"])
       return '';
 
     return 'RETURNING ' . implode(', ', $this->clausules["RETURNING"]);

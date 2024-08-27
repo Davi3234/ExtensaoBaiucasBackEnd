@@ -10,7 +10,7 @@ class SelectSQLBuilder extends SQLConditionBuilder {
    * @return static
    */
   function select(...$fields) {
-    $this->clausules['SELECT'] = SQL::select(...$fields);
+    $this->clausules['SELECT'] = array_merge($this->clausules['SELECT'], $fields);
 
     return $this;
   }
@@ -203,7 +203,7 @@ class SelectSQLBuilder extends SQLConditionBuilder {
     if (!isset($this->clausules['SELECT']))
       return 'SELECT *';
 
-    return $this->clausules['SELECT']['sql'];
+    return 'SELECT '.implode(', ', $this->clausules['SELECT']);
   }
 
   /**
