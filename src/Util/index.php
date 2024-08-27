@@ -45,6 +45,16 @@ function get_env($name) {
   return getenv($name) ?: null;
 }
 
+function date_format($date, $format) {
+  return (new DateTime($date))->format($format);
+}
+
+function is_date_format($date, $format = 'Y-m-d') {
+  $dateTime = DateTime::createFromFormat($format, $date);
+
+  return $dateTime && strtolower($dateTime->format($format)) === strtolower($date);
+}
+
 function uuid() {
   return time() . '-' . mt_rand();
 }
