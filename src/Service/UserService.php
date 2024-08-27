@@ -8,6 +8,7 @@ use App\Provider\Database\IDatabase;
 use App\Provider\Sql\DeleteSQLBuilder;
 use App\Provider\Sql\InsertSQLBuilder;
 use App\Provider\Sql\SQL;
+use App\Provider\Zod\Z;
 
 class UserService {
   private IDatabase $database;
@@ -37,8 +38,11 @@ class UserService {
   }
 
   function create($args) {
-    $name = $args['name'];
-    $login = $args['login'];
+    $dto = Z::object([
+        'name' => Z::string(),
+        'login' => Z::string(),
+      ])
+      ->parse($args);
 
     $insertBuilder = new InsertSQLBuilder;
 
@@ -46,8 +50,8 @@ class UserService {
       ->insert('"user"')
       ->params('name', 'login')
       ->value([
-        'name' => $name,
-        'login' => $login,
+        'name' => $dto->name,
+        'login' => $dto->name,
       ])
       ->returning('*')
       ->toSql();

@@ -28,7 +28,7 @@ class UserRepository extends Repository {
 
     $sql = $queryBuilder
       ->from('"user"')
-      ->where(...$args['where'] ?? [])
+      ->where(...$args['where'] ?: [])
       ->limit(1)
       ->toSql();
 
@@ -48,7 +48,7 @@ class UserRepository extends Repository {
 
     $sql = $queryBuilder
       ->from('"user"')
-      ->where(...$args['where'] ?? [])
+      ->where(...$args['where'] ?: [])
       ->toSql();
 
     $result = $this->database->query($sql);
