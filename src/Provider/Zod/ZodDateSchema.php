@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Service\Zod;
+namespace App\Provider\Zod;
 
 class ZodDateSchema extends ZodSchema {
   protected static $DATE_FORMAT = [

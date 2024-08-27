@@ -4,11 +4,11 @@ namespace App\Controller;
 
 use App\Core\Components\Request;
 use App\Repository\UserRepository;
-use App\Service\Database\Database;
-use App\Service\Database\IDatabase;
-use App\Service\Sql\DeleteSQLBuilder;
-use App\Service\Sql\InsertSQLBuilder;
-use App\Service\Sql\SQL;
+use App\Provider\Database\Database;
+use App\Provider\Database\IDatabase;
+use App\Provider\Sql\DeleteSQLBuilder;
+use App\Provider\Sql\InsertSQLBuilder;
+use App\Provider\Sql\SQL;
 
 class UserController {
   private IDatabase $database;

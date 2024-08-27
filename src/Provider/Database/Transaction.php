@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Service\Database;
+namespace App\Provider\Database;
 
 class Transaction implements ITransaction {
   /**

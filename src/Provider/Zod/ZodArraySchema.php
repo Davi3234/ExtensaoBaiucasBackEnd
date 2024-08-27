@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Service\Zod;
+namespace App\Provider\Zod;
 
 class ZodArraySchema extends ZodSchema {
 

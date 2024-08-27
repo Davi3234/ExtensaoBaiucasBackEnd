@@ -5,7 +5,7 @@ declare(strict_types=1);
 require_once __DIR__ . '/../Util/index.php';
 require_once __DIR__ . '/../env.php';
 
-use App\Service\Database\Database;
+use App\Provider\Database\Database;
 
 $db = Database::newConnection();
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Service\Sql;
+namespace App\Provider\Sql;
 
 class UpdateSQLBuilder extends SQLConditionBuilder implements ISQLReturningBuilder {
   

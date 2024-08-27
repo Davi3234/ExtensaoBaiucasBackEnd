@@ -4,7 +4,7 @@ namespace App\Repository;
 
 use App\Common\Repository;
 use App\Exception\NotFoundException;
-use App\Service\Sql\SelectSQLBuilder;
+use App\Provider\Sql\SelectSQLBuilder;
 
 class UserRepository extends Repository {
 

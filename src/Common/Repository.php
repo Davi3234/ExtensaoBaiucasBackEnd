@@ -3,8 +3,8 @@
 namespace App\Common;
 
 use App\Exception\NotFoundException;
-use App\Service\Database\IDatabase;
-use App\Service\Sql\SelectSQLBuilder;
+use App\Provider\Database\IDatabase;
+use App\Provider\Sql\SelectSQLBuilder;
 
 abstract class Repository {
   protected IDatabase $database;
