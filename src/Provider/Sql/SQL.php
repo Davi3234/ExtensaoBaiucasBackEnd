@@ -6,6 +6,15 @@ class SQL {
 
     /**
      * Clausule SELECT
+     * @param string|SQLConditionBuilder $sqlClausule Sql reference of the condiction
+     * @return SelectSQLBuilder Select SQL Builder
+     */
+    static function with($sqlClausule) {
+        return (new SelectSQLBuilder)->with($sqlClausule);
+    }
+
+    /**
+     * Clausule SELECT
      * @param string ...$fields Fields of query
      * @return SelectSQLBuilder Select SQL Builder
      */
