@@ -36,4 +36,15 @@ abstract class Repository {
   function _query(SelectSQLBuilder $selectBuilder) {
     return $this->database->queryFromSqlBuilder($selectBuilder);
   }
+
+  function _queryModel(SelectSQLBuilder $selectBuilder, $modelConstructor) {
+    $result = $this->database->queryFromSqlBuilder($selectBuilder);
+
+    $dataModel = [];
+    foreach ($result as $raw) {
+      $dataModel[] = $modelConstructor::_loadModel($raw);
+    }
+
+    return $dataModel;
+  }
 }
