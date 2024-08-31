@@ -83,7 +83,7 @@ class InsertSQLBuilder extends SQLBuilder implements ISQLReturningBuilder {
    */
   function insertToSql() {
     if (!$this->clausules['INSERT'])
-      throw new \Exception('Table name not defined for clausule "INSERT"');
+      throw new SqlBuilderException('Table name not defined for clausule "INSERT"');
 
     return "INSERT INTO $this->clausules['INSERT']";
   }
@@ -122,7 +122,7 @@ class InsertSQLBuilder extends SQLBuilder implements ISQLReturningBuilder {
 
       foreach ($this->clausules["PARAMS"] as $param) {
         if (!isset($values[$param]) || $values[$param] == '')
-          throw new \Exception("Value to param \"$param\" not defined to clausule \"VALUES\"");
+          throw new SqlBuilderException("Value to param \"$param\" not defined to clausule \"VALUES\"");
 
         $valueInsert[$param] = $values[$param];
       }
