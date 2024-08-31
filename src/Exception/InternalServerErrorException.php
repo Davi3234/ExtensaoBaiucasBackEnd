@@ -2,11 +2,11 @@
 
 namespace App\Exception;
 
-use App\Core\StatusCode;
+use App\Enums\StatusCode;
 
 class InternalServerErrorException extends HttpException {
 
   function __construct($message) {
-    parent::__construct($message, StatusCode::INTERNAL_SERVER_ERROR);
+    parent::__construct($message, StatusCode::INTERNAL_SERVER_ERROR->value);
   }
 }

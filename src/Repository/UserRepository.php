@@ -2,57 +2,48 @@
 
 namespace App\Repository;
 
+use App\Common\IRepository;
 use App\Common\Repository;
-use App\Exception\NotFoundException;
+use App\Provider\Sql\DeleteSQLBuilder;
+use App\Provider\Sql\InsertSQLBuilder;
 use App\Provider\Sql\SelectSQLBuilder;
+use App\Provider\Sql\UpdateSQLBuilder;
 
-class UserRepository extends Repository {
+class UserRepository extends Repository implements IRepository {
 
-  /**
-   * @param array{where: array} $args
-   */
-  function findFirstOrThrow($args = []) {
-    $result = $this->findFirst($args);
-
-    if (!$result)
-      throw new NotFoundException('User not found');
-
-    return $result;
+  function create(InsertSQLBuilder $insertBuilder) {
   }
 
-  /**
-   * @param array{where: array} $args
-   */
-  function findFirst($args = []) {
-    $queryBuilder = new SelectSQLBuilder;
-
-    $sql = $queryBuilder
-      ->from('"user"')
-      ->where(...$args['where'] ?: [])
-      ->limit(1)
-      ->toSql();
-
-    $result = $this->database->query($sql);
-
-    if (!$result || !isset($result[0]))
-      return null;
-
-    return $result[0];
+  function update(UpdateSQLBuilder $updateBuilder) {
   }
 
-  /**
-   * @param array{where: array} $args
-   */
-  function findMany($args = []) {
-    $queryBuilder = new SelectSQLBuilder;
+  function delete(DeleteSQLBuilder $deleteBuilder) {
+  }
 
-    $sql = $queryBuilder
-      ->from('"user"')
-      ->where(...$args['where'] ?: [])
-      ->toSql();
+  function checkExistsOrTrow(SelectSQLBuilder $selectBuilder) {
+  }
 
-    $result = $this->database->query($sql);
+  function isExists(SelectSQLBuilder $selectBuilder) {
+  }
 
-    return $result;
+  function findFirstOrThrow(SelectSQLBuilder $selectBuilder) {
+  }
+
+  function findFirst(SelectSQLBuilder $selectBuilder) {
+  }
+
+  function findUniqueOrThrow(SelectSQLBuilder $selectBuilder) {
+  }
+
+  function findUnique(SelectSQLBuilder $selectBuilder) {
+  }
+
+  function query(SelectSQLBuilder $selectBuilder) {
+  }
+
+  function findMany(SelectSQLBuilder $selectBuilder) {
+  }
+
+  function count(SelectSQLBuilder $selectBuilder) {
   }
 }

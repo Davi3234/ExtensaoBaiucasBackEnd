@@ -2,6 +2,7 @@
 
 namespace App\Core\Components;
 
+use App\Enums\RouterMethod;
 use App\Exception\InternalServerErrorException;
 
 class Router {
@@ -118,6 +119,7 @@ class Router {
   function getRouters() {
     return $this->routers;
   }
+
   function getRouterByMethodAndRouter($method, $routerPath) {
     foreach ($this->routers[$method] as $prefix => $router) {
       if (static::isMathRouterTemplate($prefix, $routerPath)) {
@@ -167,31 +169,31 @@ class Router {
   }
 
   static function get($path, ...$handlers) {
-    static::getInstance()->createRouter('GET', $path, $handlers);
+    static::getInstance()->createRouter(RouterMethod::GET->value, $path, $handlers);
   }
 
   static function post($path, ...$handlers) {
-    static::getInstance()->createRouter('POST', $path, $handlers);
+    static::getInstance()->createRouter(RouterMethod::POST->value, $path, $handlers);
   }
 
   static function put($path, ...$handlers) {
-    static::getInstance()->createRouter('PUT', $path, $handlers);
+    static::getInstance()->createRouter(RouterMethod::PUT->value, $path, $handlers);
   }
 
   static function patch($path, ...$handlers) {
-    static::getInstance()->createRouter('PATCH', $path, $handlers);
+    static::getInstance()->createRouter(RouterMethod::PATCH->value, $path, $handlers);
   }
 
   static function delete($path, ...$handlers) {
-    static::getInstance()->createRouter('DELETE', $path, $handlers);
+    static::getInstance()->createRouter(RouterMethod::DELETE->value, $path, $handlers);
   }
 
   static function head($path, ...$handlers) {
-    static::getInstance()->createRouter('HEAD', $path, $handlers);
+    static::getInstance()->createRouter(RouterMethod::HEAD->value, $path, $handlers);
   }
 
   static function options($path, ...$handlers) {
-    static::getInstance()->createRouter('OPTIONS', $path, $handlers);
+    static::getInstance()->createRouter(RouterMethod::OPTIONS->value, $path, $handlers);
   }
 
   static function maker($prefix = '') {

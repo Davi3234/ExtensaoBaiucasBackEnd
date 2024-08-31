@@ -2,6 +2,7 @@
 
 namespace App\Provider\Database;
 
+use App\Exception\Exception;
 use App\Exception\InternalServerErrorException;
 use App\Provider\Sql\SQLBuilder;
 
@@ -66,9 +67,6 @@ class Database extends DatabaseConnection implements IDatabase {
   function exec(string $sql, $params = []): array|bool {
     $result = $this->sendPgQueryParam($sql, $params);
 
-    if ($result !== true)
-      $result = pg_fetch_assoc($result);
-
     return $result ?: true;
   }
 
@@ -84,22 +82,24 @@ class Database extends DatabaseConnection implements IDatabase {
   function query(string $sql, $params = []): array|bool {
     $result = $this->sendPgQueryParam($sql, $params);
 
-    $raw = [];
-    while ($row = pg_fetch_assoc($result)) {
-      $raw[] = $row;
-    }
-
-    return $raw;
+    return $result ?: [];
   }
 
-  private function sendPgQueryParam(string $sql, $params = []): \PgSql\Result {
+  private function sendPgQueryParam(string $sql, $params = []) {
     try {
       $result = @pg_query_params($this->connection, $sql, $params);
 
       if ($result === false)
-        throw new InternalServerErrorException($this->getError());
+        throw new DatabaseException($this->getError());
 
-      return $result;
+      $raw = [];
+      while ($row = pg_fetch_assoc($result)) {
+        $raw[] = $row;
+      }
+
+      return $raw;
+    } catch (Exception $err) {
+      throw $err;
     } catch (\Exception $err) {
       throw new InternalServerErrorException($err->getMessage());
     }
