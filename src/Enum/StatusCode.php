@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Enums;
+namespace App\Enum;
 
 enum StatusCode: int {
   case CONTINUE = 100;

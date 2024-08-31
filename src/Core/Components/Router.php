@@ -2,7 +2,7 @@
 
 namespace App\Core\Components;
 
-use App\Enums\RouterMethod;
+use App\Enum\RouterMethod;
 use App\Exception\InternalServerErrorException;
 
 class Router {

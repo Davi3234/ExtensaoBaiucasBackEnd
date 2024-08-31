@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Enums;
+namespace App\Enum;
 
 enum RouterMethod: string {
   case GET = 'GET';

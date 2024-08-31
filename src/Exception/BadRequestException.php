@@ -2,7 +2,7 @@
 
 namespace App\Exception;
 
-use App\Enums\StatusCode;
+use App\Enum\StatusCode;
 
 class BadRequestException extends HttpException {
 

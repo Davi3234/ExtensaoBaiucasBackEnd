@@ -7,7 +7,7 @@ use App\Core\Components\Response;
 use App\Core\Components\Result;
 use App\Core\Components\Router;
 use App\Core\Components\Middleware;
-use App\Enums\StatusCode;
+use App\Enum\StatusCode;
 use App\Exception\Exception;
 use App\Exception\HttpException;
 use App\Exception\NotFoundException;
