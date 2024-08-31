@@ -3,6 +3,7 @@
 namespace App\Provider\Database;
 
 use App\Exception\InternalServerErrorException;
+use App\Provider\Sql\SQLBuilder;
 
 class DatabaseConnection implements IDatabaseConnection {
   /**
@@ -53,6 +54,15 @@ class DatabaseConnection implements IDatabaseConnection {
 }
 
 class Database extends DatabaseConnection implements IDatabase {
+  function execFromSqlBuilder(SQLBuilder $sqlBuilder): array|bool {
+    $sql = $sqlBuilder->toSql();
+    $params = $sqlBuilder->getParams();
+
+    $result = $this->exec($sql, $params);
+
+    return $result;
+  }
+
   function exec(string $sql, $params = []): array|bool {
     $result = $this->sendPgQueryParam($sql, $params);
 
@@ -60,6 +70,15 @@ class Database extends DatabaseConnection implements IDatabase {
       $result = pg_fetch_assoc($result);
 
     return $result ?: true;
+  }
+
+  function queryFromSqlBuilder(SQLBuilder $sqlBuilder): array|bool {
+    $sql = $sqlBuilder->toSql();
+    $params = $sqlBuilder->getParams();
+
+    $result = $this->query($sql, $params);
+
+    return $result;
   }
 
   function query(string $sql, $params = []): array|bool {

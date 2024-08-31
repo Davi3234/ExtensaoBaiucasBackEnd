@@ -2,6 +2,8 @@
 
 namespace App\Provider\Database;
 
+use App\Provider\Sql\SQLBuilder;
+
 interface IDatabaseConnection {
   function connect();
   function close();
@@ -9,7 +11,9 @@ interface IDatabaseConnection {
 }
 
 interface IDatabase extends IDatabaseConnection {
+  function execFromSqlBuilder(SQLBuilder $sqlBuilder): array|bool;
   function exec(string $sql, $params = []): array|bool;
+  function queryFromSqlBuilder(SQLBuilder $sqlBuilder): array|bool;
   function query(string $sql, $params = []): array|bool;
 }
 
