@@ -7,6 +7,8 @@ use App\Core\Components\Response;
 use App\Core\Components\Result;
 use App\Core\Components\Router;
 use App\Core\Components\Middleware;
+use App\Enums\StatusCode;
+use App\Exception\Exception;
 use App\Exception\HttpException;
 use App\Exception\NotFoundException;
 
@@ -65,11 +67,18 @@ class App {
   protected function initialComponents() {
     try {
       $this->fetchRouterRequested();
-    } catch (\Exception $err) {
+    } catch (Exception $err) {
+      $status = 400;
+
       if ($err instanceof HttpException) {
-        Response::getInstance()
-          ->sendJson(Result::failure(['message' => $err->getMessage()], $err->getStatusCode()));
+        $status = $err->getStatusCode();
       }
+
+      Response::getInstance()
+        ->sendJson(Result::failure(['message' => $err->getMessage()], $status));
+    } catch (\Exception $err) {
+      Response::getInstance()
+        ->sendJson(Result::failure(['message' => $err->getMessage()], StatusCode::INTERNAL_SERVER_ERROR->value));
     }
   }
 
@@ -91,15 +100,18 @@ class App {
   function Run() {
     try {
       $this->resolveHandlers($this->routerRequested['handlers']);
-    } catch (\Exception $err) {
+    } catch (Exception $err) {
+      $status = 400;
+
       if ($err instanceof HttpException) {
-        Response::getInstance()
-          ->sendJson(Result::failure(['message' => $err->getMessage()], $err->getStatusCode()));
-        return;
+        $status = $err->getStatusCode();
       }
 
       Response::getInstance()
-        ->sendJson(Result::failure(['message' => $err->getMessage()], StatusCode::INTERNAL_SERVER_ERROR));
+        ->sendJson(Result::failure(['message' => $err->getMessage()], $status));
+    } catch (\Exception $err) {
+      Response::getInstance()
+        ->sendJson(Result::failure(['message' => $err->getMessage()], StatusCode::INTERNAL_SERVER_ERROR->value));
     }
   }
 
@@ -113,7 +125,7 @@ class App {
     }
 
     Response::getInstance()
-      ->sendJson(Result::success('No response', StatusCode::NO_CONTENT));
+      ->sendJson(Result::success('No response', StatusCode::NO_CONTENT->value));
   }
 
   protected function resolveCallHandler($controller, $methodAction) {
@@ -144,6 +156,6 @@ class App {
     }
 
     Response::getInstance()
-      ->sendJson(Result::success($response, StatusCode::OK));
+      ->sendJson(Result::success($response, StatusCode::OK->value));
   }
 }

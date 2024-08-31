@@ -2,7 +2,7 @@
 
 namespace App\Exception;
 
-class HttpException extends \Exception {
+class HttpException extends Exception {
   private $statusCode;
 
   function __construct($message, $statusCode) {

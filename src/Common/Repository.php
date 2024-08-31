@@ -2,9 +2,11 @@
 
 namespace App\Common;
 
-use App\Exception\NotFoundException;
 use App\Provider\Database\IDatabase;
+use App\Provider\Sql\DeleteSQLBuilder;
+use App\Provider\Sql\InsertSQLBuilder;
 use App\Provider\Sql\SelectSQLBuilder;
+use App\Provider\Sql\UpdateSQLBuilder;
 
 abstract class Repository {
   protected IDatabase $database;
@@ -13,36 +15,25 @@ abstract class Repository {
     $this->database = $database;
   }
 
-  function findFirstOrThrow(SelectSQLBuilder $queryBuilder) {
-    $result = $this->findFirst($queryBuilder);
+  function _create(InsertSQLBuilder $insertBuilder) {
+    $insertBuilder->returning('*');
 
-    if (!$result)
-      throw new NotFoundException('Register not found');
-
-    return $result;
+    return $this->database->execFromSqlBuilder($insertBuilder);
   }
 
-  function findFirst(SelectSQLBuilder $queryBuilder) {
-    $sql = $queryBuilder
-      ->limit(1)
-      ->toSql();
-    $params = $queryBuilder->getParams();
+  function _update(UpdateSQLBuilder $updateBuilder) {
+    $updateBuilder->returning('*');
 
-    $result = $this->database->query($sql, $params);
-
-    if (!$result || !isset($result[0]))
-      return null;
-
-    return $result[0];
+    return $this->database->execFromSqlBuilder($updateBuilder);
   }
 
-  function findMany(SelectSQLBuilder $queryBuilder) {
-    $sql = $queryBuilder
-      ->toSql();
-    $params = $queryBuilder->getParams();
+  function _delete(DeleteSQLBuilder $deleteBuilder) {
+    $deleteBuilder->returning('*');
 
-    $result = $this->database->query($sql, $params);
+    return $this->database->execFromSqlBuilder($deleteBuilder);
+  }
 
-    return $result;
+  function _query(SelectSQLBuilder $selectBuilder) {
+    return $this->database->queryFromSqlBuilder($selectBuilder);
   }
 }

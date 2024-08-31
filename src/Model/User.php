@@ -2,16 +2,18 @@
 
 namespace App\Model;
 
-class User {
-  private $id;
-  private $login;
-  private $senha;
+use App\Common\Model;
 
-  function __get($propName) {
-    return $this->data[$propName];
+class User extends Model {
+  public int $id;
+  private string $name;
+  private string $login;
+
+  function getName() {
+    return $this->name;
   }
 
-  function __set($propName, $propValue) {
-    $this->data[$propName] = $propValue;
+  function getLogin() {
+    return $this->login;
   }
 }

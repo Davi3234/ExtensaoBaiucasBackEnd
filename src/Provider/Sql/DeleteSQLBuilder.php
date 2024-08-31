@@ -67,7 +67,7 @@ class DeleteSQLBuilder extends SQLConditionBuilder implements ISQLReturningBuild
    */
   function deleteToSql() {
     if (!$this->clausules['DELETE'])
-      throw new \Exception('Table name not defined for clausule "DELETE"');
+      throw new SqlBuilderException('Table name not defined for clausule "DELETE"');
 
     return "DELETE FROM $this->clausules['DELETE']";
   }

@@ -3,7 +3,7 @@
 namespace App\Provider\Sql;
 
 class UpdateSQLBuilder extends SQLConditionBuilder implements ISQLReturningBuilder {
-  
+
   function __construct() {
     parent::__construct();
 
@@ -29,9 +29,9 @@ class UpdateSQLBuilder extends SQLConditionBuilder implements ISQLReturningBuild
    */
   function setValue($raw) {
     if (in_array('', array_keys($raw)))
-      throw new \Exception("Param name not defined to clausule \"SET\"");
+      throw new SqlBuilderException("Param name not defined to clausule \"SET\"");
 
-    foreach($raw as $param => $value) {
+    foreach ($raw as $param => $value) {
       $raw[$param] = $this->createParam($value);
     }
 
@@ -74,7 +74,7 @@ class UpdateSQLBuilder extends SQLConditionBuilder implements ISQLReturningBuild
    */
   function updateToSql() {
     if (!$this->clausules['UPDATE'])
-      throw new \Exception('Table name not defined for clausule "UPDATE"');
+      throw new SqlBuilderException('Table name not defined for clausule "UPDATE"');
 
     return "UPDATE $this->clausules['UPDATE']";
   }
@@ -89,7 +89,7 @@ class UpdateSQLBuilder extends SQLConditionBuilder implements ISQLReturningBuild
 
     $setValues = array_map(function ($param, $value) {
       if (!$value)
-        throw new \Exception("Value to param \"$param\" not defined to clausule \"SET\"");
+        throw new SqlBuilderException("Value to param \"$param\" not defined to clausule \"SET\"");
 
       return "$param = $value";
     }, array_keys($this->clausules['SET']), array_values($this->clausules['SET']));
