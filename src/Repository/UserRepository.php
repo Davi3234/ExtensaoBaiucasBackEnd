@@ -10,7 +10,6 @@ use App\Provider\Sql\SQL;
 use App\Provider\Sql\UpdateSQLBuilder;
 
 class UserRepository extends Repository {
-
   function create(User ...$users) {
     $data = array_map(function ($user) {
       return [
