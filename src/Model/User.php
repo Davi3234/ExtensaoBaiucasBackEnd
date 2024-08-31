@@ -2,8 +2,18 @@
 
 namespace App\Model;
 
-class User {
-  public $id;
-  private $login;
-  private $senha;
+use App\Common\Model;
+
+class User extends Model {
+  public int $id;
+  private string $name;
+  private string $login;
+
+  function getName() {
+    return $this->name;
+  }
+
+  function getLogin() {
+    return $this->login;
+  }
 }
