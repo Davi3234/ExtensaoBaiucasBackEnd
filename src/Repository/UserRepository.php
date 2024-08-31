@@ -4,9 +4,13 @@ namespace App\Repository;
 
 use App\Common\Repository;
 use App\Exception\NotFoundException;
+use App\Model\User;
 use App\Provider\Sql\SelectSQLBuilder;
 
 class UserRepository extends Repository {
+
+  function __construct(private $user = new User()){
+  }
 
   /**
    * @param array{where: array} $args

@@ -7,11 +7,11 @@ class User {
   private $login;
   private $senha;
 
-  function get($propName) {
-    return $this->$propName;
+  function __get($propName) {
+    return $this->data[$propName];
   }
 
-  function set($propName, $propValue) {
-    $this->$propName = $propValue;
+  function __set($propName, $propValue) {
+    $this->data[$propName] = $propValue;
   }
 }
