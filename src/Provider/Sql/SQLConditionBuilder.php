@@ -13,7 +13,7 @@ class SQLConditionBuilder extends SQLBuilder {
 
   /**
    * Method responsible to define WITH clausule
-   * @param string|SQLConditionBuilder $sqlClausule Sql reference of the condiction
+   * @param string|SQLConditionBuilder $sqlClausule Sql reference of the condition
    * @return static
    */
   function with($sqlClausule) {
@@ -28,7 +28,7 @@ class SQLConditionBuilder extends SQLBuilder {
   }
 
   /**
-   * Method responsible to define the condictions to query
+   * Method responsible to define the conditions to query
    * @param array{sql: string, clausule: string}[] ...$conditions
    * @return static
    */

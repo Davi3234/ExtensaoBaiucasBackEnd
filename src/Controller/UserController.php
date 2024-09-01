@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Core\Components\Request;
+use App\Core\Components\Result;
 use App\Service\UserService;
 
 class UserController {
@@ -13,8 +14,7 @@ class UserController {
   }
 
   function query() {
-    $result = $this->userService->query();
-    return $result;
+    return Result::failure(['message' => 'Erro de teste'], 200);
   }
 
   function getOne(Request $request) {

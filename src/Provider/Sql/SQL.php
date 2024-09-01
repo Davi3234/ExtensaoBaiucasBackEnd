@@ -6,7 +6,7 @@ class SQL {
 
     /**
      * Clausule SELECT
-     * @param string|SQLConditionBuilder $sqlClausule Sql reference of the condiction
+     * @param string|SQLConditionBuilder $sqlClausule Sql reference of the condition
      * @return SelectSQLBuilder Select SQL Builder
      */
     static function with($sqlClausule) {

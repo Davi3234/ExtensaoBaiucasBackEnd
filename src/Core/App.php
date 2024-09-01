@@ -90,7 +90,7 @@ class App {
       }
 
       Response::getInstance()
-        ->sendJson(Result::failure(['message' => $err->getMessage()], $status));
+        ->sendJson(Result::failure($err->getInfoError(), $status));
     } catch (\Exception $err) {
       Response::getInstance()
         ->sendJson(Result::failure(['message' => $err->getMessage()], StatusCode::INTERNAL_SERVER_ERROR->value));
@@ -117,7 +117,7 @@ class App {
       }
 
       Response::getInstance()
-        ->sendJson(Result::failure(['message' => $err->getMessage()], $status));
+        ->sendJson(Result::failure($err->getInfoError(), $status));
     } catch (\Exception $err) {
       Response::getInstance()
         ->sendJson(Result::failure(['message' => $err->getMessage()], StatusCode::INTERNAL_SERVER_ERROR->value));
@@ -170,6 +170,9 @@ class App {
 
     if (!$response instanceof Result)
       $response = Result::success($response);
+
+    if (!$response->isSuccess())
+      $this->response->sendJson($response);
 
     $this->response->setDataResponse($response);
   }

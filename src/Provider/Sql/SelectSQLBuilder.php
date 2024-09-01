@@ -152,7 +152,7 @@ class SelectSQLBuilder extends SQLConditionBuilder {
 
   /**
    * Method responsible to define HAVING clausule
-   * @param string|SQLConditionBuilder ...$conditions Condictions arguments
+   * @param string|SQLConditionBuilder ...$conditions Conditions arguments
    * @return static
    */
   function having(...$conditions) {
