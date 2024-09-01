@@ -8,7 +8,7 @@ use App\Middleware\AuthenticationMiddleware;
 
 $router = Router::maker('/users');
 
-$router->get('/', [UserController::class, 'query']);
+$router->get('', [UserController::class, 'query']);
 $router->get('/:id', [UserController::class, 'getOne']);
 $router->post('/create', [UserController::class, 'create']);
 $router->put('/:id/update', AuthenticationMiddleware::class, [UserController::class, 'update']);

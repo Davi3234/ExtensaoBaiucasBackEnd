@@ -10,6 +10,6 @@ use App\Exception\UnauthorizedException;
 class AuthenticationMiddleware extends Middleware {
 
   function perform(Request $request, Response $response) {
-    // throw new UnauthorizedException('Usu·rio n„o autenticado');
+    // throw new UnauthorizedException('Usu√°rio n√£o autenticado');
   }
 }

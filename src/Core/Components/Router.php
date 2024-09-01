@@ -76,7 +76,7 @@ class Router {
     }
 
     if (isset($this->routers[$method][$path]))
-      throw new InternalServerErrorException("Router \"$method\" \"{$path}\" already defined");
+      throw new InternalServerErrorException("Router \"$method\" \"$path\" already defined");
 
     $this->routers[$method][$path] = [
       'router' => $path,
