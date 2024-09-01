@@ -13,21 +13,40 @@ class Response {
     return static::$instance;
   }
 
+  private $dataResponse = null;
+
   private function __construct() {
     header('charset=UTF-8');
   }
 
-  function status($status) {
+  function status(int $status) {
     http_response_code($status);
     return $this;
   }
 
-  function sendJson($data, $status = null) {
+  function setDataResponse($dataResponse) {
+    $this->dataResponse = $dataResponse;
+  }
+
+  function getDataResponse() {
+    return $this->dataResponse;
+  }
+
+  function sendDataResponse($status = null) {
     if ($status)
       $this->status($status);
 
-    if ($data instanceof Result)
+    $this->sendJson($this->dataResponse, $status);
+  }
+
+  function sendJson($data, $status = null) {
+    if ($data instanceof Result) {
+      $status = $data->getStatus();
       $data = $data->getResult();
+    }
+
+    if ($status)
+      $this->status($status);
 
     if (is_object($data))
       $data = (object)(array)$data;

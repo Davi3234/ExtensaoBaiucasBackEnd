@@ -85,9 +85,9 @@ class Router {
   }
 
   function getRouteRequested($method, $routerRequest) {
-    $routerGroup = $this->getRouterGroupByRouter($routerRequest);
+    $routersGroup = $this->getRoutersGroupByRouter($routerRequest);
 
-    if ($routerGroup)
+    foreach ($routersGroup as $routerGroup)
       @include str_replace('\\', '/', __DIR__ . '/../../' . $routerGroup['filePath']);
 
     $router = $this->getRouterByMethodAndRouter($method, $routerRequest);
@@ -95,14 +95,14 @@ class Router {
     return $router;
   }
 
-  function getRouterGroupByRouter($router) {
-    foreach ($this->routersGroup as $prefix => $routerGroup) {
-      if (static::isMathPrefixRouterTemplate($prefix, $router)) {
-        return $routerGroup;
-      }
-    }
+  function getRoutersGroupByRouter($router) {
+    $routersGroup = [];
 
-    return null;
+    foreach ($this->routersGroup as $prefix => $routerGroup)
+      if (static::isMathPrefixRouterTemplate($prefix, $router))
+        $routersGroup[] = $routerGroup;
+
+    return $routersGroup;
   }
 
   function getRoutersGroup() {
