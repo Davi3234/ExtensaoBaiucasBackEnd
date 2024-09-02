@@ -7,34 +7,47 @@ use App\Core\Components\Response;
 use App\Core\Components\Result;
 use App\Core\Components\Router;
 use App\Core\Components\Middleware;
+use App\Enum\StatusCode;
+use App\Exception\Exception;
 use App\Exception\HttpException;
 use App\Exception\NotFoundException;
 
 class App {
 
+  /**
+   * @var static
+   */
   private static $instance = null;
 
   /**
-   * @return App
+   * @return static
    */
   static function getInstance() {
-    if (!static::$instance)
-      static::$instance = new static();
-
-    return static::$instance;
+    return self::$instance;
   }
 
-  protected $path = '';
-  protected $method = '';
+  static function createAppInstance() {
+    self::$instance = new static();
+  }
+
+  private $path = '';
+  private $method = '';
 
   /**
    * @var Router
    */
-  protected $router = null;
-  protected $routerRequested = null;
+  private $router = null;
+  private $routerRequested = null;
+  /**
+   * @var Request
+   */
+  private $request = null;
+  /**
+   * @var Response
+   */
+  private $response = null;
 
   private function __construct() {
-    $this->router = Router::getInstance();
   }
 
   static function CreateApp() {
@@ -44,46 +57,51 @@ class App {
 
     $path = str_replace('//', '/', $path);
 
-    $method = isset($_SERVER['REQUEST_METHOD']) ? $_SERVER['REQUEST_METHOD'] : '';
+    $method = $_SERVER['REQUEST_METHOD'] ?? '';
 
-    static::makeApp($path, $method);
+    self::makeApp($path, $method);
 
     return App::getInstance();
   }
 
-  protected static function makeApp($path, $method) {
-    App::getInstance();
-    Request::getInstance();
-    Response::getInstance();
-
-    static::$instance->method = $method;
-    static::$instance->path = $path;
-
-    static::$instance->initialComponents();
+  private static function makeApp($path, $method) {
+    self::createAppInstance();
+    self::$instance->initialComponents($path, $method);
   }
 
-  protected function initialComponents() {
+  private function initialComponents(string $path, string $method) {
     try {
+      $this->path = $path;
+      $this->method = $method;
+
+      $this->router = Router::getInstance();
+
       $this->fetchRouterRequested();
-    } catch (\Exception $err) {
+
+      $params = Router::getParamsFromRouter($this->routerRequested['router'], $this->path);
+
+      $this->request = Request::createRequestInstance($path, $method, $params);
+      $this->response = Response::getInstance();
+    } catch (Exception $err) {
+      $status = 400;
+
       if ($err instanceof HttpException) {
-        Response::getInstance()
-          ->sendJson(Result::failure(['message' => $err->getMessage()], $err->getStatusCode()));
+        $status = $err->getStatusCode();
       }
+
+      Response::getInstance()
+        ->sendJson(Result::failure($err->getInfoError(), $status));
+    } catch (\Exception $err) {
+      Response::getInstance()
+        ->sendJson(Result::failure(['message' => $err->getMessage()], StatusCode::INTERNAL_SERVER_ERROR->value));
     }
   }
 
-  protected function fetchRouterRequested() {
+  private function fetchRouterRequested() {
     $router = $this->router->getRouteRequested($this->method, $this->path);
 
     if (!$router)
       throw new NotFoundException("Router \"$this->method\" \"$this->path\" not found");
-
-    $params = Router::getParamsFromRouter($router['router'], $this->path);
-
-    foreach ($params as $param => $value) {
-      Request::getInstance()->setParam($param, $value);
-    }
 
     $this->routerRequested = $router;
   }
@@ -91,19 +109,26 @@ class App {
   function Run() {
     try {
       $this->resolveHandlers($this->routerRequested['handlers']);
-    } catch (\Exception $err) {
+    } catch (Exception $err) {
+      $status = 400;
+
       if ($err instanceof HttpException) {
-        Response::getInstance()
-          ->sendJson(Result::failure(['message' => $err->getMessage()], $err->getStatusCode()));
-        return;
+        $status = $err->getStatusCode();
       }
 
       Response::getInstance()
-        ->sendJson(Result::failure(['message' => $err->getMessage()], StatusCode::INTERNAL_SERVER_ERROR));
+        ->sendJson(Result::failure($err->getInfoError(), $status));
+    } catch (\Exception $err) {
+      Response::getInstance()
+        ->sendJson(Result::failure(['message' => $err->getMessage()], StatusCode::INTERNAL_SERVER_ERROR->value));
     }
   }
 
-  protected function resolveHandlers($handlers) {
+  private function resolveHandlers($handlers) {
+    if (!$handlers)
+      return Response::getInstance()
+        ->sendJson(Result::failure(['message' => 'Method not implemented'], StatusCode::NOT_IMPLEMENTED->value));
+
     foreach ($handlers as $handler) {
       $controller = $handler[0] ?? null;
       $methodAction = $handler[1] ?? null;
@@ -112,11 +137,13 @@ class App {
       $this->resolveResponseHandler($response);
     }
 
-    Response::getInstance()
-      ->sendJson(Result::success('No response', StatusCode::NO_CONTENT));
+    if ($this->response->getDataResponse() === null)
+      $this->response->setDataResponse(Result::success(null));
+
+    $this->response->sendDataResponse(StatusCode::OK->value);
   }
 
-  protected function resolveCallHandler($controller, $methodAction) {
+  private function resolveCallHandler($controller, $methodAction) {
     if (!$controller)
       return;
 
@@ -124,7 +151,7 @@ class App {
       if (!is_callable($controller))
         return;
 
-      return $controller(Request::getInstance(), Response::getInstance());
+      return $controller($this->request, $this->response);
     }
 
     $controllerInstance = new $controller;
@@ -134,16 +161,19 @@ class App {
     else if (empty($methodAction) || !method_exists($controllerInstance, $methodAction))
       return;
 
-    return $controllerInstance->$methodAction(Request::getInstance(), Response::getInstance());
+    return $controllerInstance->$methodAction($this->request, $this->response);
   }
 
-  protected function resolveResponseHandler($response) {
-    if ($response instanceof Result) {
-      Response::getInstance()
-        ->sendJson($response);
-    }
+  private function resolveResponseHandler($response) {
+    if ($response === null)
+      return;
 
-    Response::getInstance()
-      ->sendJson(Result::success($response, StatusCode::OK));
+    if (!$response instanceof Result)
+      $response = Result::success($response);
+
+    if (!$response->isSuccess())
+      $this->response->sendJson($response);
+
+    $this->response->setDataResponse($response);
   }
 }

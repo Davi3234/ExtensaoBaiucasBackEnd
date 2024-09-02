@@ -6,7 +6,7 @@ class SQL {
 
     /**
      * Clausule SELECT
-     * @param string|SQLConditionBuilder $sqlClausule Sql reference of the condiction
+     * @param string|SQLConditionBuilder $sqlClausule Sql reference of the condition
      * @return SelectSQLBuilder Select SQL Builder
      */
     static function with($sqlClausule) {
@@ -53,12 +53,12 @@ class SQL {
      * Clausule FROM
      * @param string $table Table name
      * @param ?string $alias Alias name
-     * @throws \Exception Table name not defined for clause "FROM"
+     * @throws SqlBuilderException Table name not defined for clause "FROM"
      * @return array{sql: string, clausule: string} SQL Statement for From clausule
      */
     static function from($table, $alias = '') {
         if (!trim($table))
-            throw new \Exception('Table name not defined for clause "FROM"');
+            throw new SqlBuilderException('Table name not defined for clause "FROM"');
 
         $sql = trim("$table $alias");
 
@@ -73,9 +73,9 @@ class SQL {
      * @param string $table Table name
      * @param string $alias Alias name
      * @param string $on Condition of the relation table
-     * @throws \Exception Table name not defined for clause "{clausule}"
-     * @throws \Exception Alias not defined for clause "{clausule} table "{table}"
-     * @throws \Exception On not defined for clause "{clausule} table "{table}" "{alias}"
+     * @throws SqlBuilderException Table name not defined for clause "{clausule}"
+     * @throws SqlBuilderException Alias not defined for clause "{clausule} table "{table}"
+     * @throws SqlBuilderException On not defined for clause "{clausule} table "{table}" "{alias}"
      * @return array{sql: string, clausule: string} SQL Statement for Join clausule
      */
     static function join($table, $alias, $on) {
@@ -87,9 +87,9 @@ class SQL {
      * @param string $table Table name
      * @param string $alias Alias name
      * @param string $on Condition of the relation table
-     * @throws \Exception Table name not defined for clause "{clausule}"
-     * @throws \Exception Alias not defined for clause "{clausule} table "{table}"
-     * @throws \Exception On not defined for clause "{clausule} table "{table}" "{alias}"
+     * @throws SqlBuilderException Table name not defined for clause "{clausule}"
+     * @throws SqlBuilderException Alias not defined for clause "{clausule} table "{table}"
+     * @throws SqlBuilderException On not defined for clause "{clausule} table "{table}" "{alias}"
      * @return array{sql: string, clausule: string} SQL Statement for Left Join clausule
      */
     static function leftJoin($table, $alias, $on) {
@@ -101,9 +101,9 @@ class SQL {
      * @param string $table Table name
      * @param string $alias Alias name
      * @param string $on Condition of the relation table
-     * @throws \Exception Table name not defined for clause "{clausule}"
-     * @throws \Exception Alias not defined for clause "{clausule} table "{table}"
-     * @throws \Exception On not defined for clause "{clausule} table "{table}" "{alias}"
+     * @throws SqlBuilderException Table name not defined for clause "{clausule}"
+     * @throws SqlBuilderException Alias not defined for clause "{clausule} table "{table}"
+     * @throws SqlBuilderException On not defined for clause "{clausule} table "{table}" "{alias}"
      * @return array{sql: string, clausule: string} SQL Statement for Right Join clausule
      */
     static function rightJoin($table, $alias, $on) {
@@ -115,9 +115,9 @@ class SQL {
      * @param string $table Table name
      * @param string $alias Alias name
      * @param string $on Condition of the relation table
-     * @throws \Exception Table name not defined for clause "{clausule}"
-     * @throws \Exception Alias not defined for clause "{clausule} table "{table}"
-     * @throws \Exception On not defined for clause "{clausule} table "{table}" "{alias}"
+     * @throws SqlBuilderException Table name not defined for clause "{clausule}"
+     * @throws SqlBuilderException Alias not defined for clause "{clausule} table "{table}"
+     * @throws SqlBuilderException On not defined for clause "{clausule} table "{table}" "{alias}"
      * @return array{sql: string, clausule: string} SQL Statement for Inner Join clausule
      */
     static function innerJoin($table, $alias, $on) {
@@ -129,9 +129,9 @@ class SQL {
      * @param string $table Table name
      * @param string $alias Alias name
      * @param string $on Condition of the relation table
-     * @throws \Exception Table name not defined for clause "{clausule}"
-     * @throws \Exception Alias not defined for clause "{clausule} table "{table}"
-     * @throws \Exception On not defined for clause "{clausule} table "{table}" "{alias}"
+     * @throws SqlBuilderException Table name not defined for clause "{clausule}"
+     * @throws SqlBuilderException Alias not defined for clause "{clausule} table "{table}"
+     * @throws SqlBuilderException On not defined for clause "{clausule} table "{table}" "{alias}"
      * @return array{sql: string, clausule: string} SQL Statement for Full Join clausule
      */
     static function fullJoin($table, $alias, $on) {
@@ -144,22 +144,22 @@ class SQL {
      * @param string $table Table name
      * @param string $alias Alias name
      * @param string $on Condition of the relation table
-     * @throws \Exception Table name not defined for clause "{clausule}"
-     * @throws \Exception Alias not defined for clause "{clausule} table "{table}"
-     * @throws \Exception On not defined for clause "{clausule} table "{table}" "{alias}"
+     * @throws SqlBuilderException Table name not defined for clause "{clausule}"
+     * @throws SqlBuilderException Alias not defined for clause "{clausule} table "{table}"
+     * @throws SqlBuilderException On not defined for clause "{clausule} table "{table}" "{alias}"
      * @return array{sql: string, clausule: string} SQL Statement for Join clausule
      */
     private static function createJoin($prefix, $table, $alias, $on) {
         $clausule = trim("$prefix JOIN");
 
         if (!trim($table))
-            throw new \Exception("Table name not defined for clause \"$clausule\"");
+            throw new SqlBuilderException("Table name not defined for clause \"$clausule\"");
 
         if (!trim($alias))
-            throw new \Exception("Alias not defined for clause \"$clausule\" table \"$table\"");
+            throw new SqlBuilderException("Alias not defined for clause \"$clausule\" table \"$table\"");
 
         if (!trim($on))
-            throw new \Exception("On not defined for clause \"$clausule\" table \"$table\" \"$alias\"");
+            throw new SqlBuilderException("On not defined for clause \"$clausule\" table \"$table\" \"$alias\"");
 
         $sql = trim("$table $alias ON $on");
 

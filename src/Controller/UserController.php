@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Core\Components\Request;
+use App\Service\UserService;
 
 class UserController {
   private UserService $userService;

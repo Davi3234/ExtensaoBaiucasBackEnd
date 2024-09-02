@@ -2,6 +2,7 @@
 
 namespace App\Core\Components;
 
+use App\Enum\RouterMethod;
 use App\Exception\InternalServerErrorException;
 
 class Router {
@@ -75,7 +76,7 @@ class Router {
     }
 
     if (isset($this->routers[$method][$path]))
-      throw new InternalServerErrorException("Router \"$method\" \"{$path}\" already defined");
+      throw new InternalServerErrorException("Router \"$method\" \"$path\" already defined");
 
     $this->routers[$method][$path] = [
       'router' => $path,
@@ -84,9 +85,9 @@ class Router {
   }
 
   function getRouteRequested($method, $routerRequest) {
-    $routerGroup = $this->getRouterGroupByRouter($routerRequest);
+    $routersGroup = $this->getRoutersGroupByRouter($routerRequest);
 
-    if ($routerGroup)
+    foreach ($routersGroup as $routerGroup)
       @include str_replace('\\', '/', __DIR__ . '/../../' . $routerGroup['filePath']);
 
     $router = $this->getRouterByMethodAndRouter($method, $routerRequest);
@@ -94,14 +95,14 @@ class Router {
     return $router;
   }
 
-  function getRouterGroupByRouter($router) {
-    foreach ($this->routersGroup as $prefix => $routerGroup) {
-      if (static::isMathPrefixRouterTemplate($prefix, $router)) {
-        return $routerGroup;
-      }
-    }
+  function getRoutersGroupByRouter($router) {
+    $routersGroup = [];
 
-    return null;
+    foreach ($this->routersGroup as $prefix => $routerGroup)
+      if (static::isMathPrefixRouterTemplate($prefix, $router))
+        $routersGroup[] = $routerGroup;
+
+    return $routersGroup;
   }
 
   function getRoutersGroup() {
@@ -118,6 +119,7 @@ class Router {
   function getRouters() {
     return $this->routers;
   }
+
   function getRouterByMethodAndRouter($method, $routerPath) {
     foreach ($this->routers[$method] as $prefix => $router) {
       if (static::isMathRouterTemplate($prefix, $routerPath)) {
@@ -167,31 +169,31 @@ class Router {
   }
 
   static function get($path, ...$handlers) {
-    static::getInstance()->createRouter('GET', $path, $handlers);
+    static::getInstance()->createRouter(RouterMethod::GET->value, $path, $handlers);
   }
 
   static function post($path, ...$handlers) {
-    static::getInstance()->createRouter('POST', $path, $handlers);
+    static::getInstance()->createRouter(RouterMethod::POST->value, $path, $handlers);
   }
 
   static function put($path, ...$handlers) {
-    static::getInstance()->createRouter('PUT', $path, $handlers);
+    static::getInstance()->createRouter(RouterMethod::PUT->value, $path, $handlers);
   }
 
   static function patch($path, ...$handlers) {
-    static::getInstance()->createRouter('PATCH', $path, $handlers);
+    static::getInstance()->createRouter(RouterMethod::PATCH->value, $path, $handlers);
   }
 
   static function delete($path, ...$handlers) {
-    static::getInstance()->createRouter('DELETE', $path, $handlers);
+    static::getInstance()->createRouter(RouterMethod::DELETE->value, $path, $handlers);
   }
 
   static function head($path, ...$handlers) {
-    static::getInstance()->createRouter('HEAD', $path, $handlers);
+    static::getInstance()->createRouter(RouterMethod::HEAD->value, $path, $handlers);
   }
 
   static function options($path, ...$handlers) {
-    static::getInstance()->createRouter('OPTIONS', $path, $handlers);
+    static::getInstance()->createRouter(RouterMethod::OPTIONS->value, $path, $handlers);
   }
 
   static function maker($prefix = '') {

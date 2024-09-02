@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  baiucas-frontend:
+    build:
+      context: ./ExtensaoBaiucas
+      dockerfile: Dockerfile
+    ports:
+      - "4200:4200"
+    depends_on:
+      - baiucas-backend
+    networks:
+      - app-network
+
+  baiucas-backend:
+    build:
+      context: ./ExtensaoBaiucasBackEnd
+      dockerfile: Dockerfile
+    depends_on:
+      - baiucas-db
+    networks:
+      - app-network
+
+  baiucas-db:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: raelzera
+      POSTGRES_PASSWORD: dickvigarista@
+      POSTGRES_DB: extensao-baiucas
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - app-network
+
+volumes:
+  pgdata:
+
+networks:
+  app-network:
+    driver: bridge

@@ -152,7 +152,7 @@ class SelectSQLBuilder extends SQLConditionBuilder {
 
   /**
    * Method responsible to define HAVING clausule
-   * @param string|SQLConditionBuilder ...$conditions Condictions arguments
+   * @param string|SQLConditionBuilder ...$conditions Conditions arguments
    * @return static
    */
   function having(...$conditions) {
@@ -201,7 +201,7 @@ class SelectSQLBuilder extends SQLConditionBuilder {
     if (!$this->clausules['SELECT'])
       return 'SELECT *';
 
-    return 'SELECT '.implode(', ', $this->clausules['SELECT']);
+    return 'SELECT ' . implode(', ', $this->clausules['SELECT']);
   }
 
   /**
@@ -210,7 +210,7 @@ class SelectSQLBuilder extends SQLConditionBuilder {
    */
   function fromToSql() {
     if (!$this->clausules['FROM'] || !$this->clausules['FROM']['sql'])
-      throw new \Exception('Clausule "FROM" not defined');
+      throw new SqlBuilderException('Clausule "FROM" not defined');
 
     return $this->clausules['FROM']['sql'];
   }

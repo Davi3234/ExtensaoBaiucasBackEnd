@@ -4,5 +4,5 @@ namespace App\Core\Components;
 
 abstract class Middleware {
 
-  abstract function perform(Request $request, Response $response);
+  abstract function perform(Request $request, Response $response): void;
 }

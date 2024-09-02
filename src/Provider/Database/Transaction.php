@@ -23,6 +23,7 @@ class Transaction implements ITransaction {
 
     $this->database->exec('BEGIN');
     $this->active = true;
+    return $this;
   }
 
   function commit() {
@@ -31,6 +32,7 @@ class Transaction implements ITransaction {
 
     $this->database->exec('COMMIT');
     $this->active = false;
+    return $this;
   }
 
   function rollback() {
@@ -39,6 +41,7 @@ class Transaction implements ITransaction {
 
     $this->database->exec('ROLLBACK');
     $this->active = false;
+    return $this;
   }
 
   function save() {
@@ -68,6 +71,7 @@ class TransactionCheckpoint implements ITransactionCheckpoint {
 
     $this->database->exec("SAVEPOINT \"$this->name\"");
     $this->active = true;
+    return $this;
   }
 
   function release() {
@@ -76,6 +80,7 @@ class TransactionCheckpoint implements ITransactionCheckpoint {
 
     $this->database->exec("RELEASE SAVEPOINT \"$this->name\"");
     $this->active = false;
+    return $this;
   }
 
   function rollback() {
@@ -84,6 +89,7 @@ class TransactionCheckpoint implements ITransactionCheckpoint {
 
     $this->database->exec("ROLLBACK TO SAVEPOINT \"$this->name\"");
     $this->active = false;
+    return $this;
   }
 
   static function fromDatabase(IDatabase $connection) {
