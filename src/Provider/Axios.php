@@ -27,6 +27,13 @@ class AxiosClient {
 
     return $response;
   }
+
+  function setOptions($options = []) {
+    $this->options = array_merge(
+      $this->options,
+      $options,
+    );
+  }
 }
 
 class Axios {
