@@ -47,33 +47,25 @@ class SQL {
   }
 
   static function in(string $field, string|int|float|SelectSQLBuilder $value, string|int|float ...$values) {
-    $sqlTemplates = ["$field IN ("];
-    $params = [];
-
-    if ($value instanceof SelectSQLBuilder)
-      $values = [];
-
-    array_unshift($values, $value);
-
-    foreach ($values as $value) {
-      $sqlTemplates[] = ', ';
+    if ($value instanceof SelectSQLBuilder) {
+      $values = [$value];
+    }
+    else {
+      array_unshift($values, $value);
     }
 
-    $sqlTemplates[] = ')';
-
-    return static::condition($sqlTemplates, $values);
+    return self::prepareTemplatesMultiValuesCondition($field, 'IN', ...$values);
   }
 
   static function notIn($field, $value, ...$values) {
-    array_unshift($values, $value);
-
-    $sqlTemplates = ["$field NOT IN ("];
-    foreach ($values as $value) {
-      $sqlTemplates[] = ', ';
+    if ($value instanceof SelectSQLBuilder) {
+      $values = [$value];
     }
-    $sqlTemplates[] = ')';
+    else {
+      array_unshift($values, $value);
+    }
 
-    return static::condition($sqlTemplates, $values);
+    return self::prepareTemplatesMultiValuesCondition($field, 'NOT IN', ...$values);
   }
 
   static function isNull(string|int|float|SelectSQLBuilder $value) {
@@ -153,8 +145,7 @@ class SQL {
       $index = array_key_last($sqlTemplates);
 
       $sqlTemplates[$index] = "$sqlTemplates[$index] $operator";
-    }
-    else {
+    } else {
       $sqlTemplates = ["$value $operator"];
     }
 
@@ -172,8 +163,7 @@ class SQL {
       $params = $templates['params'];
 
       $sqlTemplates[0] = "$operator $sqlTemplates[0]";
-    }
-    else {
+    } else {
       $sqlTemplates = ["$operator $value"];
     }
 
@@ -208,6 +198,31 @@ class SQL {
 
       $sqlTemplates = array_merge($sqlTemplates, $templates['sqlTemplates']);
       $params = array_merge($params, $templates['params']);
+    }
+
+    return static::condition($sqlTemplates, $params);
+  }
+
+  private static function prepareTemplatesMultiValuesCondition(string $field, string $operator, string|int|float|SelectSQLBuilder ...$values) {
+    $sqlTemplates = ["$field $operator "];
+    $params = $values;
+
+    $value = $values[0];
+
+    if (isset($value) && $value instanceof SelectSQLBuilder) {
+      $templates = $value->fetchAllSqlTemplatesWithParentheses();
+
+      $sqlTemplates = $templates['sqlTemplates'];
+      $params = $templates['params'];
+
+      $sqlTemplates[0] = "$field $operator $sqlTemplates[0]";
+    } else {
+      foreach($values as $value) {
+        $sqlTemplates[] = '';
+      }
+
+      $sqlTemplates[0] .= "(";
+      $sqlTemplates[array_key_last($sqlTemplates)] .= ')';
     }
 
     return static::condition($sqlTemplates, $params);
@@ -381,6 +396,14 @@ printSQL(
 );
 
 printSQL(
+  SQL::in('id', 1, 2, 3, 4)
+);
+
+printSQL(
+  SQL::notIn('id', 1, 2, 3, 4)
+);
+
+printSQL(
   SQL::eq('name', new SelectSQLBuilder)
 );
 
@@ -422,6 +445,14 @@ printSQL(
 
 printSQL(
   SQL::exists(new SelectSQLBuilder)
+);
+
+printSQL(
+  SQL::in('id', new SelectSQLBuilder)
+);
+
+printSQL(
+  SQL::notIn('id', new SelectSQLBuilder)
 );
 
 function printSQL($sql) {
