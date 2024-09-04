@@ -11,10 +11,7 @@ class User extends Model {
 
   static function _loadModel(array $raw) {
     $instance = new self;
-
-    $instance->id = $raw['id'];
-    $instance->name = $raw['name'];
-    $instance->login = $raw['login'];
+    $instance->_load($raw);
 
     return $instance;
   }
