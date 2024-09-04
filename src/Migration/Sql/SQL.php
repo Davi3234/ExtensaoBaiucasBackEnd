@@ -7,43 +7,43 @@ class SqlBuilderException extends \Exception {
 class SQL {
 
   static function eq(string $field, string|int|float|bool|SelectSQLBuilder $value) {
-    return self::prepareTemplatesSimpleCondition('=', $field, $value);
+    return self::prepareTemplatesLeftRigthArgsCondition($field, '=', $value);
   }
 
   static function dif(string $field, string|int|float|bool|SelectSQLBuilder $value) {
-    return self::prepareTemplatesSimpleCondition('<>', $field, $value);
+    return self::prepareTemplatesLeftRigthArgsCondition($field, '<>', $value);
   }
 
   static function gt(string $field, string|int|float|bool|SelectSQLBuilder $value) {
-    return self::prepareTemplatesSimpleCondition('>', $field, $value);
+    return self::prepareTemplatesLeftRigthArgsCondition($field, '>', $value);
   }
 
   static function gte(string $field, string|int|float|bool|SelectSQLBuilder $value) {
-    return self::prepareTemplatesSimpleCondition('>=', $field, $value);
+    return self::prepareTemplatesLeftRigthArgsCondition($field, '>=', $value);
   }
 
   static function lt(string $field, string|int|float|bool|SelectSQLBuilder $value) {
-    return self::prepareTemplatesSimpleCondition('<', $field, $value);
+    return self::prepareTemplatesLeftRigthArgsCondition($field, '<', $value);
   }
 
   static function lte(string $field, string|int|float|bool|SelectSQLBuilder $value) {
-    return self::prepareTemplatesSimpleCondition('<=', $field, $value);
+    return self::prepareTemplatesLeftRigthArgsCondition($field, '<=', $value);
   }
 
   static function like(string $field, string|int|float|bool|SelectSQLBuilder $value) {
-    return self::prepareTemplatesSimpleCondition('LIKE', $field, $value);
+    return self::prepareTemplatesLeftRigthArgsCondition($field, 'LIKE', $value);
   }
 
   static function ilike(string $field, string|int|float|bool|SelectSQLBuilder $value) {
-    return self::prepareTemplatesSimpleCondition('ILIKE', $field, $value);
+    return self::prepareTemplatesLeftRigthArgsCondition($field, 'ILIKE', $value);
   }
 
   static function between(string $field, string|int|float|SelectSQLBuilder $valueLess, string|int|float|SelectSQLBuilder $valueGreater) {
-    return self::prepareTemplatesBetweenCondition('BETWEEN', $field, $valueLess, $valueGreater);
+    return self::prepareTemplatesBetweenCondition($field, 'BETWEEN', $valueLess, $valueGreater);
   }
 
   static function notBetween(string $field, string|int|float|SelectSQLBuilder $valueLess, string|int|float|SelectSQLBuilder $valueGreater) {
-    return self::prepareTemplatesBetweenCondition('NOT BETWEEN', $field, $valueLess, $valueGreater);
+    return self::prepareTemplatesBetweenCondition($field, 'NOT BETWEEN', $valueLess, $valueGreater);
   }
 
   static function in(string $field, string|int|float|SelectSQLBuilder $value, string|int|float ...$values) {
@@ -76,40 +76,40 @@ class SQL {
     return static::condition($sqlTemplates, $values);
   }
 
-  static function isNull($field) {
-    return static::condition(["$field IS NULL"]);
+  static function isNull(string|int|float|SelectSQLBuilder $value) {
+    return static::prepareTemplatesLeftArgsCondition($value, 'IS NULL');
   }
 
-  static function isNotNull($field) {
-    return static::condition(["$field IS NOT NULL"]);
+  static function isNotNull($value) {
+    return static::prepareTemplatesLeftArgsCondition($value, 'IS NOT NULL');
   }
 
-  static function isTrue($field) {
-    return static::condition(["$field IS TRUE"]);
+  static function isTrue($value) {
+    return static::prepareTemplatesLeftArgsCondition($value, 'IS TRUE');
   }
 
-  static function isFalse($field) {
-    return static::condition(["$field IS FALSE"]);
+  static function isFalse($value) {
+    return static::prepareTemplatesLeftArgsCondition($value, 'IS FALSE');
   }
 
-  static function isDistinctFrom($field, $value) {
-    return static::condition(["$field IS DISTINCT FROM $value"]);
+  static function isDistinctFrom(string $field, string|int|float|bool|SelectSQLBuilder $value) {
+    return self::prepareTemplatesLeftRigthArgsCondition($field, 'IS DISTINCT FROM', $value);
   }
 
-  static function exists($subSelect) {
-    return static::condition(["EXISTS ($subSelect)"]);
+  static function exists(SelectSQLBuilder $subSelect) {
+    return self::prepareTemplatesRigthArgsCondition('EXISTS', $subSelect);
   }
 
-  static function notExists($subSelect) {
-    return static::condition(["NOT EXISTS ($subSelect)"]);
+  static function notExists(SelectSQLBuilder $subSelect) {
+    return self::prepareTemplatesRigthArgsCondition('NOT EXISTS', $subSelect);
   }
 
-  static function similarTo($field, $value) {
-    return static::condition(["$field SIMILAR TO $value"]);
+  static function similarTo(string $field, string|int|float|bool|SelectSQLBuilder $value) {
+    return self::prepareTemplatesLeftRigthArgsCondition($field, 'SIMILAR TO', $value);
   }
 
-  static function notSimilarTo($field, $value) {
-    return static::condition(["$field NOT SIMILAR TO $value"]);
+  static function notSimilarTo(string $field, string|int|float|bool|SelectSQLBuilder $value) {
+    return self::prepareTemplatesLeftRigthArgsCondition($field, 'NOT SIMILAR TO', $value);
   }
 
   static function sqlAnd(...$conditions) {
@@ -124,7 +124,7 @@ class SQL {
     return static::logical('NOT', $conditions);
   }
 
-  private static function prepareTemplatesSimpleCondition(string $operator, string $field, string|int|float|bool|SelectSQLBuilder $value) {
+  private static function prepareTemplatesLeftRigthArgsCondition(string $field, string $operator, string|int|float|bool|SelectSQLBuilder $value) {
     $sqlTemplates = ["$field $operator ", ''];
     $params = [$value];
 
@@ -140,7 +140,47 @@ class SQL {
     return static::condition($sqlTemplates, $params);
   }
 
-  private static function prepareTemplatesBetweenCondition(string $operator, string $field, string|int|float|SelectSQLBuilder $valueLess, string|int|float|SelectSQLBuilder $valueGreater) {
+  private static function prepareTemplatesLeftArgsCondition(string|int|float|bool|SelectSQLBuilder $value, string $operator) {
+    $sqlTemplates = [" $operator"];
+    $params = [];
+
+    if ($value instanceof SelectSQLBuilder) {
+      $templates = $value->fetchAllSqlTemplatesWithParentheses();
+
+      $sqlTemplates = $templates['sqlTemplates'];
+      $params = $templates['params'];
+
+      $index = array_key_last($sqlTemplates);
+
+      $sqlTemplates[$index] = "$sqlTemplates[$index] $operator";
+    }
+    else {
+      $sqlTemplates = ["$value $operator"];
+    }
+
+    return static::condition($sqlTemplates, $params);
+  }
+
+  private static function prepareTemplatesRigthArgsCondition(string $operator, string|int|float|bool|SelectSQLBuilder $value) {
+    $sqlTemplates = ["$operator"];
+    $params = [];
+
+    if ($value instanceof SelectSQLBuilder) {
+      $templates = $value->fetchAllSqlTemplatesWithParentheses();
+
+      $sqlTemplates = $templates['sqlTemplates'];
+      $params = $templates['params'];
+
+      $sqlTemplates[0] = "$operator $sqlTemplates[0]";
+    }
+    else {
+      $sqlTemplates = ["$operator $value"];
+    }
+
+    return static::condition($sqlTemplates, $params);
+  }
+
+  private static function prepareTemplatesBetweenCondition(string $field, string $operator, string|int|float|SelectSQLBuilder $valueLess, string|int|float|SelectSQLBuilder $valueGreater) {
     $sqlTemplates = ["$field $operator ", ' AND ', ''];
     $params = [$valueLess, $valueGreater];
 
@@ -202,7 +242,6 @@ class SQL {
 
     return [
       'sql' => $sql,
-      'clausule' => 'ORDERBY'
     ];
   }
 
@@ -214,7 +253,6 @@ class SQL {
 
     return [
       'sql' => $sql,
-      'clausule' => 'GROUPBY'
     ];
   }
 
@@ -226,7 +264,6 @@ class SQL {
 
     return [
       'sql' => $sql,
-      'clausule' => 'LIMIT'
     ];
   }
 
@@ -238,7 +275,6 @@ class SQL {
 
     return [
       'sql' => $sql,
-      'clausule' => 'OFFSET'
     ];
   }
 }
@@ -341,6 +377,10 @@ printSQL(
 );
 
 printSQL(
+  SQL::isNull('name')
+);
+
+printSQL(
   SQL::eq('name', new SelectSQLBuilder)
 );
 
@@ -374,6 +414,14 @@ printSQL(
 
 printSQL(
   SQL::between('name', new SelectSQLBuilder, new SelectSQLBuilder)
+);
+
+printSQL(
+  SQL::isNull(new SelectSQLBuilder)
+);
+
+printSQL(
+  SQL::exists(new SelectSQLBuilder)
 );
 
 function printSQL($sql) {
