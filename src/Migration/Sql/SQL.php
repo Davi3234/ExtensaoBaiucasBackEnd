@@ -12,13 +12,25 @@ class SQL {
 
         if ($value instanceof SelectSQLBuilder) {
             $templates = $value->fetchAllSqlTemplates();
+
+            if (isset($templates['sqlTemplates'][0])) {
+                $templates['sqlTemplates'][0] = "({$templates['sqlTemplates'][0]}";
+            }
+
+            if (end($templates['sqlTemplates']) !== false) {
+                $lastTemplate = end($templates['sqlTemplates']);
+                $templates['sqlTemplates'][key($templates['sqlTemplates'])] = "$lastTemplate)";
+            }
+
+            var_dump($templates['sqlTemplates'], $templates['params']);
+
             $sqlTemplates = array_merge($sqlTemplates, $templates['sqlTemplates']);
             $params = $templates['params'];
         }
-        else
+        else {
             $params[] = $value;
-
-        $sqlTemplates[] = '';
+            $sqlTemplates[] = '';
+        }
 
         var_dump($sqlTemplates, $params);
 
@@ -410,6 +422,9 @@ printSQL(
 );
 
 function printSQL($sql) {
-    var_dump($sql['sqlTemplates'], $sql['params']);
-    echo '<br>';
+    ?>
+    <script>
+        console.log(<?= json_encode($sql['sqlTemplates']) ?>, <?= json_encode($sql['params']) ?>)
+    </script>
+    <?php
 }
