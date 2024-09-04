@@ -9,6 +9,13 @@ class User extends Model {
   private string $name;
   private string $login;
 
+  static function _loadModel(array $raw) {
+    $instance = new self;
+    $instance->_load($raw);
+
+    return $instance;
+  }
+
   function _load(array $raw) {
     $this->id = $raw['id'];
     $this->name = $raw['name'];
