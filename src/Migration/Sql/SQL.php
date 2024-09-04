@@ -124,7 +124,7 @@ class SQL {
     $params = [$value];
 
     if ($value instanceof SelectSQLBuilder) {
-      $templates = $value->fetchAllSqlTemplatesWithParentheses();
+      $templates = $value->getAllTemplatesWithParentheses();
 
       $sqlTemplates = $templates['sqlTemplates'];
       $params = $templates['params'];
@@ -140,7 +140,7 @@ class SQL {
     $params = [];
 
     if ($value instanceof SelectSQLBuilder) {
-      $templates = $value->fetchAllSqlTemplatesWithParentheses();
+      $templates = $value->getAllTemplatesWithParentheses();
 
       $sqlTemplates = $templates['sqlTemplates'];
       $params = $templates['params'];
@@ -160,7 +160,7 @@ class SQL {
     $params = [];
 
     if ($value instanceof SelectSQLBuilder) {
-      $templates = $value->fetchAllSqlTemplatesWithParentheses();
+      $templates = $value->getAllTemplatesWithParentheses();
 
       $sqlTemplates = $templates['sqlTemplates'];
       $params = $templates['params'];
@@ -178,7 +178,7 @@ class SQL {
     $params = [$valueLess, $valueGreater];
 
     if ($valueLess instanceof SelectSQLBuilder) {
-      $templates = $valueLess->fetchAllSqlTemplatesWithParentheses();
+      $templates = $valueLess->getAllTemplatesWithParentheses();
 
       $sqlTemplates = $templates['sqlTemplates'];
       $params = $templates['params'];
@@ -190,7 +190,7 @@ class SQL {
     }
 
     if ($valueGreater instanceof SelectSQLBuilder) {
-      $templates = $valueGreater->fetchAllSqlTemplatesWithParentheses();
+      $templates = $valueGreater->getAllTemplatesWithParentheses();
 
       array_pop($sqlTemplates);
       array_pop($params);
@@ -208,12 +208,12 @@ class SQL {
 
   private static function prepareTemplatesMultiValuesCondition(string $field, string $operator, string|int|float|SelectSQLBuilder ...$values) {
     $sqlTemplates = ["$field $operator "];
-    $params = $values;
+    $params = [];
 
     $value = $values[0];
 
     if (isset($value) && $value instanceof SelectSQLBuilder) {
-      $templates = $value->fetchAllSqlTemplatesWithParentheses();
+      $templates = $value->getAllTemplatesWithParentheses();
 
       $sqlTemplates = $templates['sqlTemplates'];
       $params = $templates['params'];
@@ -226,6 +226,7 @@ class SQL {
 
       $sqlTemplates[0] .= "(";
       $sqlTemplates[array_key_last($sqlTemplates)] .= ')';
+      $params = $values;
     }
 
     return static::condition($sqlTemplates, $params);
@@ -305,8 +306,13 @@ abstract class SQLBuilder {
    */
   protected array $clausules = [];
 
+  /**
+   * @var array<string, string>
+   */
+  protected array $clausulesOrder = [];
+
   function build() {
-    $template = $this->fetchAllSqlTemplates();
+    $template = $this->getAllTemplates();
 
     return [
       'sql' => implode(' ', $template['sqlTemplates']),
@@ -314,8 +320,8 @@ abstract class SQLBuilder {
     ];
   }
 
-  function fetchAllSqlTemplatesWithParentheses() {
-    $template = $this->fetchAllSqlTemplates();
+  function getAllTemplatesWithParentheses() {
+    $template = $this->getAllTemplates();
 
     if (count($template['sqlTemplates'])) {
       $template['sqlTemplates'][0] = "({$template['sqlTemplates'][0]}";
@@ -329,7 +335,25 @@ abstract class SQLBuilder {
   /**
    * @return array{sqlTemplates: string[], params: (string|number|boolean|null)[]}
    */
-  abstract function fetchAllSqlTemplates(): array;
+  function getAllTemplates() {
+    $sqlTemplates = [];
+    $params = [];
+
+    foreach ($this->clausulesOrder as $clausule => $handler) {
+      if (!method_exists($this, $handler))
+        continue;
+
+      $templates = $this->$handler();
+
+      $sqlTemplates = self::merge_templates($sqlTemplates, $templates['sqlTemplates']);
+      $params = array_merge($params, $templates['params']);
+    }
+
+    return [
+      'sqlTemplates' => $sqlTemplates,
+      'params' => $params,
+    ];
+  }
 
   protected static function merge_templates(...$arrays) {
     $templatesMerged = [];
@@ -355,10 +379,6 @@ class SQLConditionBuilder extends SQLBuilder {
     $this->clausules['WHERE'] = [];
   }
 
-  function fetchAllSqlTemplates(): array {
-    return [];
-  }
-
   /**
    * @param array{sqlTemplates: string[], params: string|number|boolean|null[]}[] ...$conditions
    */
@@ -369,21 +389,10 @@ class SQLConditionBuilder extends SQLBuilder {
   }
 
   function getTemplateWhere() {
-    if (!$this->clausules['WHERE'])
-      return [
-        'sqlTemplates' => ['WHERE 1 = 1'],
-        'params' => [],
-      ];
-
-    $conditions = array_map(function ($condition) {
-      return $this->buildCondition($condition);
-    }, $this->clausules['WHERE']);
-
-    array_unshift($conditions, '1 = 1');
-
-    var_dump($conditions);
-
-    return $conditions;
+    return [
+      'sqlTemplates' => ['WHERE 1 = 1'],
+      'params' => [],
+    ];
   }
 
   protected function buildCondition(array $condition) {
@@ -407,8 +416,13 @@ class SelectSQLBuilder extends SQLConditionBuilder {
   function __construct() {
     parent::__construct();
 
-    $this->clausules['SELECT'] = [['sqlTemplates'=> []]];
+    $this->clausules['SELECT'] = [['sqlTemplates'=> [], 'params' => '']];
     $this->clausules['FROM'] = [];
+
+    $this->clausulesOrder = [
+      'SELECT' => 'getTemplateSelect',
+      'WHERE' => 'getTemplateWhere',
+    ];
   }
 
   function select(string ...$fields) {
@@ -423,13 +437,9 @@ class SelectSQLBuilder extends SQLConditionBuilder {
     return $this;
   }
 
-  function fetchAllSqlTemplates(): array {
-    $templates = [
-      $this->getTemplateWhere()
-    ];
-
+  function getTemplateSelect() {
     return [
-      'sqlTemplates' => [],
+      'sqlTemplates' => ['*'],
       'params' => [],
     ];
   }
@@ -441,9 +451,9 @@ var_dump(
   ->where(
     SQL::eq('name','Dan'),
     SQL::sqlAnd(
-      SQL::in('name', SQL::select('id')->from('users'))
+      // SQL::in('name', SQL::select('id')->from('users'))
     ),
-  )
+  )->build()
 );
 
 function console(...$args) {
