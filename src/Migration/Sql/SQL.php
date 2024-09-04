@@ -3,8 +3,11 @@
 class SqlBuilderException extends \Exception {
 }
 
-
 class SQL {
+
+  static function select(string ...$fields) {
+    return (new SelectSQLBuilder)->select(...$fields);
+  }
 
   static function eq(string $field, string|int|float|bool|SelectSQLBuilder $value) {
     return self::prepareTemplatesLeftRigthArgsCondition($field, '=', $value);
@@ -297,17 +300,18 @@ class SQL {
 
 abstract class SQLBuilder {
 
-  function __construct() {
-  }
-
   /**
    * @var array<string,array{sqlTemplates: string|SelectSQLBuilder[], params: (string|number|boolean|null)[]}[]>
    */
   protected array $clausules = [];
-  protected $params = [];
 
   function build() {
-    return '';
+    $template = $this->fetchAllSqlTemplates();
+
+    return [
+      'sql' => implode(' ', $template['sqlTemplates']),
+      'params' => $template['params'],
+    ];
   }
 
   function fetchAllSqlTemplatesWithParentheses() {
@@ -327,135 +331,121 @@ abstract class SQLBuilder {
    */
   abstract function fetchAllSqlTemplates(): array;
 
-  function createParam($value) {
-    $this->params[] = $value;
+  protected static function merge_templates(...$arrays) {
+    $templatesMerged = [];
 
-    $number = count($this->params);
+    foreach ($arrays as $key => $array) {
+        if ($key > 0) {
+            $anterior = array_pop($templatesMerged);
+            $primeiroAtual = array_shift($array);
+            $templatesMerged[] = $anterior . $primeiroAtual;
+        }
 
-    return "$$number";
-  }
+        $templatesMerged = array_merge($templatesMerged, $array);
+    }
 
-  function getParams() {
-    return $this->params;
+    return $templatesMerged;
   }
 }
 
-class SelectSQLBuilder extends SQLBuilder {
+class SQLConditionBuilder extends SQLBuilder {
+
+  function __construct() {
+    $this->clausules['WITH'] = [];
+    $this->clausules['WHERE'] = [];
+  }
+
+  function fetchAllSqlTemplates(): array {
+    return [];
+  }
+
+  /**
+   * @param array{sqlTemplates: string[], params: string|number|boolean|null[]}[] ...$conditions
+   */
+  function where(...$conditions) {
+    $this->clausules['WHERE'] = array_merge($this->clausules['WHERE'], $conditions);
+
+    return $this;
+  }
+
+  function getTemplateWhere() {
+    if (!$this->clausules['WHERE'])
+      return [
+        'sqlTemplates' => ['WHERE 1 = 1'],
+        'params' => [],
+      ];
+
+    $conditions = array_map(function ($condition) {
+      return $this->buildCondition($condition);
+    }, $this->clausules['WHERE']);
+
+    array_unshift($conditions, '1 = 1');
+
+    var_dump($conditions);
+
+    return $conditions;
+  }
+
+  protected function buildCondition(array $condition) {
+    if (isset($condition['nested'])) {
+      $nestedConditions = array_map(function ($cond) {
+        return $this->buildCondition($cond);
+      }, $condition['nested']);
+
+      if ($condition['type'] == 'NOT')
+        return 'NOT (' . implode(' AND ', $nestedConditions) . ')';
+
+      return '(' . implode(' ' . $condition['type'] . ' ', $nestedConditions) . ')';
+    }
+
+    return $condition;
+  }
+}
+
+class SelectSQLBuilder extends SQLConditionBuilder {
+
+  function __construct() {
+    parent::__construct();
+
+    $this->clausules['SELECT'] = [['sqlTemplates'=> []]];
+    $this->clausules['FROM'] = [];
+  }
+
+  function select(string ...$fields) {
+    $this->clausules['SELECT'][0]['sqlTemplates'] = array_merge($this->clausules['SELECT'][0]['sqlTemplates'], $fields);
+
+    return $this;
+  }
+
+  function from(string $table) {
+    $this->clausules['FROM'] = array_merge($this->clausules['FROM'], ['sqlTemplates' => $table]);
+
+    return $this;
+  }
 
   function fetchAllSqlTemplates(): array {
     $templates = [
-      'sqlTemplates' => ['SELECT * FROM user WHERE login = ', ''],
-      'params' => ['Dan'],
+      $this->getTemplateWhere()
     ];
 
     return [
-      'sqlTemplates' => ['SELECT * FROM user WHERE login = ', ''],
-      'params' => ['Dan'],
+      'sqlTemplates' => [],
+      'params' => [],
     ];
   }
 }
 
-printSQL(
-  SQL::eq('name', 'Dan')
+var_dump(
+  SQL::select()
+  ->from('users')
+  ->where(
+    SQL::eq('name','Dan'),
+    SQL::sqlAnd(
+      SQL::in('name', SQL::select('id')->from('users'))
+    ),
+  )
 );
 
-printSQL(
-  SQL::dif('name', 'Dan')
-);
-
-printSQL(
-  SQL::gt('name', 'Dan')
-);
-
-printSQL(
-  SQL::gte('name', 'Dan')
-);
-
-printSQL(
-  SQL::lt('name', 'Dan')
-);
-
-printSQL(
-  SQL::lte('name', 'Dan')
-);
-
-printSQL(
-  SQL::between('name', 1, 2)
-);
-
-printSQL(
-  SQL::between('name', new SelectSQLBuilder, 2)
-);
-
-printSQL(
-  SQL::between('name', 1, new SelectSQLBuilder)
-);
-
-printSQL(
-  SQL::isNull('name')
-);
-
-printSQL(
-  SQL::in('id', 1, 2, 3, 4)
-);
-
-printSQL(
-  SQL::notIn('id', 1, 2, 3, 4)
-);
-
-printSQL(
-  SQL::eq('name', new SelectSQLBuilder)
-);
-
-printSQL(
-  SQL::dif('name', new SelectSQLBuilder)
-);
-
-printSQL(
-  SQL::gt('name', new SelectSQLBuilder)
-);
-
-printSQL(
-  SQL::gte('name', new SelectSQLBuilder)
-);
-
-printSQL(
-  SQL::lt('name', new SelectSQLBuilder)
-);
-
-printSQL(
-  SQL::lte('name', new SelectSQLBuilder)
-);
-
-printSQL(
-  SQL::like('name', new SelectSQLBuilder)
-);
-
-printSQL(
-  SQL::ilike('name', new SelectSQLBuilder)
-);
-
-printSQL(
-  SQL::between('name', new SelectSQLBuilder, new SelectSQLBuilder)
-);
-
-printSQL(
-  SQL::isNull(new SelectSQLBuilder)
-);
-
-printSQL(
-  SQL::exists(new SelectSQLBuilder)
-);
-
-printSQL(
-  SQL::in('id', new SelectSQLBuilder)
-);
-
-printSQL(
-  SQL::notIn('id', new SelectSQLBuilder)
-);
-
-function printSQL($sql) {
-  var_dump($sql['sqlTemplates'], $sql['params']);
-  echo '<br>';
+function console(...$args) {
+  ?><script>console.log(...<?= json_encode($args)?>)</script><?php
 }
