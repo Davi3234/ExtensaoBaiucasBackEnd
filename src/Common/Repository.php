@@ -15,29 +15,29 @@ abstract class Repository {
     $this->database = $database;
   }
 
-  function _create(InsertSQLBuilder $insertBuilder) {
+  protected function _create(InsertSQLBuilder $insertBuilder) {
     $insertBuilder->returning('*');
 
     return $this->database->execFromSqlBuilder($insertBuilder);
   }
 
-  function _update(UpdateSQLBuilder $updateBuilder) {
+  protected function _update(UpdateSQLBuilder $updateBuilder) {
     $updateBuilder->returning('*');
 
     return $this->database->execFromSqlBuilder($updateBuilder);
   }
 
-  function _delete(DeleteSQLBuilder $deleteBuilder) {
+  protected function _delete(DeleteSQLBuilder $deleteBuilder) {
     $deleteBuilder->returning('*');
 
     return $this->database->execFromSqlBuilder($deleteBuilder);
   }
 
-  function _query(SelectSQLBuilder $selectBuilder) {
+  protected function _query(SelectSQLBuilder $selectBuilder) {
     return $this->database->queryFromSqlBuilder($selectBuilder);
   }
 
-  function _queryModel(SelectSQLBuilder $selectBuilder, $modelConstructor) {
+  protected function _queryModel(SelectSQLBuilder $selectBuilder, $modelConstructor) {
     $result = $this->database->queryFromSqlBuilder($selectBuilder);
 
     $dataModel = [];
