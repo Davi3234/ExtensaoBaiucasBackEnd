@@ -52,8 +52,7 @@ class SQL {
   static function in(string $field, string|int|float|SelectSQLBuilder $value, string|int|float ...$values) {
     if ($value instanceof SelectSQLBuilder) {
       $values = [$value];
-    }
-    else {
+    } else {
       array_unshift($values, $value);
     }
 
@@ -63,8 +62,7 @@ class SQL {
   static function notIn($field, $value, ...$values) {
     if ($value instanceof SelectSQLBuilder) {
       $values = [$value];
-    }
-    else {
+    } else {
       array_unshift($values, $value);
     }
 
@@ -220,7 +218,7 @@ class SQL {
 
       $sqlTemplates[0] = "$field $operator $sqlTemplates[0]";
     } else {
-      foreach($values as $value) {
+      foreach ($values as $value) {
         $sqlTemplates[] = '';
       }
 
@@ -250,50 +248,6 @@ class SQL {
     return [
       'type' => $type,
       'nested' => $nested
-    ];
-  }
-
-  static function orderBy(...$orderByArgs) {
-    $sql = '';
-
-    if (count($orderByArgs) > 0)
-      $sql = "ORDER BY " . implode(', ', $orderByArgs);
-
-    return [
-      'sql' => $sql,
-    ];
-  }
-
-  static function groupBy(...$groupByArgs) {
-    $sql = '';
-
-    if (count($groupByArgs) > 0)
-      $sql = "GROUP BY " . implode(', ', $groupByArgs);
-
-    return [
-      'sql' => $sql,
-    ];
-  }
-
-  static function limit($limitArgs) {
-    $sql = '';
-
-    if (trim($limitArgs))
-      $sql = "LIMIT $limitArgs";
-
-    return [
-      'sql' => $sql,
-    ];
-  }
-
-  static function offset($offsetArgs) {
-    $sql = '';
-
-    if (trim($offsetArgs))
-      $sql = "OFFSET $offsetArgs";
-
-    return [
-      'sql' => $sql,
     ];
   }
 }
@@ -359,13 +313,13 @@ abstract class SQLBuilder {
     $templatesMerged = [];
 
     foreach ($arrays as $key => $array) {
-        if ($key > 0) {
-            $anterior = array_pop($templatesMerged);
-            $primeiroAtual = array_shift($array);
-            $templatesMerged[] = $anterior . $primeiroAtual;
-        }
+      if ($key > 0) {
+        $anterior = array_pop($templatesMerged);
+        $primeiroAtual = array_shift($array);
+        $templatesMerged[] = "$anterior $primeiroAtual";
+      }
 
-        $templatesMerged = array_merge($templatesMerged, $array);
+      $templatesMerged = array_merge($templatesMerged, $array);
     }
 
     return $templatesMerged;
@@ -416,7 +370,7 @@ class SelectSQLBuilder extends SQLConditionBuilder {
   function __construct() {
     parent::__construct();
 
-    $this->clausules['SELECT'] = [['sqlTemplates'=> [], 'params' => '']];
+    $this->clausules['SELECT'] = [['sqlTemplates' => [], 'params' => '']];
     $this->clausules['FROM'] = [];
 
     $this->clausulesOrder = [
@@ -439,7 +393,7 @@ class SelectSQLBuilder extends SQLConditionBuilder {
 
   function getTemplateSelect() {
     return [
-      'sqlTemplates' => ['*'],
+      'sqlTemplates' => ['Select *'],
       'params' => [],
     ];
   }
@@ -447,15 +401,17 @@ class SelectSQLBuilder extends SQLConditionBuilder {
 
 var_dump(
   SQL::select()
-  ->from('users')
-  ->where(
-    SQL::eq('name','Dan'),
-    SQL::sqlAnd(
-      // SQL::in('name', SQL::select('id')->from('users'))
-    ),
-  )->build()
+    ->from('users')
+    ->where(
+      SQL::eq('name', 'Dan'),
+      SQL::sqlAnd(
+        // SQL::in('name', SQL::select('id')->from('users'))
+      ),
+    )->build()
 );
 
 function console(...$args) {
-  ?><script>console.log(...<?= json_encode($args)?>)</script><?php
-}
+?><script>
+    console.log(...<?= json_encode($args) ?>)
+  </script><?php
+          }
