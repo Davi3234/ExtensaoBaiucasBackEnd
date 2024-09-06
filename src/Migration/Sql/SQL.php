@@ -299,7 +299,7 @@ abstract class SQLBuilder {
 
       $templates = $this->$handler();
 
-      $sqlTemplates = self::merge_templates($sqlTemplates, $templates['sqlTemplates']);
+      $sqlTemplates = self::merge_templates(' ', $sqlTemplates, $templates['sqlTemplates']);
       $params = array_merge($params, $templates['params']);
     }
 
@@ -309,14 +309,14 @@ abstract class SQLBuilder {
     ];
   }
 
-  protected static function merge_templates(...$arrays) {
+  protected static function merge_templates(string $separator, array ...$arrays) {
     $templatesMerged = [];
 
     foreach ($arrays as $key => $array) {
       if ($key > 0) {
         $anterior = array_pop($templatesMerged);
         $primeiroAtual = array_shift($array);
-        $templatesMerged[] = "$anterior $primeiroAtual";
+        $templatesMerged[] = $anterior . $separator . $primeiroAtual;
       }
 
       $templatesMerged = array_merge($templatesMerged, $array);
@@ -344,7 +344,7 @@ class SQLConditionBuilder extends SQLBuilder {
 
   function getTemplateWhere() {
     return [
-      'sqlTemplates' => ['WHERE 1 = 1'],
+      'sqlTemplates' => [],
       'params' => [],
     ];
   }
@@ -370,7 +370,7 @@ class SelectSQLBuilder extends SQLConditionBuilder {
   function __construct() {
     parent::__construct();
 
-    $this->clausules['SELECT'] = [['sqlTemplates' => [], 'params' => '']];
+    $this->clausules['SELECT'] = [['sqlTemplates' => [], 'params' => []]];
     $this->clausules['FROM'] = [];
 
     $this->clausulesOrder = [
@@ -385,22 +385,42 @@ class SelectSQLBuilder extends SQLConditionBuilder {
     return $this;
   }
 
-  function from(string $table) {
-    $this->clausules['FROM'] = array_merge($this->clausules['FROM'], ['sqlTemplates' => $table]);
+  function from(string|SelectSQLBuilder $table, string $alias = '') {
+    $sqlTemplates = [];
+    $params = [];
+
+    if ($table instanceof SelectSQLBuilder) {
+      $sqlTemplates = $table->getAllTemplatesWithParentheses();
+
+      $sqlTemplates = $sqlTemplates['sqlTemplates'];
+      $params = $sqlTemplates['params'];
+    }
+
+    $this->clausules['FROM'] = [
+      'sqlTemplates' => $sqlTemplates,
+      'params' => $params,
+    ];
 
     return $this;
   }
 
   function getTemplateSelect() {
     return [
-      'sqlTemplates' => ['Select *'],
+      'sqlTemplates' => [],
+      'params' => [],
+    ];
+  }
+
+  function getTemplateFrom() {
+    return [
+      'sqlTemplates' => [],
       'params' => [],
     ];
   }
 }
 
 var_dump(
-  SQL::select()
+  SQL::select('name', 'id')
     ->from('users')
     ->where(
       SQL::eq('name', 'Dan'),
