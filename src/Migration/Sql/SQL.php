@@ -365,7 +365,7 @@ class SQLConditionBuilder extends SQLBuilder {
     return $this;
   }
 
-  function getTemplateWhere() {
+  protected function getTemplateWhere() {
     $sqlTemplates = ['1 = 1'];
     $params = [];
 
@@ -427,12 +427,14 @@ class SelectSQLBuilder extends SQLConditionBuilder {
     $this->clausules['SELECT'] = [['sqlTemplates' => [], 'params' => []]];
     $this->clausules['FROM'] = [];
     $this->clausules['ORDERBY'] = [['sqlTemplates' => [], 'params' => []]];
+    $this->clausules['LIMIT'] = [['sqlTemplates' => [], 'params' => []]];
 
     $this->clausulesOrder = [
       'SELECT' => 'getTemplateSelect',
       'FROM' => 'getTemplateFrom',
       'WHERE' => 'getTemplateWhere',
       'ORDERBY' => 'getTemplateOrderBy',
+      'LIMIT' => 'getTemplateLimit',
     ];
   }
 
@@ -464,7 +466,13 @@ class SelectSQLBuilder extends SQLConditionBuilder {
     return $this;
   }
 
-  function getTemplateSelect() {
+  function limit(string|int $value) {
+    $this->clausules['LIMIT'][0] = ['sqlTemplates' => [''], 'params' => [$value]];
+
+    return $this;
+  }
+
+  protected function getTemplateSelect() {
     $sqlTemplates = $this->clausules['SELECT'][0]['sqlTemplates'];
     $params = $this->clausules['SELECT'][0]['params'];
 
@@ -477,7 +485,7 @@ class SelectSQLBuilder extends SQLConditionBuilder {
     ];
   }
 
-  function getTemplateFrom() {
+  protected function getTemplateFrom() {
     $sqlTemplates = [];
     $params = $this->clausules['FROM'][0]['params'];
 
@@ -498,7 +506,7 @@ class SelectSQLBuilder extends SQLConditionBuilder {
     ];
   }
 
-  function getTemplateOrderBy() {
+  protected function getTemplateOrderBy() {
     $sqlTemplates = $this->clausules['ORDERBY'][0]['sqlTemplates'];
     $params = $this->clausules['ORDERBY'][0]['params'];
 
@@ -514,15 +522,31 @@ class SelectSQLBuilder extends SQLConditionBuilder {
     }
 
     $sqlTemplates[] = '';
+    $sqlTemplates[0] = "ORDER BY $sqlTemplates[0]";
 
     return [
-      'sqlTemplates' => $this->merge_templates(' ', ['ORDER BY'], $sqlTemplates),
+      'sqlTemplates' => $sqlTemplates,
+      'params' => $params,
+    ];
+  }
+
+  protected function getTemplateLimit() {
+    $params = $this->clausules['LIMIT'][0]['params'];
+
+    if (!$params)
+      return [
+        'sqlTemplates' => [],
+        'params' => [],
+      ];
+
+    return [
+      'sqlTemplates' => ['LIMIT ', ''],
       'params' => $params,
     ];
   }
 }
 
-console(
+consoleSQL(
   SQL::select('name', 'id')
     ->from('users', 'us')
     ->where(
@@ -545,8 +569,13 @@ console(
     )
     ->orderBy(1, 'id')
     ->orderBy(3)
+    ->limit(1)
     ->build()
 );
+
+function consoleSQL($args) {
+  console($args['sql'], $args['params']);
+}
 
 function console(...$args) {
 ?><script>
