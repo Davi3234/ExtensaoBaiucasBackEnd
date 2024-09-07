@@ -1,5 +1,7 @@
 <?php
 
+namespace App\Migration\Sql;
+
 class SqlBuilderException extends \Exception {
 }
 
@@ -268,13 +270,22 @@ abstract class SQLBuilder {
    */
   protected array $clausulesOrder = [];
 
-  function buildOnlySql() {
+  function buildSqlOnly() {
     $template = $this->getAllTemplates();
     $sql = '';
 
     foreach ($template['sqlTemplates'] as $key => $sqlTemplates) {
-      if ($key > 0)
-        $sql .= " {$template['params'][$key - 1]} ";
+      if ($key > 0) {
+        $param = $template['params'][$key - 1];
+
+        if (is_string($param))
+          $param = "'$param'";
+
+        if (is_bool($param))
+          $param = $param ? 'TRUE' : 'FALSE';
+
+        $sql .= " $param ";
+      }
       $sql .= $sqlTemplates;
     }
 
@@ -569,34 +580,35 @@ class SelectSQLBuilder extends SQLConditionBuilder {
   }
 }
 
-consoleSQL(
-  SQL::select('name', 'id')
-    ->from('users', 'us')
-    ->where(
-      SQL::eq('name', 'Dan'),
-      SQL::sqlNot(
-        SQL::eq('email', 'dan'),
-        SQL::eq('active', true),
-        SQL::notIn('id', SQL::select()->from('users'))
-      ),
-      SQL::sqlAnd(
-        SQL::eq('email', 'dan'),
-        SQL::eq('active', true),
-        SQL::notIn('id', SQL::select()->from('users'))
-      ),
-      SQL::sqlOr(
-        SQL::eq('email', 'dan'),
-        SQL::eq('active', true),
-        SQL::notIn('id', SQL::select()->from('users'))
-      )
+$sqlBuilder = SQL::select('name', 'id')
+  ->from('"user"', 'us')
+  ->where(
+    SQL::eq('name', 'Dan'),
+    SQL::sqlNot(
+      SQL::eq('login', 'dan'),
+      SQL::eq('active', true),
+      SQL::notIn('id', SQL::select('id')->from('"user"')->where(SQL::eq('type', 'ADM')))
+    ),
+    SQL::sqlAnd(
+      SQL::eq('login', 'dan'),
+      SQL::eq('active', true),
+      SQL::notIn('id', SQL::select('id')->from('"user"')->where(SQL::eq('type', 'ADM')))
+    ),
+    SQL::sqlOr(
+      SQL::eq('login', 'dan'),
+      SQL::eq('active', true),
+      SQL::notIn('id', SQL::select('id')->from('"user"')->where(SQL::eq('type', 'ADM')))
     )
-    ->orderBy(1, 'id')
-    ->orderBy(3)
-    ->limit(1)
-    ->offset(2)
-    ->select('login')
-    ->build()
-);
+  )
+  ->orderBy(1, 'id')
+  ->orderBy(3)
+  ->limit(1)
+  ->offset(2)
+  ->select('login');
+
+$sqlResult = $sqlBuilder->build();
+
+consoleSQL($sqlResult);
 
 function consoleSQL($args) {
   console($args['sql'], $args['params']);
