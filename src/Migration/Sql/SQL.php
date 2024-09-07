@@ -426,11 +426,13 @@ class SelectSQLBuilder extends SQLConditionBuilder {
 
     $this->clausules['SELECT'] = [['sqlTemplates' => [], 'params' => []]];
     $this->clausules['FROM'] = [];
+    $this->clausules['ORDERBY'] = [['sqlTemplates' => [], 'params' => []]];
 
     $this->clausulesOrder = [
       'SELECT' => 'getTemplateSelect',
       'FROM' => 'getTemplateFrom',
       'WHERE' => 'getTemplateWhere',
+      'ORDERBY' => 'getTemplateOrderBy',
     ];
   }
 
@@ -445,6 +447,19 @@ class SelectSQLBuilder extends SQLConditionBuilder {
       'sqlTemplates' => [$table, $alias],
       'params' => [],
     ];
+
+    return $this;
+  }
+
+  function orderBy(string|int ...$values) {
+    $sqlTemplate = $this->clausules['ORDERBY'][0]['sqlTemplates'];
+
+    foreach ($values as $value) {
+      $sqlTemplate[] = '';
+    }
+
+    $this->clausules['ORDERBY'][0]['sqlTemplates'] = $sqlTemplate;
+    $this->clausules['ORDERBY'][0]['params'] = array_merge($this->clausules['ORDERBY'][0]['params'], $values);
 
     return $this;
   }
@@ -482,6 +497,29 @@ class SelectSQLBuilder extends SQLConditionBuilder {
       'params' => $params,
     ];
   }
+
+  function getTemplateOrderBy() {
+    $sqlTemplates = $this->clausules['ORDERBY'][0]['sqlTemplates'];
+    $params = $this->clausules['ORDERBY'][0]['params'];
+
+    if (!$sqlTemplates)
+      return [
+        'sqlTemplates' => [],
+        'params' => [],
+      ];
+
+    foreach ($sqlTemplates as $key => &$template) {
+      if ($key > 0)
+        $template = ',';
+    }
+
+    $sqlTemplates[] = '';
+
+    return [
+      'sqlTemplates' => $this->merge_templates(' ', ['ORDER BY'], $sqlTemplates),
+      'params' => $params,
+    ];
+  }
 }
 
 console(
@@ -505,6 +543,8 @@ console(
         SQL::notIn('id', SQL::select()->from('users'))
       )
     )
+    ->orderBy(1, 'id')
+    ->orderBy(3)
     ->build()
 );
 
