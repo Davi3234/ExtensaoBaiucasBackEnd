@@ -10,35 +10,35 @@ class SQL {
   }
 
   static function eq(string $field, string|int|float|bool|SelectSQLBuilder $value) {
-    return self::prepareTemplatesLeftRigthArgsCondition($field, '=', $value);
+    return self::prepareTemplatesLeftRightArgsCondition($field, '=', $value);
   }
 
   static function dif(string $field, string|int|float|bool|SelectSQLBuilder $value) {
-    return self::prepareTemplatesLeftRigthArgsCondition($field, '<>', $value);
+    return self::prepareTemplatesLeftRightArgsCondition($field, '<>', $value);
   }
 
   static function gt(string $field, string|int|float|bool|SelectSQLBuilder $value) {
-    return self::prepareTemplatesLeftRigthArgsCondition($field, '>', $value);
+    return self::prepareTemplatesLeftRightArgsCondition($field, '>', $value);
   }
 
   static function gte(string $field, string|int|float|bool|SelectSQLBuilder $value) {
-    return self::prepareTemplatesLeftRigthArgsCondition($field, '>=', $value);
+    return self::prepareTemplatesLeftRightArgsCondition($field, '>=', $value);
   }
 
   static function lt(string $field, string|int|float|bool|SelectSQLBuilder $value) {
-    return self::prepareTemplatesLeftRigthArgsCondition($field, '<', $value);
+    return self::prepareTemplatesLeftRightArgsCondition($field, '<', $value);
   }
 
   static function lte(string $field, string|int|float|bool|SelectSQLBuilder $value) {
-    return self::prepareTemplatesLeftRigthArgsCondition($field, '<=', $value);
+    return self::prepareTemplatesLeftRightArgsCondition($field, '<=', $value);
   }
 
   static function like(string $field, string|int|float|bool|SelectSQLBuilder $value) {
-    return self::prepareTemplatesLeftRigthArgsCondition($field, 'LIKE', $value);
+    return self::prepareTemplatesLeftRightArgsCondition($field, 'LIKE', $value);
   }
 
   static function ilike(string $field, string|int|float|bool|SelectSQLBuilder $value) {
-    return self::prepareTemplatesLeftRigthArgsCondition($field, 'ILIKE', $value);
+    return self::prepareTemplatesLeftRightArgsCondition($field, 'ILIKE', $value);
   }
 
   static function between(string $field, string|int|float|SelectSQLBuilder $valueLess, string|int|float|SelectSQLBuilder $valueGreater) {
@@ -86,23 +86,23 @@ class SQL {
   }
 
   static function isDistinctFrom(string $field, string|int|float|bool|SelectSQLBuilder $value) {
-    return self::prepareTemplatesLeftRigthArgsCondition($field, 'IS DISTINCT FROM', $value);
+    return self::prepareTemplatesLeftRightArgsCondition($field, 'IS DISTINCT FROM', $value);
   }
 
   static function exists(SelectSQLBuilder $subSelect) {
-    return self::prepareTemplatesRigthArgsCondition('EXISTS', $subSelect);
+    return self::prepareTemplatesRightArgsCondition('EXISTS', $subSelect);
   }
 
   static function notExists(SelectSQLBuilder $subSelect) {
-    return self::prepareTemplatesRigthArgsCondition('NOT EXISTS', $subSelect);
+    return self::prepareTemplatesRightArgsCondition('NOT EXISTS', $subSelect);
   }
 
   static function similarTo(string $field, string|int|float|bool|SelectSQLBuilder $value) {
-    return self::prepareTemplatesLeftRigthArgsCondition($field, 'SIMILAR TO', $value);
+    return self::prepareTemplatesLeftRightArgsCondition($field, 'SIMILAR TO', $value);
   }
 
   static function notSimilarTo(string $field, string|int|float|bool|SelectSQLBuilder $value) {
-    return self::prepareTemplatesLeftRigthArgsCondition($field, 'NOT SIMILAR TO', $value);
+    return self::prepareTemplatesLeftRightArgsCondition($field, 'NOT SIMILAR TO', $value);
   }
 
   static function sqlAnd(...$conditions) {
@@ -113,11 +113,11 @@ class SQL {
     return static::logical('OR', $conditions);
   }
 
-  static function not(...$conditions) {
+  static function sqlNot(...$conditions) {
     return static::logical('NOT', $conditions);
   }
 
-  private static function prepareTemplatesLeftRigthArgsCondition(string $field, string $operator, string|int|float|bool|SelectSQLBuilder $value) {
+  private static function prepareTemplatesLeftRightArgsCondition(string $field, string $operator, string|int|float|bool|SelectSQLBuilder $value) {
     $sqlTemplates = ["$field $operator ", ''];
     $params = [$value];
 
@@ -153,7 +153,7 @@ class SQL {
     return static::condition($sqlTemplates, $params);
   }
 
-  private static function prepareTemplatesRigthArgsCondition(string $operator, string|int|float|bool|SelectSQLBuilder $value) {
+  private static function prepareTemplatesRightArgsCondition(string $operator, string|int|float|bool|SelectSQLBuilder $value) {
     $sqlTemplates = ["$operator"];
     $params = [];
 
@@ -218,8 +218,11 @@ class SQL {
 
       $sqlTemplates[0] = "$field $operator $sqlTemplates[0]";
     } else {
-      foreach ($values as $value) {
-        $sqlTemplates[] = '';
+      foreach ($values as $key => $value) {
+        if ($key < count($values) - 1)
+          $sqlTemplates[] = ', ';
+        else
+          $sqlTemplates[] = '';
       }
 
       $sqlTemplates[0] .= "(";
@@ -256,7 +259,7 @@ class SQL {
 abstract class SQLBuilder {
 
   /**
-   * @var array<string,array{sqlTemplates: string|SelectSQLBuilder[], params: (string|number|boolean|null)[]}[]>
+   * @var array<string,array{sqlTemplates: (string|SelectSQLBuilder)[], params: (string|number|boolean|null)[]}[]>
    */
   protected array $clausules = [];
 
@@ -265,11 +268,31 @@ abstract class SQLBuilder {
    */
   protected array $clausulesOrder = [];
 
+  function buildOnlySql() {
+    $template = $this->getAllTemplates();
+    $sql = '';
+
+    foreach ($template['sqlTemplates'] as $key => $sqlTemplates) {
+      if ($key > 0)
+        $sql .= " {$template['params'][$key - 1]} ";
+      $sql .= $sqlTemplates;
+    }
+
+    return $sql;
+  }
+
   function build() {
     $template = $this->getAllTemplates();
+    $sql = '';
+
+    foreach ($template['sqlTemplates'] as $key => $sqlTemplates) {
+      if ($key > 0)
+        $sql .= " $$key ";
+      $sql .= $sqlTemplates;
+    }
 
     return [
-      'sql' => implode(' ', $template['sqlTemplates']),
+      'sql' => $sql,
       'params' => $template['params'],
     ];
   }
@@ -316,7 +339,7 @@ abstract class SQLBuilder {
       if ($key > 0) {
         $anterior = array_pop($templatesMerged);
         $primeiroAtual = array_shift($array);
-        $templatesMerged[] = $anterior . $separator . $primeiroAtual;
+        $templatesMerged[] = trim($anterior . $separator . $primeiroAtual);
       }
 
       $templatesMerged = array_merge($templatesMerged, $array);
@@ -343,9 +366,19 @@ class SQLConditionBuilder extends SQLBuilder {
   }
 
   function getTemplateWhere() {
+    $sqlTemplates = ['1 = 1'];
+    $params = [];
+
+    foreach ($this->clausules['WHERE'] as $template) {
+      $templates = $this->buildCondition($template);
+
+      $sqlTemplates = $this->merge_templates(' AND ', $sqlTemplates, $templates['sqlTemplates']);
+      $params = array_merge($params, $templates['params']);
+    }
+
     return [
-      'sqlTemplates' => [],
-      'params' => [],
+      'sqlTemplates' => $this->merge_templates(' ', ['WHERE'], $sqlTemplates),
+      'params' => $params,
     ];
   }
 
@@ -355,10 +388,31 @@ class SQLConditionBuilder extends SQLBuilder {
         return $this->buildCondition($cond);
       }, $condition['nested']);
 
-      if ($condition['type'] == 'NOT')
-        return 'NOT (' . implode(' AND ', $nestedConditions) . ')';
+      $sqlTemplates = [];
+      $params = [];
 
-      return '(' . implode(' ' . $condition['type'] . ' ', $nestedConditions) . ')';
+      foreach ($nestedConditions as $nestedCondition) {
+        if (!$sqlTemplates)
+          $sqlTemplates = $nestedCondition['sqlTemplates'];
+        else {
+          $type = $condition['type'] != 'NOT' ? $condition['type'] : 'AND';
+          $sqlTemplates = $this->merge_templates("$type ", $sqlTemplates, $nestedCondition['sqlTemplates']);
+        }
+
+        $params = array_merge($params, $nestedCondition['params']);
+      }
+
+      if ($sqlTemplates) {
+        $sqlTemplates[0] = "($sqlTemplates[0]";
+        $sqlTemplates[array_key_last($sqlTemplates)] = "{$sqlTemplates[array_key_last($sqlTemplates)]})";
+
+        if ($condition['type'] == 'NOT') {
+          $sqlTemplates[0] = "NOT $sqlTemplates[0]";
+        }
+      }
+
+      $condition['sqlTemplates'] = $sqlTemplates;
+      $condition['params'] = $params;
     }
 
     return $condition;
@@ -375,6 +429,7 @@ class SelectSQLBuilder extends SQLConditionBuilder {
 
     $this->clausulesOrder = [
       'SELECT' => 'getTemplateSelect',
+      'FROM' => 'getTemplateFrom',
       'WHERE' => 'getTemplateWhere',
     ];
   }
@@ -386,48 +441,71 @@ class SelectSQLBuilder extends SQLConditionBuilder {
   }
 
   function from(string|SelectSQLBuilder $table, string $alias = '') {
-    $sqlTemplates = [];
-    $params = [];
-
-    if ($table instanceof SelectSQLBuilder) {
-      $sqlTemplates = $table->getAllTemplatesWithParentheses();
-
-      $sqlTemplates = $sqlTemplates['sqlTemplates'];
-      $params = $sqlTemplates['params'];
-    }
-
-    $this->clausules['FROM'] = [
-      'sqlTemplates' => $sqlTemplates,
-      'params' => $params,
+    $this->clausules['FROM'][0] = [
+      'sqlTemplates' => [$table, $alias],
+      'params' => [],
     ];
 
     return $this;
   }
 
   function getTemplateSelect() {
+    $sqlTemplates = $this->clausules['SELECT'][0]['sqlTemplates'];
+    $params = $this->clausules['SELECT'][0]['params'];
+
+    if (!$sqlTemplates)
+      $sqlTemplates = ['*'];
+
     return [
-      'sqlTemplates' => [],
-      'params' => [],
+      'sqlTemplates' => ['SELECT ' . implode(', ', $sqlTemplates)],
+      'params' => $params,
     ];
   }
 
   function getTemplateFrom() {
+    $sqlTemplates = [];
+    $params = $this->clausules['FROM'][0]['params'];
+
+    foreach ($this->clausules['FROM'][0]['sqlTemplates'] as $template) {
+      if ($template instanceof SelectSQLBuilder) {
+        $templates = $template->getAllTemplatesWithParentheses();
+
+        $sqlTemplates = $this->merge_templates(' ', $sqlTemplates, $templates['sqlTemplates']);
+        $params = array_merge($params, $templates['params']);
+      } else {
+        $sqlTemplates = $this->merge_templates(' ', $sqlTemplates, [$template]);
+      }
+    }
+
     return [
-      'sqlTemplates' => [],
-      'params' => [],
+      'sqlTemplates' => $this->merge_templates(' ', ['FROM'], $sqlTemplates),
+      'params' => $params,
     ];
   }
 }
 
-var_dump(
+console(
   SQL::select('name', 'id')
-    ->from('users')
+    ->from('users', 'us')
     ->where(
       SQL::eq('name', 'Dan'),
-      SQL::sqlAnd(
-        // SQL::in('name', SQL::select('id')->from('users'))
+      SQL::sqlNot(
+        SQL::eq('email', 'dan'),
+        SQL::eq('active', true),
+        SQL::notIn('id', SQL::select()->from('users'))
       ),
-    )->build()
+      SQL::sqlAnd(
+        SQL::eq('email', 'dan'),
+        SQL::eq('active', true),
+        SQL::notIn('id', SQL::select()->from('users'))
+      ),
+      SQL::sqlOr(
+        SQL::eq('email', 'dan'),
+        SQL::eq('active', true),
+        SQL::notIn('id', SQL::select()->from('users'))
+      )
+    )
+    ->build()
 );
 
 function console(...$args) {
