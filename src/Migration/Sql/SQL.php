@@ -428,6 +428,7 @@ class SelectSQLBuilder extends SQLConditionBuilder {
     $this->clausules['FROM'] = [];
     $this->clausules['ORDERBY'] = [['sqlTemplates' => [], 'params' => []]];
     $this->clausules['LIMIT'] = [['sqlTemplates' => [], 'params' => []]];
+    $this->clausules['OFFSET'] = [['sqlTemplates' => [], 'params' => []]];
 
     $this->clausulesOrder = [
       'SELECT' => 'getTemplateSelect',
@@ -435,6 +436,7 @@ class SelectSQLBuilder extends SQLConditionBuilder {
       'WHERE' => 'getTemplateWhere',
       'ORDERBY' => 'getTemplateOrderBy',
       'LIMIT' => 'getTemplateLimit',
+      'OFFSET' => 'getTemplateOffset',
     ];
   }
 
@@ -468,6 +470,12 @@ class SelectSQLBuilder extends SQLConditionBuilder {
 
   function limit(string|int $value) {
     $this->clausules['LIMIT'][0] = ['sqlTemplates' => [''], 'params' => [$value]];
+
+    return $this;
+  }
+
+  function offset(string|int $value) {
+    $this->clausules['OFFSET'][0] = ['sqlTemplates' => [''], 'params' => [$value]];
 
     return $this;
   }
@@ -544,6 +552,21 @@ class SelectSQLBuilder extends SQLConditionBuilder {
       'params' => $params,
     ];
   }
+
+  protected function getTemplateOffset() {
+    $params = $this->clausules['OFFSET'][0]['params'];
+
+    if (!$params)
+      return [
+        'sqlTemplates' => [],
+        'params' => [],
+      ];
+
+    return [
+      'sqlTemplates' => ['OFFSET ', ''],
+      'params' => $params,
+    ];
+  }
 }
 
 consoleSQL(
@@ -570,6 +593,8 @@ consoleSQL(
     ->orderBy(1, 'id')
     ->orderBy(3)
     ->limit(1)
+    ->offset(2)
+    ->select('login')
     ->build()
 );
 
