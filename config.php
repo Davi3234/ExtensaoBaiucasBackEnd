@@ -7,3 +7,4 @@ error_reporting(E_ALL & ~(E_NOTICE | E_WARNING));
 @ini_set('internal_encoding', 'UTF-8');
 @ini_set('input_encoding', 'UTF-8');
 @ini_set('output_encoding', 'UTF-8');
+@ini_set('default_mimetype', 'application/json');
