@@ -93,9 +93,14 @@ abstract class SQLBuilder {
 
     foreach ($arrays as $key => $array) {
       if ($key > 0) {
-        $anterior = array_pop($templatesMerged);
-        $primeiroAtual = array_shift($array);
-        $templatesMerged[] = trim($anterior . $separator . $primeiroAtual);
+        $current = array_shift($array);
+
+        if ($templatesMerged) {
+          $last = array_pop($templatesMerged);
+          $templatesMerged[] = trim($last . $separator . $current);
+        } else {
+          $templatesMerged[] = trim($current);
+        }
       }
 
       $templatesMerged = array_merge($templatesMerged, $array);

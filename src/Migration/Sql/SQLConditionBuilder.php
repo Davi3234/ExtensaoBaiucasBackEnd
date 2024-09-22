@@ -5,7 +5,6 @@ namespace App\Migration\Sql;
 class SQLConditionBuilder extends SQLBuilder {
 
   function __construct() {
-    $this->clausules['WITH'] = [];
     $this->clausules['WHERE'] = [];
   }
 

@@ -12,6 +12,10 @@ class SQL {
     return (new SelectSQLBuilder)->select(...$fields);
   }
 
+  static function insertInto(string $table) {
+    return (new InsertSQLBuilder)->insertInto($table);
+  }
+
   static function eq(string $field, string|int|float|bool|SelectSQLBuilder $value) {
     return self::prepareTemplatesLeftRightArgsCondition($field, '=', $value);
   }
