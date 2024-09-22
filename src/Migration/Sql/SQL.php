@@ -613,23 +613,7 @@ $sqlBuilder = SQL::select('name', 'id')
       SQL::notIn('id', SQL::select('id')->from('"user"')->where(SQL::eq('type', 'ADM')))
     )
   )
-  ->orderBy(1, 'id', '3 DESC')
+  ->orderBy('id', 'name DESC')
   ->limit(1)
   ->offset(2)
   ->select('login');
-
-$sqlResult = $sqlBuilder->build();
-
-consoleSQL($sqlResult);
-
-function consoleSQL($args) {
-  console($args['sql'], $args['params']);
-}
-
-function console(...$args) {
-  @ini_set('default_mimetype', 'text/html');
-
-?><script>
-    console.log(...<?= json_encode($args) ?>)
-  </script><?php
-          }

@@ -54,3 +54,11 @@ function is_date_format($date, $format) {
 function uuid() {
   return time() . '-' . mt_rand();
 }
+
+function console(...$args) {
+  @ini_set('default_mimetype', 'text/html');
+
+?><script>
+    console.log(...<?= json_encode($args) ?>)
+  </script><?php
+          }
