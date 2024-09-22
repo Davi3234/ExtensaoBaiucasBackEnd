@@ -7,6 +7,7 @@ class SelectSQLBuilder extends SQLConditionBuilder {
   function __construct() {
     parent::__construct();
 
+    $this->clausules['WITH'] = [];
     $this->clausules['SELECT'] = [['sqlTemplates' => [], 'params' => []]];
     $this->clausules['FROM'] = [];
     $this->clausules['ORDERBY'] = [['sqlTemplates' => [], 'params' => []]];
@@ -14,6 +15,7 @@ class SelectSQLBuilder extends SQLConditionBuilder {
     $this->clausules['OFFSET'] = [['sqlTemplates' => [], 'params' => []]];
 
     $this->clausulesOrder = [
+      'WITH' => 'getTemplateWith',
       'SELECT' => 'getTemplateSelect',
       'FROM' => 'getTemplateFrom',
       'WHERE' => 'getTemplateWhere',
@@ -21,6 +23,15 @@ class SelectSQLBuilder extends SQLConditionBuilder {
       'LIMIT' => 'getTemplateLimit',
       'OFFSET' => 'getTemplateOffset',
     ];
+  }
+
+  function with(string $alias, SelectSQLBuilder $selectBuilder) {
+    $this->clausules['WITH'][] = [
+      'sqlTemplates' => [$alias, $selectBuilder],
+      'params' => [],
+    ];
+
+    return $this;
   }
 
   function select(string ...$fields) {
@@ -72,6 +83,41 @@ class SelectSQLBuilder extends SQLConditionBuilder {
     $this->clausules['OFFSET'][0] = ['sqlTemplates' => [''], 'params' => [$value]];
 
     return $this;
+  }
+
+  protected function getTemplateWith() {
+    $sqlTemplatesWith = $this->clausules['WITH'];
+
+    if (!$sqlTemplatesWith)
+      return [
+        'sqlTemplates' => [],
+        'params' => [],
+      ];
+
+    $sqlTemplates = ['WITH '];
+    $params = [];
+
+    foreach ($sqlTemplatesWith as $key => $sqlTemplate) {
+      [$alias, $selectBuilder] = $sqlTemplate['sqlTemplates'];
+
+      if (true) {
+        $selectSqlTemplate = $selectBuilder->getAllTemplatesWithParentheses();
+
+        if ($key > 0) {
+          $sqlTemplates[array_key_last($sqlTemplates)] .= ', ';
+        }
+
+        $sqlTemplates[array_key_last($sqlTemplates)] .= "$alias AS";
+
+        $sqlTemplates = self::merge_templates(' ', $sqlTemplates, $selectSqlTemplate['sqlTemplates']);
+        $params = array_merge($params, $selectSqlTemplate['params']);
+      }
+    }
+
+    return [
+      'sqlTemplates' => $sqlTemplates,
+      'params' => $params,
+    ];
   }
 
   protected function getTemplateSelect() {
@@ -165,27 +211,58 @@ class SelectSQLBuilder extends SQLConditionBuilder {
   }
 }
 
-$sqlBuilder = SQL::select('name', 'id')
+$sqlBuilder = SQL::with(
+  'user_with',
+  SQL::select()
+    ->from('"user"')
+    ->where(SQL::eq('name', 'dan'))
+)
+  ->with(
+    'user_with2',
+    SQL::select()
+      ->from('"user"')
+      ->where(SQL::eq('name', 'dan'))
+  )
+  ->select('name', 'id')
   ->from('"user"', 'us')
   ->where(
     SQL::eq('name', 'Dan'),
     SQL::sqlNot(
       SQL::eq('login', 'dan'),
       SQL::eq('active', true),
-      SQL::notIn('id', SQL::select('id')->from('"user"')->where(SQL::eq('type', 'ADM')))
+      SQL::notIn(
+        'id',
+        SQL::select('id')
+          ->from('"user"')
+          ->where(SQL::eq('type', 'ADM'))
+      )
     ),
     SQL::sqlAnd(
       SQL::eq('login', 'dan'),
       SQL::eq('active', true),
-      SQL::notIn('id', SQL::select('id')->from('"user"')->where(SQL::eq('type', 'ADM')))
+      SQL::notIn(
+        'id',
+        SQL::select('id')
+          ->from('"user"')
+          ->where(SQL::eq('type', 'ADM'))
+      )
     ),
     SQL::sqlOr(
       SQL::eq('login', 'dan'),
       SQL::eq('active', true),
-      SQL::notIn('id', SQL::select('id')->from('"user"')->where(SQL::eq('type', 'ADM')))
+      SQL::notIn(
+        'id',
+        SQL::select('id')
+          ->from('"user"')
+          ->where(SQL::eq('type', 'ADM'))
+      )
     )
   )
   ->orderBy('id', 'name DESC')
   ->limit(1)
   ->offset(2)
   ->select('login');
+
+$sql = $sqlBuilder->build();
+
+console($sql['sql'], $sql['params']);

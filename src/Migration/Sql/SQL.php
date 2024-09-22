@@ -4,6 +4,10 @@ namespace App\Migration\Sql;
 
 class SQL {
 
+  static function with(string $alias, SelectSQLBuilder $selectBuilder) {
+    return (new SelectSQLBuilder)->with($alias, $selectBuilder);
+  }
+
   static function select(string ...$fields) {
     return (new SelectSQLBuilder)->select(...$fields);
   }
