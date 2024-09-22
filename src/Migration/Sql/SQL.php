@@ -469,8 +469,19 @@ class SelectSQLBuilder extends SQLConditionBuilder {
   function orderBy(string|int ...$values) {
     $sqlTemplate = $this->clausules['ORDERBY'][0]['sqlTemplates'];
 
-    foreach ($values as $value) {
-      $sqlTemplate[] = '';
+    foreach ($values as &$value) {
+      $value = is_string($value) ? trim($value) : (string) $value;
+
+      [$column, $direction] = explode(' ', $value);
+
+      $direction = strtoupper($direction);
+
+      if ($direction != 'DESC') {
+        $direction = 'ASC';
+      }
+
+      $value = trim($column);
+      $sqlTemplate[] = $direction;
     }
 
     $this->clausules['ORDERBY'][0]['sqlTemplates'] = $sqlTemplate;
@@ -536,12 +547,14 @@ class SelectSQLBuilder extends SQLConditionBuilder {
       ];
 
     foreach ($sqlTemplates as $key => &$template) {
-      if ($key > 0)
-        $template = ',';
+      $template = " $template";
+
+      if ($key < count($sqlTemplates) - 1) {
+        $template .= ',';
+      }
     }
 
-    $sqlTemplates[] = '';
-    $sqlTemplates[0] = "ORDER BY $sqlTemplates[0]";
+    array_unshift($sqlTemplates, "ORDER BY ");
 
     return [
       'sqlTemplates' => $sqlTemplates,
@@ -600,8 +613,7 @@ $sqlBuilder = SQL::select('name', 'id')
       SQL::notIn('id', SQL::select('id')->from('"user"')->where(SQL::eq('type', 'ADM')))
     )
   )
-  ->orderBy(1, 'id')
-  ->orderBy(3)
+  ->orderBy(1, 'id', '3 DESC')
   ->limit(1)
   ->offset(2)
   ->select('login');
