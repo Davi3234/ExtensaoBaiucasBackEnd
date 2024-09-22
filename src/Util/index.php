@@ -41,11 +41,11 @@ function set_env($name, $value) {
   putenv("$name=$value");
 }
 
-function get_env($name) {
-  return getenv($name) ?: null;
+function get_env($name, $valueDefault = null) {
+  return getenv($name) ?: $valueDefault;
 }
 
-function is_date_format($date, $format = 'Y-m-d') {
+function is_date_format($date, $format) {
   $dateTime = DateTime::createFromFormat($format, $date);
 
   return $dateTime && strtolower($dateTime->format($format)) === strtolower($date);
