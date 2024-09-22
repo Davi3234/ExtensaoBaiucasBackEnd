@@ -1,9 +1,26 @@
 <?php
 
-$variables = [
-  'DATABASE_URL' => 'host=localhost port=5432 dbname=extensao-baiucas user=postgres password=admin',
-  'ENV' => 'DEV', // DEV | PROD
-];
+$handle = fopen('.env', 'r');
 
-foreach ($variables as $key => $value)
+$variables = [];
+if ($handle) {
+  while (($line = fgets($handle)) !== false) {
+    if (!trim($line))
+      continue;
+
+    [$line] = explode('#', $line);
+
+    [$name, $value] = explode('=', $line, 2);
+
+    if (!$name || !$value)
+      continue;
+
+    $variables[$name] = trim($value, '\'"');
+  }
+
+  fclose($handle);
+}
+
+foreach ($variables as $key => $value) {
   set_env($key, $value);
+}
