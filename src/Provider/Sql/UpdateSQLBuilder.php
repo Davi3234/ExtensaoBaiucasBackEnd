@@ -2,109 +2,92 @@
 
 namespace App\Provider\Sql;
 
-class UpdateSQLBuilder extends SQLConditionBuilder implements ISQLReturningBuilder {
+class UpdateSQLBuilder extends ReturningConditionSQLBuilder {
 
   function __construct() {
     parent::__construct();
 
-    $this->clausules['UPDATE'] = '';
-    $this->clausules['SET'] = [];
-    $this->clausules['RETURNING'] = [];
+    $this->clausules["UPDATE"] = [['sqlTemplates' => [], 'params' => []]];
+    $this->clausules["SET"] = [];
+
+    $this->clausulesOrder = [
+      'UPDATE' => 'getTemplateUpdate',
+      'SET' => 'getTemplateSet',
+    ];
   }
 
-  /**
-   * Method responsible to define UPDATE clausule
-   * @param string $table Table name
-   * @return static
-   */
-  function update($table) {
-    $this->clausules['UPDATE'] = $table;
+  function update(string $table) {
+    $this->clausules["UPDATE"][0]['sqlTemplates'] = [$table];
+
     return $this;
   }
 
   /**
-   * Method responsible to define UPDATE clausule
-   * @param array<string, mixed> $raw Values to set clausule
-   * @return static
+   * @param array<string, string|int|float|bool>[] $values
    */
-  function setValue($raw) {
-    if (in_array('', array_keys($raw)))
-      throw new SqlBuilderException("Param name not defined to clausule \"SET\"");
+  function values(array $values) {
+    $paramsName = $this->clausules["SET"][0]['sqlTemplates'];
+    $paramsSql = $this->clausules["SET"][0]['params'];
 
-    foreach ($raw as $param => $value) {
-      $raw[$param] = $this->createParam($value);
+    foreach ($values as $param => $value) {
+      $paramsName[$param] = $param;
+      $paramsSql[$param] = $value;
     }
 
-    $this->clausules["SET"] = array_merge($this->clausules["SET"], $raw);
-    return $this;
-  }
-
-  /**
-   * Method responsible to define RETURNING clausule
-   * @param string ...$fields Fields to be returned
-   * @return static
-   */
-  function returning(...$fields) {
-    $this->clausules["RETURNING"] = array_merge($this->clausules["RETURNING"], $fields);
-    return $this;
-  }
-
-  /**
-   * Method responsible for generating the sql
-   * @return string
-   */
-  function toSql() {
-    $sqlStatement = [
-      $this->updateToSql(),
-      $this->setValueToSql(),
-      $this->whereToSql(),
-      $this->returningToSql(),
+    $this->clausules["SET"][0] = [
+      'sqlTemplates' => $paramsName,
+      'params' => $paramsSql
     ];
 
-    $sqlStatement = array_filter($sqlStatement, function ($statement) {
-      return !!$statement;
-    });
-
-    return implode(' ', $sqlStatement);
+    return $this;
   }
 
-  /**
-   * Method responsible for generating the sql for clausule UPDATE
-   * @return string
-   */
-  function updateToSql() {
-    if (!$this->clausules['UPDATE'])
-      throw new SqlBuilderException('Table name not defined for clausule "UPDATE"');
+  protected function getTemplateUpdate() {
+    $sqlParams = $this->clausules["UPDATE"][0]['sqlTemplates'];
 
-    return "UPDATE $this->clausules['UPDATE']";
+    if (!$sqlParams || !$sqlParams[0]) {
+      throw new SqlBuilderException('Table name not defined for clause "UPDATE"');
+    }
+
+    return [
+      'sqlTemplates' => ["UPDATE $sqlParams[0]"],
+      'params' => [],
+    ];
   }
 
-  /**
-   * Method responsible for generating the sql for clausule SET
-   * @return string
-   */
-  function setValueToSql() {
-    if (!$this->clausules['SET'])
-      return '';
+  protected function getTemplateSet() {
+    $sqlValues = $this->clausules["SET"][0];
 
-    $setValues = array_map(function ($param, $value) {
-      if (!$value)
-        throw new SqlBuilderException("Value to param \"$param\" not defined to clausule \"SET\"");
+    if (!$sqlValues) {
+      throw new SqlBuilderException('Values not defined for clause "UPDATE"');
+    }
 
-      return "$param = $value";
-    }, array_keys($this->clausules['SET']), array_values($this->clausules['SET']));
+    $sqlTemplates = [];
+    $params = [];
 
-    return 'SET ' . implode(', ', $setValues);
+    foreach ($sqlValues['sqlTemplates'] as $param) {
+      $sqlTemplates = self::merge_templates(', ', $sqlTemplates, ["$param = ", '']);
+      $params[] = $sqlValues['params'][$param];
+    }
+
+    $sqlTemplates[0] = "SET $sqlTemplates[0]";
+
+    return [
+      'sqlTemplates' => $sqlTemplates,
+      'params' => $params,
+    ];
   }
 
-  /**
-   * Method responsible for generating the sql for clausule RETURNING
-   * @return string
-   */
-  function returningToSql() {
-    if (!$this->clausules["RETURNING"])
-      return '';
+  protected function getTemplateWhere() {
+    if (!$this->clausules['WHERE']) {
+      throw new SqlBuilderException('There must be at least one update condition in the "WHERE" statement.');
+    }
 
-    return 'RETURNING ' . implode(', ', $this->clausules["RETURNING"]);
+    return parent::getTemplateWhere();
   }
 }
+
+$sqlBuilder = SQL::update('"user"')
+  ->values(['name' => 'Dan'])
+  ->values(['login' => 'dan@gmail.com'])
+  ->returning('*');

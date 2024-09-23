@@ -2,50 +2,110 @@
 
 namespace App\Provider\Sql;
 
-class SQLBuilder {
 
-  function __construct() {}
+abstract class SQLBuilder {
 
-    /**
-     * Summary of clausules
-     * @var array<string,mixed>
-     */
-    protected $clausules = [];
-    protected $params = [];
+  /**
+   * @var array<string,array{sqlTemplates: (string|SelectSQLBuilder)[], params: (string|number|boolean|null)[]}[]>
+   */
+  protected array $clausules = [];
 
-    /**
-     * Method responsible for generating the sql
-     * @return string
-     */
-    function toSql() {
-        return '';
+  /**
+   * @var array<string, string>
+   */
+  protected array $clausulesOrder = [];
+
+  function buildSqlOnly() {
+    $template = $this->getAllTemplates();
+    $sql = '';
+
+    foreach ($template['sqlTemplates'] as $key => $sqlTemplates) {
+      if ($key > 0) {
+        $param = $template['params'][$key - 1];
+
+        if (is_string($param))
+          $param = "'$param'";
+
+        if (is_bool($param))
+          $param = $param ? 'TRUE' : 'FALSE';
+
+        $sql .= " $param ";
+      }
+      $sql .= $sqlTemplates;
     }
 
-    /**
-     * Get the clausules statement
-     * @return array<string, mixed>
-     */
-    function getClausules() {
-        return $this->clausules;
+    return $sql;
+  }
+
+  function build() {
+    $template = $this->getAllTemplates();
+    $sql = '';
+
+    foreach ($template['sqlTemplates'] as $key => $sqlTemplates) {
+      if ($key > 0)
+        $sql .= " $$key ";
+      $sql .= $sqlTemplates;
     }
 
-    /**
-     * Get the clausule statement
-     * @return mixed
-     */
-    function getClausule($clausule) {
-        return $this->clausules[$clausule];
+    return [
+      'sql' => $sql,
+      'params' => $template['params'],
+    ];
+  }
+
+  function getAllTemplatesWithParentheses() {
+    $template = $this->getAllTemplates();
+
+    if (count($template['sqlTemplates'])) {
+      $template['sqlTemplates'][0] = "({$template['sqlTemplates'][0]}";
+      $lastKey = array_key_last($template['sqlTemplates']);
+      $template['sqlTemplates'][$lastKey] = "{$template['sqlTemplates'][$lastKey]})";
     }
 
-    function createParam($value) {
-        $this->params[] = $value;
+    return $template;
+  }
 
-        $number = count($this->params);
+  /**
+   * @return array{sqlTemplates: string[], params: (string|number|boolean|null)[]}
+   */
+  function getAllTemplates() {
+    $sqlTemplates = [];
+    $params = [];
 
-        return "$$number";
+    foreach ($this->clausulesOrder as $clausule => $handler) {
+      if (!method_exists($this, $handler))
+        continue;
+
+      $templates = $this->$handler();
+
+      $sqlTemplates = self::merge_templates(' ', $sqlTemplates, $templates['sqlTemplates']);
+      $params = array_merge($params, $templates['params']);
     }
 
-    function getParams() {
-        return $this->params;
+    return [
+      'sqlTemplates' => $sqlTemplates,
+      'params' => $params,
+    ];
+  }
+
+  protected static function merge_templates(string $separator, array ...$arrays) {
+    $templatesMerged = [];
+
+    foreach ($arrays as $key => $array) {
+      if ($key > 0) {
+        $current = array_shift($array);
+
+        if ($templatesMerged) {
+          $last = array_pop($templatesMerged);
+          $templatesMerged[] = trim($last . $separator . $current);
+        } else {
+          $templatesMerged[] = trim($current);
+        }
+      }
+
+      $templatesMerged = array_merge($templatesMerged, $array);
     }
+
+    return $templatesMerged;
+  }
 }

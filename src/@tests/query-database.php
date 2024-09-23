@@ -20,6 +20,6 @@ $insertBuilder->where(
   )
 );
 
-$sql = $insertBuilder->toSql();
+$sql = $insertBuilder->build()['sql'];
 
 echo $sql;

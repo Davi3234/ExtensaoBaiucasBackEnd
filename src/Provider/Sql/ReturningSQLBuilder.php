@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Migration\Sql;
+namespace App\Provider\Sql;
 
 class ReturningSQLBuilder extends SQLBuilder {
 

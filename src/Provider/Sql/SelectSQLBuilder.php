@@ -7,287 +7,284 @@ class SelectSQLBuilder extends SQLConditionBuilder {
   function __construct() {
     parent::__construct();
 
-    $this->clausules['SELECT'] = [];
+    $this->clausules['SELECT'] = [['sqlTemplates' => [], 'params' => []]];
     $this->clausules['FROM'] = [];
     $this->clausules['JOIN'] = [];
-    $this->clausules['ORDERBY'] = [];
-    $this->clausules['GROUPBY'] = [];
-    $this->clausules['LIMIT'] = '';
-    $this->clausules['OFFSET'] = '';
-    $this->clausules['HAVIING'] = [];
+    $this->clausules['ORDERBY'] = [['sqlTemplates' => [], 'params' => []]];
+    $this->clausules['LIMIT'] = [['sqlTemplates' => [], 'params' => []]];
+    $this->clausules['OFFSET'] = [['sqlTemplates' => [], 'params' => []]];
+
+    $this->clausulesOrder = [
+      'WITH' => 'getTemplateWith',
+      'SELECT' => 'getTemplateSelect',
+      'FROM' => 'getTemplateFrom',
+      'JOIN' => 'getTemplateJoin',
+      'WHERE' => 'getTemplateWhere',
+      'ORDERBY' => 'getTemplateOrderBy',
+      'LIMIT' => 'getTemplateLimit',
+      'OFFSET' => 'getTemplateOffset',
+    ];
   }
 
-  /**
-   * Method responsible to define SELECT clausule
-   * @param string ...$fields Fields to be selected
-   * @return static
-   */
   function select(string ...$fields) {
-    $this->clausules['SELECT'] = array_merge($this->clausules['SELECT'], $fields);
+    $this->clausules['SELECT'][0]['sqlTemplates'] = array_merge($this->clausules['SELECT'][0]['sqlTemplates'], $fields);
 
     return $this;
   }
 
-  /**
-   * Method responsible to define FROM clausule
-   * @param string $table Table name
-   * @param string $alias Alias name
-   * @return static
-   */
-  function from(string $table, string $alias = '') {
-    $this->clausules['FROM'] = SQL::from($table, $alias);
-
-    return $this;
-  }
-
-  /**
-   * Method responsible to define JOIN clausule
-   * @param string $table Table name
-   * @param string $alias Alias name
-   * @param string $on On Condition of the relation
-   * @return static
-   */
-  function join(string $table, string $alias, string $on) {
-    return $this->createjoin(SQL::join($table, $alias, $on));
-  }
-
-  /**
-   * Method responsible to define LEFT JOIN clausule
-   * @param string $table Table name
-   * @param string $alias Alias name
-   * @param string $on On Condition of the relation
-   * @return static
-   */
-  function leftJoin(string $table, string $alias, string $on) {
-    return $this->createjoin(SQL::leftJoin($table, $alias, $on));
-  }
-
-  /**
-   * Method responsible to define RIGHT JOIN clausule
-   * @param string $table Table name
-   * @param string $alias Alias name
-   * @param string $on On Condition of the relation
-   * @return static
-   */
-  function rightJoin(string $table, string $alias, string $on) {
-    return $this->createjoin(SQL::rightJoin($table, $alias, $on));
-  }
-
-  /**
-   * Method responsible to define INNER JOIN clausule
-   * @param string $table Table name
-   * @param string $alias Alias name
-   * @param string $on On Condition of the relation
-   * @return static
-   */
-  function innerJoin(string $table, string $alias, string $on) {
-    return $this->createjoin(SQL::innerJoin($table, $alias, $on));
-  }
-
-  /**
-   * Method responsible to define FULL JOIN clausule
-   * @param string $table Table name
-   * @param string $alias Alias name
-   * @param string $on On Condition of the relation
-   * @return static
-   */
-  function fullJoin(string $table, string $alias, string $on) {
-    return $this->createjoin(SQL::fullJoin($table, $alias, $on));
-  }
-
-  /**
-   * Prepare data sql to JOIN clausule
-   * @param string $sql Sql of the relation
-   * @return static
-   */
-  private function createjoin(string $sqlClausule) {
-    $this->clausules['JOIN'][] = $sqlClausule;
-
-    return $this;
-  }
-
-  /**
-   * Method responsible to define ORDER BY clausule
-   * @param string|int ...$orderByArgs Order by arguments
-   * @return static
-   */
-  function orderBy(string|int ...$orderByArgs) {
-    $this->clausules['ORDERBY'] = array_merge($this->clausules['ORDERBY'], $orderByArgs);
-
-    return $this;
-  }
-
-  /**
-   * Method responsible to define GROUP BY clausule
-   * @param string|int ...$groupByArgs Group by arguments
-   * @return static
-   */
-  function groupBy(string|int ...$groupByArgs) {
-    $this->clausules['GROUPBY'] = array_merge($this->clausules['GROUPBY'], $groupByArgs);
-
-    return $this;
-  }
-
-  /**
-   * Method responsible to define LIMIT clausule
-   * @param string|int $limit Limit argument
-   * @return static
-   */
-  function limit(string|int $limit) {
-    $this->clausules['LIMIT'] = SQL::limit($limit);
-
-    return $this;
-  }
-
-  /**
-   * Method responsible to define OFFSET clausule
-   * @param string|int $offset Offset argument
-   * @return static
-   */
-  function offset(string|int $offset) {
-    $this->clausules['OFFSET'] = $offset;
-
-    return $this;
-  }
-
-  /**
-   * Method responsible to define HAVING clausule
-   * @param string|SQLConditionBuilder ...$conditions Conditions arguments
-   * @return static
-   */
-  function having(string|SQLConditionBuilder ...$conditions) {
-    $conditions = array_map(function ($condition) {
-      if ($condition instanceof SelectSQLBuilder)
-        return $condition->toSql();
-
-      return $condition;
-    }, $conditions);
-
-    $this->clausules['HAVIING'] = array_merge($this->clausules['HAVIING'], $conditions);
-
-    return $this;
-  }
-
-  /**
-   * Method responsible for generating the sql
-   * @return string
-   */
-  function toSql() {
-    $sqlStatement = [
-      $this->withToSql(),
-      $this->selectFieldsToSql(),
-      $this->fromToSql(),
-      $this->joinToSql(),
-      $this->whereToSql(),
-      $this->groupByToSql(),
-      $this->havingToSql(),
-      $this->orderByToSql(),
-      $this->limitToSql(),
-      $this->offsetToSql(),
+  function from(string|SelectSQLBuilder $table, string $alias = '') {
+    $this->clausules['FROM'][0] = [
+      'sqlTemplates' => [$table, $alias],
+      'params' => [],
     ];
 
-    $sqlStatement = array_filter($sqlStatement, function ($statement) {
-      return !!$statement;
-    });
-
-    return implode(' ', $sqlStatement);
+    return $this;
   }
 
-  /**
-   * Method responsible for generating the sql for clausule SELECT
-   * @return string
-   */
-  function selectFieldsToSql() {
-    if (!$this->clausules['SELECT'])
-      return 'SELECT *';
-
-    return 'SELECT ' . implode(', ', $this->clausules['SELECT']);
+  function join(SelectSQLBuilder|string $joinTable, string $alias, string $onRelation) {
+    return $this->createJoin('JOIN', $joinTable, $alias, $onRelation);
   }
 
-  /**
-   * Method responsible for generating the sql for clausule FROM
-   * @return string
-   */
-  function fromToSql() {
-    if (!$this->clausules['FROM'] || !$this->clausules['FROM']['sql'])
-      throw new SqlBuilderException('Clausule "FROM" not defined');
-
-    return $this->clausules['FROM']['sql'];
+  function innerJoin(SelectSQLBuilder|string $joinTable, string $alias, string $onRelation) {
+    return $this->createJoin('INNER JOIN', $joinTable, $alias, $onRelation);
   }
 
-  /**
-   * Method responsible for generating the sql for clausule JOIN
-   * @return string
-   */
-  function joinToSql() {
-    if (!$this->clausules['JOIN'])
-      return '';
-
-    $sql = array_map(function ($clausuleJoin) {
-      return $clausuleJoin['sql'];
-    }, $this->clausules['JOIN']);
-
-    return implode(' ', $sql);
+  function leftJoin(SelectSQLBuilder|string $joinTable, string $alias, string $onRelation) {
+    return $this->createJoin('LEFT JOIN', $joinTable, $alias, $onRelation);
   }
 
-  /**
-   * Method responsible for generating the sql for clausule GROUP BY
-   * @return string
-   */
-  function groupByToSql() {
-    if (!$this->clausules['GROUPBY'])
-      return '';
-
-    return 'GROUP BY ' . implode(', ', $this->clausules['GROUPBY']);
+  function rightJoin(SelectSQLBuilder|string $joinTable, string $alias, string $onRelation) {
+    return $this->createJoin('RIGHT JOIN', $joinTable, $alias, $onRelation);
   }
 
-  /**
-   * Method responsible for generating the sql for clausule HAVING
-   * @return string
-   */
-  function havingToSql() {
-    if (!$this->clausules['HAVING'])
-      return '';
-
-    $conditions = array_map(function ($condition) {
-      return $this->buildCondition($condition);
-    }, $this->clausules['HAVING']);
-
-    array_unshift($conditions, '1 = 1');
-
-    return 'HAVING ' . implode(' AND ', $conditions);
+  function fullJoin(SelectSQLBuilder|string $joinTable, string $alias, string $onRelation) {
+    return $this->createJoin('FULL JOIN', $joinTable, $alias, $onRelation);
   }
 
-  /**
-   * Method responsible for generating the sql for clausule ORDER BY
-   * @return string
-   */
-  function orderByToSql() {
-    if (!$this->clausules['ORDERBY'])
-      return '';
+  private function createJoin(string $type, SelectSQLBuilder|string $joinTable, string $alias, string $onRelation) {
+    $this->clausules['JOIN'][] = [
+      'sqlTemplates' => [$type, $joinTable, $alias, $onRelation],
+      'params' => [],
+    ];
 
-    return 'ORDER BY ' . implode(', ', $this->clausules['ORDERBY']);
+    return $this;
   }
 
-  /**
-   * Method responsible for generating the sql for clausule LIMIT
-   * @return string
-   */
-  function limitToSql() {
-    if (!$this->clausules['LIMIT'] || !$this->clausules['LIMIT']['sql'])
-      return '';
+  function orderBy(string|int ...$values) {
+    $sqlTemplate = $this->clausules['ORDERBY'][0]['sqlTemplates'];
 
-    return $this->clausules['LIMIT']['sql'];
+    foreach ($values as &$value) {
+      $value = is_string($value) ? trim($value) : (string) $value;
+
+      [$column, $direction] = explode(' ', $value);
+
+      $direction = strtoupper($direction);
+
+      if ($direction != 'DESC') {
+        $direction = 'ASC';
+      }
+
+      $value = trim($column);
+      $sqlTemplate[] = $direction;
+    }
+
+    $this->clausules['ORDERBY'][0]['sqlTemplates'] = $sqlTemplate;
+    $this->clausules['ORDERBY'][0]['params'] = array_merge($this->clausules['ORDERBY'][0]['params'], $values);
+
+    return $this;
   }
 
-  /**
-   * Method responsible for generating the sql for clausule OFFSET
-   * @return string
-   */
-  function offsetToSql() {
-    if (!$this->clausules['OFFSET'] || !$this->clausules['OFFSET']['sql'])
-      return '';
+  function limit(string|int $value) {
+    $this->clausules['LIMIT'][0] = ['sqlTemplates' => [''], 'params' => [$value]];
 
-    return $this->clausules['OFFSET']['sql'];
+    return $this;
+  }
+
+  function offset(string|int $value) {
+    $this->clausules['OFFSET'][0] = ['sqlTemplates' => [''], 'params' => [$value]];
+
+    return $this;
+  }
+
+  protected function getTemplateSelect() {
+    $sqlTemplates = $this->clausules['SELECT'][0]['sqlTemplates'];
+    $params = $this->clausules['SELECT'][0]['params'];
+
+    if (!$sqlTemplates)
+      $sqlTemplates = ['*'];
+
+    return [
+      'sqlTemplates' => ['SELECT ' . implode(', ', $sqlTemplates)],
+      'params' => $params,
+    ];
+  }
+
+  protected function getTemplateJoin() {
+    $sqlJoins = $this->clausules['JOIN'];
+
+    if (!$sqlJoins)
+      return [
+        'sqlTemplates' => [],
+        'params' => [],
+      ];
+
+    $sqlTemplates = [];
+    $params = [];
+
+    foreach ($sqlJoins as $sqlJoin) {
+      [$type, $joinTable, $alias, $onRelation] = $sqlJoin['sqlTemplates'];
+
+      if ($joinTable instanceof SelectSQLBuilder) {
+        $joinTable = $joinTable->getAllTemplatesWithParentheses();
+
+        $params = array_merge($params, $joinTable['params']);
+
+        $joinTable = $joinTable['sqlTemplates'];
+      } else {
+        $joinTable = [$joinTable];
+      }
+
+      $sqlTemplates = self::merge_templates(' ', $sqlTemplates, [$type], $joinTable, ["AS $alias ON $onRelation"]);
+    }
+
+    return [
+      'sqlTemplates' => $sqlTemplates,
+      'params' => $params,
+    ];
+  }
+
+  protected function getTemplateFrom() {
+    $sqlTemplates = [];
+    $params = $this->clausules['FROM'][0]['params'];
+
+    foreach ($this->clausules['FROM'][0]['sqlTemplates'] as $template) {
+      if ($template instanceof SelectSQLBuilder) {
+        $templates = $template->getAllTemplatesWithParentheses();
+
+        $sqlTemplates = $this->merge_templates(' ', $sqlTemplates, $templates['sqlTemplates']);
+        $params = array_merge($params, $templates['params']);
+      } else {
+        $sqlTemplates = $this->merge_templates(' ', $sqlTemplates, [$template]);
+      }
+    }
+
+    return [
+      'sqlTemplates' => $this->merge_templates(' ', ['FROM'], $sqlTemplates),
+      'params' => $params,
+    ];
+  }
+
+  protected function getTemplateOrderBy() {
+    $sqlTemplates = $this->clausules['ORDERBY'][0]['sqlTemplates'];
+    $params = $this->clausules['ORDERBY'][0]['params'];
+
+    if (!$sqlTemplates)
+      return [
+        'sqlTemplates' => [],
+        'params' => [],
+      ];
+
+    foreach ($sqlTemplates as $key => &$template) {
+      $template = " $template";
+
+      if ($key < count($sqlTemplates) - 1) {
+        $template .= ',';
+      }
+    }
+
+    array_unshift($sqlTemplates, "ORDER BY ");
+
+    return [
+      'sqlTemplates' => $sqlTemplates,
+      'params' => $params,
+    ];
+  }
+
+  protected function getTemplateLimit() {
+    $params = $this->clausules['LIMIT'][0]['params'];
+
+    if (!$params)
+      return [
+        'sqlTemplates' => [],
+        'params' => [],
+      ];
+
+    return [
+      'sqlTemplates' => ['LIMIT ', ''],
+      'params' => $params,
+    ];
+  }
+
+  protected function getTemplateOffset() {
+    $params = $this->clausules['OFFSET'][0]['params'];
+
+    if (!$params)
+      return [
+        'sqlTemplates' => [],
+        'params' => [],
+      ];
+
+    return [
+      'sqlTemplates' => ['OFFSET ', ''],
+      'params' => $params,
+    ];
   }
 }
+
+$sqlBuilder = SQL::with(
+  'user_with',
+  SQL::select()
+    ->from('"user"')
+    ->where(SQL::eq('name', 'dan'))
+)
+  ->with(
+    'user_with2',
+    SQL::select()
+      ->from('"user"')
+      ->where(SQL::eq('name', 'dan'))
+  )
+  ->select('name', 'id')
+  ->from('"user"', 'us')
+  ->join('perfil', 'pr', 'pr.id_user = us.id_user')
+  ->leftJoin(
+    SQL::select()->from('perfil')->where(SQL::eq('type', 'ADM')),
+    'pr1',
+    'pr1.id_user = us.id_user'
+  )
+  ->where(
+    SQL::eq('name', 'Dan'),
+    SQL::sqlNot(
+      SQL::eq('login', 'dan'),
+      SQL::eq('active', true),
+      SQL::notIn(
+        'id',
+        SQL::select('id')
+          ->from('"user"')
+          ->where(SQL::eq('type', 'ADM'))
+      )
+    ),
+    SQL::sqlAnd(
+      SQL::eq('login', 'dan'),
+      SQL::eq('active', true),
+      SQL::notIn(
+        'id',
+        SQL::select('id')
+          ->from('"user"')
+          ->where(SQL::eq('type', 'ADM'))
+      )
+    ),
+    SQL::sqlOr(
+      SQL::eq('login', 'dan'),
+      SQL::eq('active', true),
+      SQL::notIn(
+        'id',
+        SQL::select('id')
+          ->from('"user"')
+          ->where(SQL::eq('type', 'ADM'))
+      )
+    )
+  )
+  ->orderBy('id', 'name DESC')
+  ->limit(1)
+  ->offset(2)
+  ->select('login');

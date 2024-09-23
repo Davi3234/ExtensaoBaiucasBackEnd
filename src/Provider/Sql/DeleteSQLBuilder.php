@@ -2,95 +2,102 @@
 
 namespace App\Provider\Sql;
 
-class DeleteSQLBuilder extends SQLConditionBuilder implements ISQLReturningBuilder {
+class DeleteSQLBuilder extends ReturningConditionSQLBuilder {
 
   function __construct() {
     parent::__construct();
 
-    $this->clausules['DELETE'] = '';
-    $this->clausules['USING'] = [];
-    $this->clausules['RETURNING'] = [];
+    $this->clausules["DELETEFROM"] = [['sqlTemplates' => [], 'params' => []]];
+    $this->clausules["USING"] = [];
+
+    $this->clausulesOrder = [
+      'DELETEFROM' => 'getTemplateDeleteFrom',
+      'USING' => 'getTemplateUsing',
+      'WHERE' => 'getTemplateWhere',
+    ];
   }
 
-  /**
-   * Method responsible to define DELETE clausule
-   * @param string $table Table name
-   * @return static
-   */
-  function delete($table) {
-    $this->clausules['DELETE'] = $table;
+  function deleteFrom(string $table) {
+    $this->clausules["DELETEFROM"][0]['sqlTemplates'] = [$table];
+
     return $this;
   }
 
-  /**
-   * Method responsible to define USING clausule
-   * @param string $table Table name
-   * @param string $alias Alias name
-   * @return static
-   */
-  function using($table, $alias = '') {
-    $this->clausules['USING'][] = trim("$table $alias");
-    return $this;
-  }
-
-  /**
-   * Method responsible to define RETURNING clausule
-   * @param string ...$fields Fields to be returned
-   * @return static
-   */
-  function returning(...$fields) {
-    $this->clausules["RETURNING"] = array_merge($this->clausules["RETURNING"], $fields);
-    return $this;
-  }
-
-  /**
-   * Method responsible for generating the sql
-   * @return string
-   */
-  function toSql() {
-    $sqlStatement = [
-      $this->deleteToSql(),
-      $this->usingToSql(),
-      $this->whereToSql(),
+  function using(SelectSQLBuilder|string $table, string $alias) {
+    $this->clausules["USING"][] = [
+      'sqlTemplates' => [$table, $alias],
+      'params' => []
     ];
 
-    $sqlStatement = array_filter($sqlStatement, function ($statement) {
-      return !!$statement;
-    });
-
-    return implode(' ', $sqlStatement);
+    return $this;
   }
 
-  /**
-   * Method responsible for generating the sql for clausule DELETE
-   * @return string
-   */
-  function deleteToSql() {
-    if (!$this->clausules['DELETE'])
-      throw new SqlBuilderException('Table name not defined for clausule "DELETE"');
+  protected function getTemplateDeleteFrom() {
+    $sqlParams = $this->clausules["DELETEFROM"][0]['sqlTemplates'];
 
-    return "DELETE FROM $this->clausules['DELETE']";
+    if (!$sqlParams || !$sqlParams[0]) {
+      throw new SqlBuilderException('Table name not defined for clause "DELETE"');
+    }
+
+    return [
+      'sqlTemplates' => ["DELETE FROM $sqlParams[0]"],
+      'params' => [],
+    ];
   }
 
-  /**
-   * Method responsible for generating the sql for clausule USING
-   * @return string
-   */
-  function usingToSql() {
-    if (!$this->clausules['USING'])
-      return '';
+  protected function getTemplateUsing() {
+    $sqlUsings = $this->clausules['USING'];
 
-    return 'USING ' . implode(', ', $this->clausules['USING']);
+    if (!$sqlUsings)
+      return [
+        'sqlTemplates' => [],
+        'params' => [],
+      ];
+
+    $sqlTemplates = [];
+    $params = [];
+
+    foreach ($sqlUsings as $key => $sqlJoin) {
+      [$joinTable, $alias] = $sqlJoin['sqlTemplates'];
+
+      if ($joinTable instanceof SelectSQLBuilder) {
+        $joinTable = $joinTable->getAllTemplatesWithParentheses();
+
+        $params = array_merge($params, $joinTable['params']);
+
+        $joinTable = $joinTable['sqlTemplates'];
+      } else {
+        $joinTable = [$joinTable];
+      }
+
+      if ($key > 0) {
+        $sqlTemplates[array_key_last($sqlTemplates)] .= ',';
+      }
+
+      $sqlTemplates = self::merge_templates(' ', $sqlTemplates, $joinTable, ["AS $alias"]);
+    }
+
+    $sqlTemplates[0] = "USING $sqlTemplates[0]";
+
+    return [
+      'sqlTemplates' => $sqlTemplates,
+      'params' => $params,
+    ];
   }
 
-  /**
-   * Method responsible for generating the sql for clausule RETURNING
-   * @return string
-   */
-  function returningToSql() {
-    if (!$this->clausules["RETURNING"])
-      return '';
+  protected function getTemplateWhere() {
+    if (!$this->clausules['WHERE']) {
+      throw new SqlBuilderException('There must be at least one exclusion condition in the "WHERE" statement.');
+    }
 
-    return 'RETURNING ' . implode(', ', $this->clausules["RETURNING"]);
+    return parent::getTemplateWhere();
   }
 }
+
+$sqlBuilder = SQL::deleteFrom('"user"')
+  ->using('perfil', 'pr')
+  ->using(SQL::select()->from('perfil'), 'pr1')
+  ->where(
+    SQL::eq('id', 1)
+  )
+  ->returning('*');

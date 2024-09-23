@@ -5,32 +5,21 @@ namespace App\Provider\Sql;
 class SQLConditionBuilder extends SQLBuilder {
 
   function __construct() {
-    parent::__construct();
-
-    $this->clausules['WITH'] = '';
+    $this->clausules['WITH'] = [];
     $this->clausules['WHERE'] = [];
   }
 
-  /**
-   * Method responsible to define WITH clausule
-   * @param string|SQLConditionBuilder $sqlClausule Sql reference of the condition
-   * @return static
-   */
-  function with($sqlClausule) {
-    if ($sqlClausule instanceof SQLConditionBuilder)
-      $sql = $sqlClausule->toSql();
-    else
-      $sql = $sqlClausule;
-
-    $this->clausules['WITH'] = $sql;
+  function with(string $alias, SelectSQLBuilder $selectBuilder) {
+    $this->clausules['WITH'][] = [
+      'sqlTemplates' => [$alias, $selectBuilder],
+      'params' => [],
+    ];
 
     return $this;
   }
 
   /**
-   * Method responsible to define the conditions to query
-   * @param array{sql: string, clausule: string}[] ...$conditions
-   * @return static
+   * @param array{sqlTemplates: string[], params: string|number|boolean|null[]}[] ...$conditions
    */
   function where(...$conditions) {
     $this->clausules['WHERE'] = array_merge($this->clausules['WHERE'], $conditions);
@@ -38,42 +27,91 @@ class SQLConditionBuilder extends SQLBuilder {
     return $this;
   }
 
-  function whereToSql() {
-    if (!$this->clausules['WHERE'])
-      return 'WHERE 1 = 1';
+  protected function getTemplateWith() {
+    $sqlTemplatesWith = $this->clausules['WITH'];
 
-    $conditions = array_map(function ($condition) {
-      return $this->buildCondition($condition);
-    }, $this->clausules['WHERE']);
+    if (!$sqlTemplatesWith)
+      return [
+        'sqlTemplates' => [],
+        'params' => [],
+      ];
 
-    array_unshift($conditions, '1 = 1');
+    $sqlTemplates = ['WITH '];
+    $params = [];
 
-    return 'WHERE ' . implode(' AND ', $conditions);
+    foreach ($sqlTemplatesWith as $key => $sqlTemplate) {
+      [$alias, $selectBuilder] = $sqlTemplate['sqlTemplates'];
+
+      if (true) {
+        $selectSqlTemplate = $selectBuilder->getAllTemplatesWithParentheses();
+
+        if ($key > 0) {
+          $sqlTemplates[array_key_last($sqlTemplates)] .= ', ';
+        }
+
+        $sqlTemplates[array_key_last($sqlTemplates)] .= "$alias AS";
+
+        $sqlTemplates = self::merge_templates(' ', $sqlTemplates, $selectSqlTemplate['sqlTemplates']);
+        $params = array_merge($params, $selectSqlTemplate['params']);
+      }
+    }
+
+    return [
+      'sqlTemplates' => $sqlTemplates,
+      'params' => $params,
+    ];
   }
 
-  function withToSql() {
-    if (!$this->clausules['WITH'])
-      return '';
+  protected function getTemplateWhere() {
+    $sqlTemplates = ['1 = 1'];
+    $params = [];
 
-    $sql = array_map(function ($clausuleWith) {
-      return $clausuleWith['sql'];
-    }, $this->clausules['WITH']);
+    foreach ($this->clausules['WHERE'] as $template) {
+      $templates = $this->buildCondition($template);
 
-    return 'WITH ' . implode(', ', $sql);
+      $sqlTemplates = $this->merge_templates(' AND ', $sqlTemplates, $templates['sqlTemplates']);
+      $params = array_merge($params, $templates['params']);
+    }
+
+    return [
+      'sqlTemplates' => $this->merge_templates(' ', ['WHERE'], $sqlTemplates),
+      'params' => $params,
+    ];
   }
 
-  protected function buildCondition($condition) {
+  protected function buildCondition(array $condition) {
     if (isset($condition['nested'])) {
       $nestedConditions = array_map(function ($cond) {
         return $this->buildCondition($cond);
       }, $condition['nested']);
 
-      if ($condition['type'] == 'NOT')
-        return 'NOT (' . implode(' AND ', $nestedConditions) . ')';
+      $sqlTemplates = [];
+      $params = [];
 
-      return '(' . implode(' ' . $condition['type'] . ' ', $nestedConditions) . ')';
+      foreach ($nestedConditions as $nestedCondition) {
+        if (!$sqlTemplates)
+          $sqlTemplates = $nestedCondition['sqlTemplates'];
+        else {
+          $type = $condition['type'] != 'NOT' ? $condition['type'] : 'AND';
+          $sqlTemplates = $this->merge_templates("$type ", $sqlTemplates, $nestedCondition['sqlTemplates']);
+        }
+
+        $params = array_merge($params, $nestedCondition['params']);
+      }
+
+      if ($sqlTemplates) {
+        $sqlTemplates[0] = "($sqlTemplates[0]";
+        $sqlTemplates[array_key_last($sqlTemplates)] = "{$sqlTemplates[array_key_last($sqlTemplates)]})";
+
+        if ($condition['type'] == 'NOT') {
+          $sqlTemplates[0] = "NOT $sqlTemplates[0]";
+        }
+      }
+
+      $condition['sqlTemplates'] = $sqlTemplates;
+      $condition['params'] = $params;
     }
 
-    return $condition['sql'];
+    return $condition;
   }
 }

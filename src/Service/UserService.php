@@ -5,7 +5,6 @@ namespace App\Service;
 use App\Repository\UserRepository;
 use App\Provider\Database\Database;
 use App\Provider\Database\IDatabase;
-use App\Provider\Sql\SQL;
 
 class UserService {
   private IDatabase $database;
@@ -17,7 +16,6 @@ class UserService {
   }
 
   function query() {
-    return $this->userRepository->findMany(SQL::select());
   }
 
   function getOne($args) {
