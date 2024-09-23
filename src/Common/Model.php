@@ -14,5 +14,5 @@ abstract class Model {
     return $instance;
   }
 
-  abstract function _load(array $raw);
+  abstract protected function _load(array $raw);
 }

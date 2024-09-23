@@ -64,39 +64,39 @@ class SQL extends SQLFormat {
     return self::prepareTemplatesBetweenCondition($field, 'NOT BETWEEN', $valueLess, $valueGreater);
   }
 
-  static function in(string $field, string|int|float|SelectSQLBuilder $value, string|int|float ...$values) {
+  static function in(string $field, string|int|float|SelectSQLBuilder $value, array ...$values) {
     if ($value instanceof SelectSQLBuilder) {
       $values = [$value];
     } else {
       array_unshift($values, $value);
     }
 
-    return self::prepareTemplatesMultiValuesCondition($field, 'IN', ...$values);
+    return self::prepareTemplatesMultiValuesCondition($field, 'IN', $values);
   }
 
-  static function notIn($field, $value, ...$values) {
+  static function notIn(string $field, string|int|float|SelectSQLBuilder $value, array ...$values) {
     if ($value instanceof SelectSQLBuilder) {
       $values = [$value];
     } else {
       array_unshift($values, $value);
     }
 
-    return self::prepareTemplatesMultiValuesCondition($field, 'NOT IN', ...$values);
+    return self::prepareTemplatesMultiValuesCondition($field, 'NOT IN', $values);
   }
 
   static function isNull(string|int|float|SelectSQLBuilder $value) {
     return static::prepareTemplatesLeftArgsCondition($value, 'IS NULL');
   }
 
-  static function isNotNull($value) {
+  static function isNotNull(string|int|float|SelectSQLBuilder $value) {
     return static::prepareTemplatesLeftArgsCondition($value, 'IS NOT NULL');
   }
 
-  static function isTrue($value) {
+  static function isTrue(string|int|float|SelectSQLBuilder $value) {
     return static::prepareTemplatesLeftArgsCondition($value, 'IS TRUE');
   }
 
-  static function isFalse($value) {
+  static function isFalse(string|int|float|SelectSQLBuilder $value) {
     return static::prepareTemplatesLeftArgsCondition($value, 'IS FALSE');
   }
 
@@ -120,15 +120,15 @@ class SQL extends SQLFormat {
     return self::prepareTemplatesLeftRightArgsCondition($field, 'NOT SIMILAR TO', $value);
   }
 
-  static function sqlAnd(...$conditions) {
+  static function sqlAnd(array ...$conditions) {
     return static::logical('AND', $conditions);
   }
 
-  static function sqlOr(...$conditions) {
+  static function sqlOr(array ...$conditions) {
     return static::logical('OR', $conditions);
   }
 
-  static function sqlNot(...$conditions) {
+  static function sqlNot(array ...$conditions) {
     return static::logical('NOT', $conditions);
   }
 
@@ -219,7 +219,7 @@ class SQL extends SQLFormat {
     return static::condition($sqlTemplates, $params);
   }
 
-  private static function prepareTemplatesMultiValuesCondition(string $field, string $operator, string|int|float|SelectSQLBuilder ...$values) {
+  private static function prepareTemplatesMultiValuesCondition(string $field, string $operator, array $values) {
     $sqlTemplates = ["$field $operator "];
     $params = [];
 

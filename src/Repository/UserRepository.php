@@ -49,11 +49,28 @@ class UserRepository extends Repository {
   }
 
   /**
+   * @return User
+   */
+  function delete(User $user) {
+    /**
+     * @var User
+     */
+    $userDeleted = parent::_delete(
+      SQL::deleteFrom('"user"')
+        ->where(
+          SQL::eq('id', $user->getId())
+        )
+    );
+
+    return $userDeleted;
+  }
+
+  /**
    * @return User[]
    */
   function findMany() {
     return parent::_queryModel(
-      SQL::select()->from('"user"'),
+      SQL::select('us.*')->from('"user"', 'us'),
       User::class
     );
   }
