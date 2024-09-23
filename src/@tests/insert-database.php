@@ -9,20 +9,20 @@ use App\Provider\Database\Database;
 use App\Provider\Sql\InsertSQLBuilder;
 use App\Provider\Sql\SQLFormat;
 
-$db = Database::newConnection();
+$db = Database::getGlobalConnection();
 
 $insertBuilder = new InsertSQLBuilder;
 
 $sql = $insertBuilder
-  ->insert('"user"')
+  ->insertInto('"user"')
   ->params('name', 'login')
-  ->value(
+  ->values(
     ['name' => SQLFormat::toString('dan ruan'), 'login' => SQLFormat::toString('dan.ruan@gmail.com')],
     ['name' => SQLFormat::toString('dan ruan'), 'login' => SQLFormat::toString('dan.ruan@gmail.com')],
     ['name' => SQLFormat::toString('dan ruan'), 'login' => SQLFormat::toString('dan.ruan@gmail.com')],
     ['name' => SQLFormat::toString('dan ruan'), 'login' => SQLFormat::toString('dan.ruan@gmail.com')],
     ['name' => SQLFormat::toString('dan ruan'), 'login' => SQLFormat::toString('dan.ruan@gmail.com')],
   )
-  ->toSql();
+  ->build();
 
-var_dump($db->exec($sql, $insertBuilder->getParams()));
+var_dump($db->exec($sql['sql'], $sql['params']));

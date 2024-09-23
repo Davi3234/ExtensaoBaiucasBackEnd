@@ -7,6 +7,12 @@ use App\Exception\InternalServerErrorException;
 use App\Provider\Sql\SQLBuilder;
 
 class DatabaseConnection implements IDatabaseConnection {
+
+  /**
+   * @var DatabaseConnection
+   */
+  private static $globalConnection = null;
+
   /**
    * @var \PgSql\Connection
    */
@@ -14,6 +20,17 @@ class DatabaseConnection implements IDatabaseConnection {
 
   function __construct(?\PgSql\Connection $connection = null) {
     $this->connection = $connection;
+  }
+
+  /**
+   * @return static
+   */
+  static function getGlobalConnection() {
+    if (static::$globalConnection == null) {
+      static::$globalConnection = static::newConnection();
+    }
+
+    return static::$globalConnection;
   }
 
   /**

@@ -29,4 +29,8 @@ class User extends Model {
   function getLogin() {
     return $this->login;
   }
+
+  function getId() {
+    return $this->id;
+  }
 }

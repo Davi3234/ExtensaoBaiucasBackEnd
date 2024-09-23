@@ -33,12 +33,12 @@ abstract class Repository {
     return $this->database->execFromSqlBuilder($deleteBuilder);
   }
 
-  protected function _query(SelectSQLBuilder $selectBuilder) {
-    return $this->database->queryFromSqlBuilder($selectBuilder);
+  protected function _queryOneModel(SelectSQLBuilder $selectBuilder, $modelConstructor) {
+    return $this->_queryModel($selectBuilder, $modelConstructor)[0];
   }
 
   protected function _queryModel(SelectSQLBuilder $selectBuilder, $modelConstructor) {
-    $result = $this->database->queryFromSqlBuilder($selectBuilder);
+    $result = $this->_query($selectBuilder);
 
     $dataModel = [];
     foreach ($result as $raw) {
@@ -46,5 +46,13 @@ abstract class Repository {
     }
 
     return $dataModel;
+  }
+
+  protected function _queryOne(SelectSQLBuilder $selectBuilder): array {
+    return $this->_query($selectBuilder)[0];
+  }
+
+  protected function _query(SelectSQLBuilder $selectBuilder) {
+    return $this->database->queryFromSqlBuilder($selectBuilder);
   }
 }

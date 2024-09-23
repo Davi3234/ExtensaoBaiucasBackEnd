@@ -7,7 +7,7 @@ require_once __DIR__ . '/../env.php';
 
 use App\Provider\Database\Database;
 
-$db = Database::newConnection();
+$db = Database::getGlobalConnection();
 
 $transaction = $db->transaction();
 

@@ -11,11 +11,12 @@ class UserService {
   private UserRepository $userRepository;
 
   function __construct() {
-    $this->database = Database::newConnection();
+    $this->database = Database::getGlobalConnection();
     $this->userRepository = new UserRepository($this->database);
   }
 
   function query() {
+    return $this->userRepository->findMany();
   }
 
   function getOne($args) {
