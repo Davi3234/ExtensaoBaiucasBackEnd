@@ -104,7 +104,7 @@ $router->delete('', [UserController::class, 'delete']); // /users
 
 ## Grupos de Rotas
 
-Diferente de outras linguagens que, no momento em que é levantado o servidor é carregado todos os componentes da aplicação (como rotas, conexão com o banco e outros serviços), o PHP não faz o load dos componentes no momento em que é levantado o servidor, mas sim em toda requisição feita, ou seja, toda vez que é feito uma requisição, será feito o load de todos os componentes novamente
+Diferente de outras linguagens que, no momento em que é levantado o servidor é carregado todos os componentes da aplicação (como rotas, conexão com o banco e outros serviços), o PHP não faz o carregamento dos componentes no momento em que é levantado o servidor, mas sim em toda requisição feita, ou seja, toda vez que é feito uma requisição, será feito o carregamento de todos os componentes novamente
 
 Pensando nisso, não se deve declarar todas as rotas da aplicação em uma vez só, já que apenas uma dessas rotas será executada, será um desperdício de processamento ter que declara-las toda vez que é feito uma requisição
 

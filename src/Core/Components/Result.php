@@ -26,9 +26,15 @@ class Result implements ResultModel {
   private function __construct(bool $ok, int $status, $value = null, $error = null) {
     if ($ok) {
       if ($status >= 400)
-        throw new Exception("It is not possible to define a status code greater than or equal to 400 when the result is success", ['message' => "Status code received was \"$status\"", 'origin' => 'status']);
+        throw new Exception(
+          "It is not possible to define a status code greater than or equal to 400 when the result is success",
+          [['message' => "Status code received was \"$status\"", 'origin' => 'status']]
+        );
     } else if ($status < 400)
-      throw new Exception("It is not possible to set a status code lower than 400 when the result is failure", ['message' => "Status code received was \"$status\"", 'origin' => 'status']);
+      throw new Exception(
+        "It is not possible to set a status code lower than 400 when the result is failure",
+        [['message' => "Status code received was \"$status\"", 'origin' => 'status']]
+      );
 
     $this->ok = $ok;
     $this->status = $status;

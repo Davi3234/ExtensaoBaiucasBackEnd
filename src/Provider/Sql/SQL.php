@@ -253,9 +253,6 @@ class SQL extends SQLFormat {
    * @return array{sqlTemplates: string|SelectSQLBuilder[], params: (string|number|boolean|null)[]}
    */
   private static function condition(array $sqlTemplates, array $params = []) {
-    if (count($params) != count($sqlTemplates) - 1)
-      throw new SqlBuilderException("Count");
-
     return [
       'sqlTemplates' => $sqlTemplates,
       'params' => $params

@@ -64,7 +64,7 @@ class App {
     return App::getInstance();
   }
 
-  private static function makeApp($path, $method) {
+  private static function makeApp(string $path, string $method) {
     self::createAppInstance();
     self::$instance->initialComponents($path, $method);
   }
@@ -124,7 +124,7 @@ class App {
     }
   }
 
-  private function resolveHandlers($handlers) {
+  private function resolveHandlers(array $handlers) {
     if (!$handlers)
       return Response::getInstance()
         ->sendJson(Result::failure(['message' => 'Method not implemented'], StatusCode::NOT_IMPLEMENTED->value));
@@ -143,7 +143,7 @@ class App {
     $this->response->sendDataResponse(StatusCode::OK->value);
   }
 
-  private function resolveCallHandler($controller, $methodAction) {
+  private function resolveCallHandler($controller, ?string $methodAction = null) {
     if (!$controller)
       return;
 

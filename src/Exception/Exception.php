@@ -15,7 +15,7 @@ class Exception extends \Exception {
    */
   function __construct(
     protected $message = "",
-    array ...$causes
+    array $causes = []
   ) {
     $this->causes = $causes;
   }

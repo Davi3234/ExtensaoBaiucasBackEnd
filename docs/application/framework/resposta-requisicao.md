@@ -41,16 +41,18 @@ O exemplo acima retornará:
 
 ## Retornando um erro
 
-Quando necessário retornar um erro, deve-se. Para retornar uma falha ao usuário deve-se utilizar exceções, informando tanto a mensagem do erro quando as causas do erro (opcional) que servirá para quem solicitar saber exatamente a origem do que ocasionou o erro, desta forma:
+Para retornar uma falha ao usuário deve-se utilizar exceções, informando tanto a mensagem do erro quando as causas do erro (opcional) que servirá para quem solicitar saber exatamente a origem do que ocasionou o erro, desta forma:
 ```php
 class UserController {
 
   create() {
     // Dispare o erro utilizando a exceção mais cabível pro contexto
     throw new BadRequestException(
-      'Erro no cadastro do usuário', // Mensagem genérica do erro. Normalmente referente ao título da operação
-      ['message' => 'Nome é obrigatório', 'origin' => 'name'], // Causa do erro
-      ['message' => 'Login é obrigatório', 'origin' => 'login'] // Causa do erro
+      'Erro no cadastro do usuário', // Mensagem genérica do erro. Normalmente referente ao nome da operação
+      [
+        ['message' => 'Nome é obrigatório', 'origin' => 'name'], // Causa do erro
+        ['message' => 'Login é obrigatório', 'origin' => 'login'] // Causa do erro
+      ]
     );
   }
 }
@@ -146,8 +148,10 @@ class UserController {
     // # Antes
     // throw new BadRequestException(
     //   'Erro no cadastro do usuário', // Mensagem genérica do erro. Normalmente referente ao título da operação
-    //   ['message' => 'Nome é obrigatório', 'origin' => 'name'], // Causa do erro
-    //   ['message' => 'Login é obrigatório', 'origin' => 'login'] // Causa do erro
+    //   [
+    //     ['message' => 'Nome é obrigatório', 'origin' => 'name'], // Causa do erro
+    //     ['message' => 'Login é obrigatório', 'origin' => 'login'] // Causa do erro
+    //   ]
     // );
 
     // # Depois (com o Result)
