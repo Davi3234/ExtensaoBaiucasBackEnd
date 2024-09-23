@@ -5,7 +5,17 @@ namespace App\Migration\Sql;
 class SQLConditionBuilder extends SQLBuilder {
 
   function __construct() {
+    $this->clausules['WITH'] = [];
     $this->clausules['WHERE'] = [];
+  }
+
+  function with(string $alias, SelectSQLBuilder $selectBuilder) {
+    $this->clausules['WITH'][] = [
+      'sqlTemplates' => [$alias, $selectBuilder],
+      'params' => [],
+    ];
+
+    return $this;
   }
 
   /**
@@ -15,6 +25,41 @@ class SQLConditionBuilder extends SQLBuilder {
     $this->clausules['WHERE'] = array_merge($this->clausules['WHERE'], $conditions);
 
     return $this;
+  }
+
+  protected function getTemplateWith() {
+    $sqlTemplatesWith = $this->clausules['WITH'];
+
+    if (!$sqlTemplatesWith)
+      return [
+        'sqlTemplates' => [],
+        'params' => [],
+      ];
+
+    $sqlTemplates = ['WITH '];
+    $params = [];
+
+    foreach ($sqlTemplatesWith as $key => $sqlTemplate) {
+      [$alias, $selectBuilder] = $sqlTemplate['sqlTemplates'];
+
+      if (true) {
+        $selectSqlTemplate = $selectBuilder->getAllTemplatesWithParentheses();
+
+        if ($key > 0) {
+          $sqlTemplates[array_key_last($sqlTemplates)] .= ', ';
+        }
+
+        $sqlTemplates[array_key_last($sqlTemplates)] .= "$alias AS";
+
+        $sqlTemplates = self::merge_templates(' ', $sqlTemplates, $selectSqlTemplate['sqlTemplates']);
+        $params = array_merge($params, $selectSqlTemplate['params']);
+      }
+    }
+
+    return [
+      'sqlTemplates' => $sqlTemplates,
+      'params' => $params,
+    ];
   }
 
   protected function getTemplateWhere() {

@@ -7,7 +7,6 @@ class SelectSQLBuilder extends SQLConditionBuilder {
   function __construct() {
     parent::__construct();
 
-    $this->clausules['WITH'] = [];
     $this->clausules['SELECT'] = [['sqlTemplates' => [], 'params' => []]];
     $this->clausules['FROM'] = [];
     $this->clausules['JOIN'] = [];
@@ -25,15 +24,6 @@ class SelectSQLBuilder extends SQLConditionBuilder {
       'LIMIT' => 'getTemplateLimit',
       'OFFSET' => 'getTemplateOffset',
     ];
-  }
-
-  function with(string $alias, SelectSQLBuilder $selectBuilder) {
-    $this->clausules['WITH'][] = [
-      'sqlTemplates' => [$alias, $selectBuilder],
-      'params' => [],
-    ];
-
-    return $this;
   }
 
   function select(string ...$fields) {
@@ -114,41 +104,6 @@ class SelectSQLBuilder extends SQLConditionBuilder {
     $this->clausules['OFFSET'][0] = ['sqlTemplates' => [''], 'params' => [$value]];
 
     return $this;
-  }
-
-  protected function getTemplateWith() {
-    $sqlTemplatesWith = $this->clausules['WITH'];
-
-    if (!$sqlTemplatesWith)
-      return [
-        'sqlTemplates' => [],
-        'params' => [],
-      ];
-
-    $sqlTemplates = ['WITH '];
-    $params = [];
-
-    foreach ($sqlTemplatesWith as $key => $sqlTemplate) {
-      [$alias, $selectBuilder] = $sqlTemplate['sqlTemplates'];
-
-      if (true) {
-        $selectSqlTemplate = $selectBuilder->getAllTemplatesWithParentheses();
-
-        if ($key > 0) {
-          $sqlTemplates[array_key_last($sqlTemplates)] .= ', ';
-        }
-
-        $sqlTemplates[array_key_last($sqlTemplates)] .= "$alias AS";
-
-        $sqlTemplates = self::merge_templates(' ', $sqlTemplates, $selectSqlTemplate['sqlTemplates']);
-        $params = array_merge($params, $selectSqlTemplate['params']);
-      }
-    }
-
-    return [
-      'sqlTemplates' => $sqlTemplates,
-      'params' => $params,
-    ];
   }
 
   protected function getTemplateSelect() {
