@@ -35,7 +35,11 @@ class DatabaseConnection implements IDatabaseConnection {
   }
 
   function connect() {
-    $this->connection = pg_connect(get_env('DATABASE_URL'));
+    if ($this->connection != null) {
+      throw new DatabaseException('Connection link database already connected');
+    }
+
+    $this->connection = @pg_connect(get_env('DATABASE_URL'));
 
     if ($this->connection === false)
       throw new InternalServerErrorException('Failed to connect to the database');
@@ -56,10 +60,9 @@ class DatabaseConnection implements IDatabaseConnection {
 
 class Database extends DatabaseConnection implements IDatabase {
   function execFromSqlBuilder(SQLBuilder $sqlBuilder): array|bool {
-    $sql = $sqlBuilder->toSql();
-    $params = $sqlBuilder->getParams();
+    $sql = $sqlBuilder->build();
 
-    $result = $this->exec($sql, $params);
+    $result = $this->exec($sql['sql'], $sql['params']);
 
     return $result;
   }
@@ -71,10 +74,9 @@ class Database extends DatabaseConnection implements IDatabase {
   }
 
   function queryFromSqlBuilder(SQLBuilder $sqlBuilder): array {
-    $sql = $sqlBuilder->toSql();
-    $params = $sqlBuilder->getParams();
+    $sql = $sqlBuilder->build();
 
-    $result = $this->query($sql, $params);
+    $result = $this->query($sql['sql'], $sql['params']);
 
     return $result;
   }
@@ -85,7 +87,7 @@ class Database extends DatabaseConnection implements IDatabase {
     return $result ?: [];
   }
 
-  private function sendPgQueryParam(string $sql, $params = []) {
+  private function sendPgQueryParam($sql, $params = []) {
     try {
       $result = @pg_query_params($this->connection, $sql, $params);
 
