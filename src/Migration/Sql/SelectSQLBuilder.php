@@ -10,6 +10,7 @@ class SelectSQLBuilder extends SQLConditionBuilder {
     $this->clausules['WITH'] = [];
     $this->clausules['SELECT'] = [['sqlTemplates' => [], 'params' => []]];
     $this->clausules['FROM'] = [];
+    $this->clausules['JOIN'] = [];
     $this->clausules['ORDERBY'] = [['sqlTemplates' => [], 'params' => []]];
     $this->clausules['LIMIT'] = [['sqlTemplates' => [], 'params' => []]];
     $this->clausules['OFFSET'] = [['sqlTemplates' => [], 'params' => []]];
@@ -18,6 +19,7 @@ class SelectSQLBuilder extends SQLConditionBuilder {
       'WITH' => 'getTemplateWith',
       'SELECT' => 'getTemplateSelect',
       'FROM' => 'getTemplateFrom',
+      'JOIN' => 'getTemplateJoin',
       'WHERE' => 'getTemplateWhere',
       'ORDERBY' => 'getTemplateOrderBy',
       'LIMIT' => 'getTemplateLimit',
@@ -43,6 +45,35 @@ class SelectSQLBuilder extends SQLConditionBuilder {
   function from(string|SelectSQLBuilder $table, string $alias = '') {
     $this->clausules['FROM'][0] = [
       'sqlTemplates' => [$table, $alias],
+      'params' => [],
+    ];
+
+    return $this;
+  }
+
+  function join(SelectSQLBuilder|string $joinTable, string $alias, string $onRelation) {
+    return $this->createJoin('JOIN', $joinTable, $alias, $onRelation);
+  }
+
+  function innerJoin(SelectSQLBuilder|string $joinTable, string $alias, string $onRelation) {
+    return $this->createJoin('INNER JOIN', $joinTable, $alias, $onRelation);
+  }
+
+  function leftJoin(SelectSQLBuilder|string $joinTable, string $alias, string $onRelation) {
+    return $this->createJoin('LEFT JOIN', $joinTable, $alias, $onRelation);
+  }
+
+  function rightJoin(SelectSQLBuilder|string $joinTable, string $alias, string $onRelation) {
+    return $this->createJoin('RIGHT JOIN', $joinTable, $alias, $onRelation);
+  }
+
+  function fullJoin(SelectSQLBuilder|string $joinTable, string $alias, string $onRelation) {
+    return $this->createJoin('FULL JOIN', $joinTable, $alias, $onRelation);
+  }
+
+  private function createJoin(string $type, SelectSQLBuilder|string $joinTable, string $alias, string $onRelation) {
+    $this->clausules['JOIN'][] = [
+      'sqlTemplates' => [$type, $joinTable, $alias, $onRelation],
       'params' => [],
     ];
 
@@ -129,6 +160,40 @@ class SelectSQLBuilder extends SQLConditionBuilder {
 
     return [
       'sqlTemplates' => ['SELECT ' . implode(', ', $sqlTemplates)],
+      'params' => $params,
+    ];
+  }
+
+  protected function getTemplateJoin() {
+    $sqlJoins = $this->clausules['JOIN'];
+
+    if (!$sqlJoins)
+      return [
+        'sqlTemplates' => [],
+        'params' => [],
+      ];
+
+    $sqlTemplates = [];
+    $params = [];
+
+    foreach ($sqlJoins as $sqlJoin) {
+      [$type, $joinTable, $alias, $onRelation] = $sqlJoin['sqlTemplates'];
+
+      if ($joinTable instanceof SelectSQLBuilder) {
+        $joinTable = $joinTable->getAllTemplatesWithParentheses();
+
+        $params = array_merge($params, $joinTable['params']);
+
+        $joinTable = $joinTable['sqlTemplates'];
+      } else {
+        $joinTable = [$joinTable];
+      }
+
+      $sqlTemplates = self::merge_templates(' ', $sqlTemplates, [$type], $joinTable, ["AS $alias ON $onRelation"]);
+    }
+
+    return [
+      'sqlTemplates' => $sqlTemplates,
       'params' => $params,
     ];
   }
@@ -225,6 +290,12 @@ $sqlBuilder = SQL::with(
   )
   ->select('name', 'id')
   ->from('"user"', 'us')
+  ->join('perfil', 'pr', 'pr.id_user = us.id_user')
+  ->leftJoin(
+    SQL::select()->from('perfil')->where(SQL::eq('type', 'ADM')),
+    'pr1',
+    'pr1.id_user = us.id_user'
+  )
   ->where(
     SQL::eq('name', 'Dan'),
     SQL::sqlNot(
@@ -262,3 +333,7 @@ $sqlBuilder = SQL::with(
   ->limit(1)
   ->offset(2)
   ->select('login');
+
+$sql = $sqlBuilder->build();
+
+console($sql['sql'], $sql['params']);
