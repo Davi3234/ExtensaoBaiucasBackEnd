@@ -2,7 +2,7 @@
 
 namespace App\Migration\Sql;
 
-class SQL {
+class SQL extends SQLFormat {
 
   static function with(string $alias, SelectSQLBuilder $selectBuilder) {
     return (new SelectSQLBuilder)->with($alias, $selectBuilder);

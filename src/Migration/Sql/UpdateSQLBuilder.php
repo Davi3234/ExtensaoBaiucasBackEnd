@@ -2,7 +2,7 @@
 
 namespace App\Migration\Sql;
 
-class UpdateSQLBuilder extends SQLConditionBuilder {
+class UpdateSQLBuilder extends ReturningConditionSQLBuilder {
 
   function __construct() {
     parent::__construct();
@@ -89,4 +89,5 @@ class UpdateSQLBuilder extends SQLConditionBuilder {
 
 $sqlBuilder = SQL::update('"user"')
   ->values(['name' => 'Dan'])
-  ->values(['login' => 'dan@gmail.com']);
+  ->values(['login' => 'dan@gmail.com'])
+  ->returning('*');

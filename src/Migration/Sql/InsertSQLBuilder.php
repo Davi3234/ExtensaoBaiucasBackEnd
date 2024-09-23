@@ -2,7 +2,7 @@
 
 namespace App\Migration\Sql;
 
-class InsertSQLBuilder extends SQLConditionBuilder {
+class InsertSQLBuilder extends ReturningSQLBuilder {
 
   function __construct() {
     parent::__construct();
@@ -15,6 +15,7 @@ class InsertSQLBuilder extends SQLConditionBuilder {
       'INTO' => 'getTemplateInto',
       'PARAMS' => 'getTemplateParams',
       'VALUES' => 'getTemplateValue',
+      'RETURNING' => 'getTemplateReturning',
     ];
   }
 
@@ -133,4 +134,9 @@ $sqlBuilder = SQL::insertInto('"user"')
       'login' => 'davi@gmail.com',
       'name' => 'Davi',
     ]
-  );
+  )
+  ->returning('id', 'name');
+
+$sql = $sqlBuilder->build();
+
+console($sql['sql'], $sql['params']);

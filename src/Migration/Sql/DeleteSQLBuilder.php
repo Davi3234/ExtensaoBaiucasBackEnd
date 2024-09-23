@@ -2,7 +2,7 @@
 
 namespace App\Migration\Sql;
 
-class DeleteSQLBuilder extends SQLConditionBuilder {
+class DeleteSQLBuilder extends ReturningConditionSQLBuilder {
 
   function __construct() {
     parent::__construct();
@@ -99,8 +99,5 @@ $sqlBuilder = SQL::deleteFrom('"user"')
   ->using(SQL::select()->from('perfil'), 'pr1')
   ->where(
     SQL::eq('id', 1)
-  );
-
-$sql = $sqlBuilder->build();
-
-console($sql['sql'], $sql['params']);
+  )
+  ->returning('*');
