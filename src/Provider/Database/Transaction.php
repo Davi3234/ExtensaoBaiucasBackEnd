@@ -45,10 +45,11 @@ class Transaction implements ITransaction {
   }
 
   function save() {
-    $checkpoint = TransactionCheckpoint::fromDatabase($this->database);
-    $checkpoint->save();
+    return $this->checkpoint()->save();
+  }
 
-    return $checkpoint;
+  function checkpoint() {
+    return TransactionCheckpoint::fromDatabase($this->database);
   }
 }
 
