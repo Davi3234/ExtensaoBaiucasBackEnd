@@ -262,7 +262,3 @@ $sqlBuilder = SQL::with(
   ->limit(1)
   ->offset(2)
   ->select('login');
-
-$sql = $sqlBuilder->build();
-
-console($sql['sql'], $sql['params']);

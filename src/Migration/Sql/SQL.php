@@ -20,6 +20,10 @@ class SQL {
     return (new UpdateSQLBuilder)->update($table);
   }
 
+  static function deleteFrom(string $table) {
+    return (new DeleteSQLBuilder)->deleteFrom($table);
+  }
+
   static function eq(string $field, string|int|float|bool|SelectSQLBuilder $value) {
     return self::prepareTemplatesLeftRightArgsCondition($field, '=', $value);
   }

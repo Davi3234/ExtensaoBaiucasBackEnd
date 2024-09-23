@@ -134,7 +134,3 @@ $sqlBuilder = SQL::insertInto('"user"')
       'name' => 'Davi',
     ]
   );
-
-$sql = $sqlBuilder->build();
-
-console($sql['sql'], $sql['params']);

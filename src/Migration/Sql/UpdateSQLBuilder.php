@@ -77,12 +77,16 @@ class UpdateSQLBuilder extends SQLConditionBuilder {
       'params' => $params,
     ];
   }
+
+  protected function getTemplateWhere() {
+    if (!$this->clausules['WHERE']) {
+      throw new SqlBuilderException('There must be at least one update condition in the "WHERE" statement.');
+    }
+
+    return parent::getTemplateWhere();
+  }
 }
 
 $sqlBuilder = SQL::update('"user"')
   ->values(['name' => 'Dan'])
   ->values(['login' => 'dan@gmail.com']);
-
-$sql = $sqlBuilder->build();
-
-console($sql['sql'], $sql['params']);
