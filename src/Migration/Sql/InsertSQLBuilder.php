@@ -34,7 +34,6 @@ class InsertSQLBuilder extends SQLConditionBuilder {
    * @param array<string, string|int|float|bool>[] $values
    */
   function values(array ...$values) {
-
     foreach ($values as $value) {
       $paramsName = [];
       $paramsSql = [];
