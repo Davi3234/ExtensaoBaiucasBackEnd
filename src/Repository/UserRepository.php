@@ -16,7 +16,7 @@ class UserRepository extends Repository {
      * @var User
      */
     $userCreated = parent::_create(
-      SQL::insertInto('"users"')
+      SQL::insertInto('"user"')
         ->params('name', 'login')
         ->values([
           'name' => $user->getName(),
@@ -35,7 +35,7 @@ class UserRepository extends Repository {
      * @var User
      */
     $userUpdated = parent::_update(
-      SQL::update('"users"')
+      SQL::update('"user"')
         ->values([
           'name' => $user->getName(),
           'login' => $user->getLogin(),
@@ -53,7 +53,7 @@ class UserRepository extends Repository {
    */
   function findMany() {
     return parent::_queryModel(
-      SQL::select()->from('"users"'),
+      SQL::select()->from('"user"'),
       User::class
     );
   }
@@ -64,7 +64,7 @@ class UserRepository extends Repository {
   function findById(int $id) {
     return parent::_queryOneModel(
       SQL::select()
-        ->from('"users"')
+        ->from('"user"')
         ->where(
           SQL::eq('id', $id)
         )

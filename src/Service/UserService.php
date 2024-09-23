@@ -16,7 +16,19 @@ class UserService {
   }
 
   function query() {
-    return $this->userRepository->findMany();
+    $users = $this->userRepository->findMany();
+
+    $raw = [];
+
+    foreach ($users as $user) {
+      $raw[] = [
+        'id' => $user->getId(),
+        'name' => $user->getName(),
+        'login' => $user->getLogin(),
+      ];
+    }
+
+    return $raw;
   }
 
   function getOne($args) {
