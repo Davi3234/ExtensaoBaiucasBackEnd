@@ -11,7 +11,7 @@ class UserRepository extends Repository {
   /**
    * @return User
    */
-  function create(User $user) {
+  function create(User $user): User {
     /**
      * @var User
      */
@@ -30,7 +30,7 @@ class UserRepository extends Repository {
   /**
    * @return User
    */
-  function update(User $user) {
+  function update(User $user): User {
     /**
      * @var User
      */
@@ -51,7 +51,7 @@ class UserRepository extends Repository {
   /**
    * @return User
    */
-  function delete(User $user) {
+  function delete(User $user): User {
     /**
      * @var User
      */
@@ -68,7 +68,7 @@ class UserRepository extends Repository {
   /**
    * @return User[]
    */
-  function findMany() {
+  function findMany(): array {
     return parent::_queryModel(
       SQL::select('us.*')->from('"user"', 'us'),
       User::class
@@ -78,7 +78,7 @@ class UserRepository extends Repository {
   /**
    * @return User
    */
-  function findById(int $id) {
+  function findById(int $id): ?User {
     return parent::_queryOneModel(
       SQL::select()
         ->from('"user"')
