@@ -6,15 +6,10 @@ use App\Common\Repository;
 use App\Model\User;
 use App\Provider\Sql\SQL;
 
-class UserRepository extends Repository {
+class UserRepository extends Repository implements IUserRepository {
 
-  /**
-   * @return User
-   */
-  function create(User $user) {
-    /**
-     * @var User
-     */
+  function create(User $user): User {
+    /** @var User */
     $userCreated = parent::_create(
       SQL::insertInto('"user"')
         ->params('name', 'login')
@@ -27,13 +22,8 @@ class UserRepository extends Repository {
     return $userCreated;
   }
 
-  /**
-   * @return User
-   */
-  function update(User $user) {
-    /**
-     * @var User
-     */
+  function update(User $user): User {
+    /** @var User */
     $userUpdated = parent::_update(
       SQL::update('"user"')
         ->values([
@@ -48,13 +38,8 @@ class UserRepository extends Repository {
     return $userUpdated;
   }
 
-  /**
-   * @return User
-   */
-  function delete(User $user) {
-    /**
-     * @var User
-     */
+  function delete(User $user): User {
+    /** @var User */
     $userDeleted = parent::_delete(
       SQL::deleteFrom('"user"')
         ->where(
@@ -68,17 +53,14 @@ class UserRepository extends Repository {
   /**
    * @return User[]
    */
-  function findMany() {
+  function findMany(): array {
     return parent::_queryModel(
       SQL::select('us.*')->from('"user"', 'us'),
       User::class
     );
   }
 
-  /**
-   * @return User
-   */
-  function findById(int $id) {
+  function findById(int $id): ?User {
     return parent::_queryOneModel(
       SQL::select()
         ->from('"user"')

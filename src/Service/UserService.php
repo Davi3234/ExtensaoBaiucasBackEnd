@@ -2,17 +2,13 @@
 
 namespace App\Service;
 
-use App\Repository\UserRepository;
-use App\Provider\Database\Database;
-use App\Provider\Database\IDatabase;
+use App\Repository\IUserRepository;
 
 class UserService {
-  private IDatabase $database;
-  private UserRepository $userRepository;
 
-  function __construct() {
-    $this->database = Database::getGlobalConnection();
-    $this->userRepository = new UserRepository($this->database);
+  function __construct(
+    private IUserRepository $userRepository
+  ) {
   }
 
   function query() {

@@ -15,29 +15,32 @@ abstract class Repository {
     $this->database = $database;
   }
 
-  protected function _create(InsertSQLBuilder $insertBuilder) {
+  protected function _create(InsertSQLBuilder $insertBuilder): array {
     $insertBuilder->returning('*');
 
     return $this->database->execFromSqlBuilder($insertBuilder);
   }
 
-  protected function _update(UpdateSQLBuilder $updateBuilder) {
+  protected function _update(UpdateSQLBuilder $updateBuilder): array {
     $updateBuilder->returning('*');
 
     return $this->database->execFromSqlBuilder($updateBuilder);
   }
 
-  protected function _delete(DeleteSQLBuilder $deleteBuilder) {
+  protected function _delete(DeleteSQLBuilder $deleteBuilder): array {
     $deleteBuilder->returning('*');
 
     return $this->database->execFromSqlBuilder($deleteBuilder);
   }
 
-  protected function _queryOneModel(SelectSQLBuilder $selectBuilder, $modelConstructor) {
+  protected function _queryOneModel(SelectSQLBuilder $selectBuilder, string $modelConstructor): object {
     return $this->_queryModel($selectBuilder, $modelConstructor)[0];
   }
 
-  protected function _queryModel(SelectSQLBuilder $selectBuilder, $modelConstructor) {
+  /**
+   * @return object[]
+   */
+  protected function _queryModel(SelectSQLBuilder $selectBuilder, string $modelConstructor): array {
     $result = $this->_query($selectBuilder);
 
     $dataModel = [];
@@ -48,11 +51,11 @@ abstract class Repository {
     return $dataModel;
   }
 
-  protected function _queryOne(SelectSQLBuilder $selectBuilder): array {
+  protected function _queryOne(SelectSQLBuilder $selectBuilder): ?array {
     return $this->_query($selectBuilder)[0];
   }
 
-  protected function _query(SelectSQLBuilder $selectBuilder) {
+  protected function _query(SelectSQLBuilder $selectBuilder): array {
     return $this->database->queryFromSqlBuilder($selectBuilder);
   }
 }

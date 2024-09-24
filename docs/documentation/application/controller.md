@@ -13,13 +13,19 @@ Router::post('/create', AuthenticationMiddleware::class, [PostController::class,
 
 // Em Controller/PostController.php
 use App\Core\Components\Request;
+use App\Provider\Database\Database;
+use App\Repository\PostRepository;
+use App\Service\PostService;
 
 class PostController {
 
   private PostService $postService;
 
   function __construct() {
-    $this->postService = new PostService;
+    $this->postService = new PostService(
+      new PostRepository(Database::getGlobalConnection()),
+      new UserRepository(Database::getGlobalConnection()),
+    );
   }
 
   function create(Request $request) {
@@ -33,3 +39,5 @@ class PostController {
   }
 }
 ```
+
+Em seu método construtor, é realizado a instância dos serviços, bem como a preparação do estado da classe para assim receber a requisição

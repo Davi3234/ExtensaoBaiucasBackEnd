@@ -4,20 +4,16 @@ O `Service` é onde conterá todos os casos de uso junto com as regras de negóc
 
 Exemplo:
 ```php
-use App\Repository\PostRepository;
-use App\Provider\Database\Database;
-use App\Provider\Database\IDatabase;
+use App\Repository\IPostRepository;
+use App\Repository\IUserRepository;
 use App\Exception\BadRequestException;
 
 class PostService {
-  private IDatabase $database;
-  private PostRepository $postRepository;
-  private UserRepository $userRepository;
 
-  function __construct() {
-    $this->database = Database::getGlobalConnection();
-    $this->postRepository = new PostRepository($this->database);
-    $this->userRepository = new UserRepository($this->database);
+  function __construct(
+    private IPostRepository $postRepository,
+    private IUserRepository $userRepository,
+  ) {
   }
 
   function create(array $args) {
