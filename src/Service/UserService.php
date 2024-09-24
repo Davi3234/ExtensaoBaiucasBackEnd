@@ -19,7 +19,6 @@ class UserService {
     $users = $this->userRepository->findMany();
 
     $raw = [];
-
     foreach ($users as $user) {
       $raw[] = [
         'id' => $user->getId(),

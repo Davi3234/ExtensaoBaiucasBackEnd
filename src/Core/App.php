@@ -53,6 +53,9 @@ class App {
   static function CreateApp() {
     $path = '/';
 
+    if (!isset($_GET['url']))
+      $_GET['url'] = $_SERVER['REQUEST_URI'];
+
     isset($_GET['url']) && $path .= $_GET['url'];
 
     $path = str_replace('//', '/', $path);

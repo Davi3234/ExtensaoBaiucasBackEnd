@@ -1,3 +1,35 @@
 # Criando o Controller
 
-O `Controller` terá a responsabilidade de receber as requisições da API por meio dos métodos conforme mapeados em [`Router`](framework/criando-rotas.md)
+O `Controller` terá a responsabilidade de receber as requisições da API por meio dos métodos, conforme mapeados em [`Router`](rotas.md), e repassar para o [`Service`](service.md) realizar o caso de uso junto com as regras de negócio
+
+Exemplo:
+```php
+// Em Router/PostRouter.php
+use App\Core\Components\Router;
+use App\Controller\PostController;
+use App\Middleware\AuthenticationMiddleware;
+
+Router::post('/create', AuthenticationMiddleware::class, [PostController::class, 'create']);
+
+// Em Controller/PostController.php
+use App\Core\Components\Request;
+
+class PostController {
+
+  private PostService $postService;
+
+  function __construct() {
+    $this->postService = new PostService;
+  }
+
+  function create(Request $request) {
+    $result = $this->postService->create([
+      'userId' => $request->getAttribute('userId'),
+      'subject' => $request->getBody('subject'),
+      'body' => $request->getBody('body'),
+    ]);
+
+    return $result;
+  }
+}
+```

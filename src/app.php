@@ -1,11 +1,7 @@
 <?php
 
-require_once __DIR__ . '/routers.php';
+require_once __DIR__ . '/groups-router.php';
 
 use App\Core\App;
 
-if (!isset($_GET['url']))
-  $_GET['url'] = $_SERVER['REQUEST_URI'];
-
-$app = App::CreateApp();
-$app->Run();
+App::CreateApp()->Run();
