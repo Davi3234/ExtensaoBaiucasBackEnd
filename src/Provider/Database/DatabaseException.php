@@ -2,7 +2,7 @@
 
 namespace App\Provider\Database;
 
-use App\Exception\Exception;
+use App\Exception\CriticalException;
 
-class DatabaseException extends Exception {
+class DatabaseException extends CriticalException {
 }

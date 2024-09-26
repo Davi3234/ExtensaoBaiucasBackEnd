@@ -3,7 +3,7 @@
 namespace App\Core\Components;
 
 use App\Enum\RouterMethod;
-use App\Exception\InternalServerErrorException;
+use App\Exception\Http\InternalServerErrorException;
 
 class Router {
 

@@ -5,7 +5,7 @@ namespace App\Middleware;
 use App\Core\Components\Middleware;
 use App\Core\Components\Request;
 use App\Core\Components\Response;
-use App\Exception\UnauthorizedException;
+use App\Exception\Http\UnauthorizedException;
 
 class AuthenticationMiddleware extends Middleware {
 

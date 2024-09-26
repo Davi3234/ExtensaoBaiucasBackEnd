@@ -6,7 +6,7 @@ Exemplo:
 ```php
 use App\Repository\IPostRepository;
 use App\Repository\IUserRepository;
-use App\Exception\BadRequestException;
+use App\Exception\Http\BadRequestException;
 
 class PostService {
 

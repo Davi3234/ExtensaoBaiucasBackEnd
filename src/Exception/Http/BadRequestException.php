@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Exception;
+namespace App\Exception\Http;
 
 use App\Enum\StatusCode;
 

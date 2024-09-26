@@ -3,7 +3,7 @@
 namespace App\Provider\Database;
 
 use App\Exception\Exception;
-use App\Exception\InternalServerErrorException;
+use App\Exception\Http\InternalServerErrorException;
 use App\Provider\Sql\SQLBuilder;
 
 class DatabaseConnection implements IDatabaseConnection {

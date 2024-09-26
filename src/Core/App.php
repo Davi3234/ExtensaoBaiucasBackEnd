@@ -9,8 +9,8 @@ use App\Core\Components\Router;
 use App\Core\Components\Middleware;
 use App\Enum\StatusCode;
 use App\Exception\Exception;
-use App\Exception\HttpException;
-use App\Exception\NotFoundException;
+use App\Exception\Http\HttpException;
+use App\Exception\Http\RouterNotFoundException;
 
 class App {
 
@@ -104,7 +104,7 @@ class App {
     $router = $this->router->getRouteRequested($this->method, $this->path);
 
     if (!$router)
-      throw new NotFoundException("Router \"$this->method\" \"$this->path\" not found");
+      throw new RouterNotFoundException("Router \"$this->method\" \"$this->path\" not found");
 
     $this->routerRequested = $router;
   }

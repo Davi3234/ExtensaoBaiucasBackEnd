@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Exception;
+namespace App\RuntimeException\Http;
 
-class HttpException extends Exception {
+class HttpException extends RuntimeException {
   private $statusCode;
 
   function __construct($message, $statusCode, array $causes = []) {
