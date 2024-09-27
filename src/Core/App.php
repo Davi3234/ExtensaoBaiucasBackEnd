@@ -9,8 +9,8 @@ use App\Core\Components\Router;
 use App\Core\Components\Middleware;
 use App\Enum\StatusCode;
 use App\Exception\Exception;
-use App\Exception\Http\HttpException;
 use App\Exception\Http\RouterNotFoundException;
+use App\RuntimeException\Http\HttpException;
 
 class App {
 

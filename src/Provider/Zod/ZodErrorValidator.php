@@ -4,10 +4,14 @@ namespace App\Provider\Zod;
 
 class ZodErrorValidator {
 
-  private $message;
-  private $path;
+  private string $message;
 
-  function __construct($message, ...$paths) {
+  /**
+   * @var string[]
+   */
+  private array $path;
+
+  function __construct(string $message, string ...$paths) {
     $this->message = $message;
     $this->path = $paths;
   }

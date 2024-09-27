@@ -8,7 +8,7 @@ class Z {
    * @param array{message: string}|string $attributes
    * @return ZodStringSchema
    */
-  static function string($attributes = []) {
+  static function string(array|string $attributes = []) {
     return new ZodStringSchema($attributes);
   }
 
@@ -16,7 +16,7 @@ class Z {
    * @param array{message: string}|string $attributes
    * @return ZodNumberSchema
    */
-  static function number($attributes = []) {
+  static function number(array|string $attributes = []) {
     return new ZodNumberSchema($attributes);
   }
 
@@ -24,7 +24,7 @@ class Z {
    * @param array{message: string}|string $attributes
    * @return ZodBooleanSchema
    */
-  static function boolean($attributes = []) {
+  static function boolean(array|string $attributes = []) {
     return new ZodBooleanSchema($attributes);
   }
 
@@ -32,16 +32,16 @@ class Z {
    * @param array{message: string}|string $attributes
    * @return ZodDateSchema
    */
-  static function date($attributes = []) {
+  static function date(array|string $attributes = []) {
     return new ZodDateSchema($attributes);
   }
 
   /**
-   * @param array<ZodSchema> $fields
+   * @param array<string, ZodSchema> $fields
    * @param array{message: string}|string $attributes
    * @return ZodObjectSchema
    */
-  static function object($fields, $attributes = []) {
+  static function object(array $fields, array|string $attributes = []) {
     return new ZodObjectSchema($fields, $attributes);
   }
 
@@ -50,7 +50,7 @@ class Z {
    * @param array{message: string}|string $attributes
    * @return ZodArraySchema
    */
-  static function arrayZod($schema, $attributes = []) {
+  static function arrayZod(ZodSchema $schema, array|string $attributes = []) {
     return new ZodArraySchema($schema, $attributes);
   }
 }

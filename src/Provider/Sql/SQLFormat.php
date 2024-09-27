@@ -6,7 +6,7 @@ class SQLFormat {
 
   /**
    * A list of data types that are allowed for casting.
-   * @var array<string>
+   * @var string[]
    */
   private static $TYPES_CAST = ['text', 'int', 'numeric', 'decimal', 'float', 'boolean', 'date', 'time', 'timestamp', 'json', 'interval'];
 

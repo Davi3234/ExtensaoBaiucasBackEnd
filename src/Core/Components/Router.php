@@ -46,7 +46,7 @@ class Router {
   ];
 
   /**
-   * @param array<array{prefix: string, filePath: string}> ...$args
+   * @param array{prefix: string, filePath: string}[] ...$args
    * @return void
    */
   function addRouterGroup(array ...$args) {
@@ -104,7 +104,7 @@ class Router {
   }
 
   /**
-   * @return array<string>
+   * @return string[]
    */
   function getAllRoutersPaths(string $method) {
     return array_keys($this->routers[$method]);

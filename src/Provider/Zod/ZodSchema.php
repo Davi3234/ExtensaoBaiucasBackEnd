@@ -6,15 +6,15 @@ abstract class ZodSchema {
 
   /**
    * @var array{
-   * DEFAULT: array{string: array{parser: callable, attributes: array<string>}}, 
-   * TRANSFORMINITIAL: array{string: array{parser: callable, attributes: array<string>}}, 
-   * TYPEVALIDATE: array{string: array{parser: callable, attributes: array<string>}}, 
-   * TRANSFORM: array{string: array{parser: callable, attributes: array<string>}}, 
-   * REFINERULE: array{string: array{parser: callable, attributes: array<string>}}, 
-   * REFINEEXTRA: array{string: array{parser: callable, attributes: array<string>}}
+   * DEFAULT: array{string: array{parser: callable, attributes: string[]}}, 
+   * TRANSFORMINITIAL: array{string: array{parser: callable, attributes: string[]}}, 
+   * TYPEVALIDATE: array{string: array{parser: callable, attributes: string[]}}, 
+   * TRANSFORM: array{string: array{parser: callable, attributes: string[]}}, 
+   * REFINERULE: array{string: array{parser: callable, attributes: string[]}}, 
+   * REFINEEXTRA: array{string: array{parser: callable, attributes: string[]}}
    * }
    */
-  protected $stackRules = [
+  protected array $stackRules = [
     'DEFAULT' => [],
     'TRANSFORMINITIAL' => [],
     'TYPEVALIDATE' => [],
@@ -23,26 +23,41 @@ abstract class ZodSchema {
     'REFINEEXTRA' => [],
     'TRANSFORMEXTRA' => [],
   ];
+
   /**
-   * @var array<ZodErrorValidator>
+   * @var ZodErrorValidator[]
    */
   protected $errors = [];
 
   protected $value = null;
-  protected $type;
-  private $isStop = false;
-  protected $defaultValue = null;
-  protected $isOptional = false;
-  protected $isCoerce = false;
+  protected string $type;
+  private bool $isStop = false;
+  protected callable|int|float|string|bool $_defaultValue = null;
+  protected bool $isOptional = false;
+  protected bool $isCoerce = false;
 
-  function __construct($attributes, $type) {
+  function __construct(array $attributes, string $type) {
     $this->type = $type;
 
     $this->addTypeValidateRule('parseRequired', $attributes);
     $this->addTypeValidateRule('parseType', $attributes);
   }
 
-  function parse($value): array|object {
+  function parseNoSafe($value): array|object {
+    $response = $this->parseSafe($value);
+
+    if ($response['errors']) {
+      throw new ZodParseException('Invalid data', $response['errors']);
+    }
+
+    return $response['data'];
+  }
+
+  /**
+   * 
+   * @return array{data: mixed, errors: array<string|int, array{message: mixed, path: mixed}>}
+   */
+  function parseSafe($value): array {
     $this->setup($value);
     $this->resolveStack();
     $response = $this->getParseResult();
@@ -54,7 +69,7 @@ abstract class ZodSchema {
   protected function resolveStack() {
     $stackOrder = ['DEFAULT', 'TRANSFORMINITIAL', 'TYPEVALIDATE', 'TRANSFORM', 'REFINERULE', 'REFINEEXTRA', 'TRANSFORMEXTRA'];
 
-    foreach($stackOrder as $stack) {
+    foreach ($stackOrder as $stack) {
       $this->resolveStackType($stack);
 
       if ($this->isStop)
@@ -62,8 +77,8 @@ abstract class ZodSchema {
     }
   }
 
-  protected function resolveStackType($typeStack) {
-    foreach ($this->stackRules[$typeStack] as $key => $rule) {
+  protected function resolveStackType(string $typeStack) {
+    foreach ($this->stackRules[$typeStack] as $rule) {
       $response = $this->resolveValidator($typeStack, $rule['parser'], $rule['attributes']);
 
       $this->resolveResultHandleValidator($response, $rule['attributes']);
@@ -73,11 +88,11 @@ abstract class ZodSchema {
     }
   }
 
-  protected function resolveValidator($typeStack, $parser, $attributes) {
+  protected function resolveValidator(string $typeStack, string|callable $parser, array $attributes) {
     return $this->resolveHandleValidator($typeStack, $parser, $attributes);
   }
 
-  protected function resolveHandleValidator($typeStack, $parser, $attributes) {
+  protected function resolveHandleValidator(string $typeStack, string|callable $parser, array $attributes) {
     $response = $this->resolveHandle($parser, $attributes);
 
     if (!$response)
@@ -89,7 +104,7 @@ abstract class ZodSchema {
     return null;
   }
 
-  protected function resolveHandle($parser, $attributes) {
+  protected function resolveHandle(string|callable $parser, array $attributes) {
     if (is_string($parser) && method_exists($this, $parser))
       $response = $this->$parser($this->value, $attributes);
     else if (is_callable($parser))
@@ -98,7 +113,7 @@ abstract class ZodSchema {
     return $response;
   }
 
-  protected function resolveResultHandleValidator($response, $attributes) {
+  protected function resolveResultHandleValidator($response, array $attributes) {
     if ($response === false)
       $this->addError(new ZodErrorValidator($attributes['message'] ?? 'Value invalid'));
     else if ($response && isset($response['message']))
@@ -126,30 +141,30 @@ abstract class ZodSchema {
     return $this;
   }
 
-  function defaultValue($value) {
-    $this->defaultValue = $value;
+  function defaultValue(callable|int|float|string|bool $value) {
+    $this->_defaultValue = $value;
     $this->setDefaultRule('parseDefault');
     return $this;
   }
 
-  function refine($callable, $attributes = null) {
+  function refine(string|callable $callable, array $attributes = null) {
     $this->addRefineExtraRule($callable, $attributes);
     return $this;
   }
 
-  function transform($callable, $attributes = null) {
+  function transform(string|callable $callable, array $attributes = null) {
     $this->addTransformExtraRule(function () use ($callable, $attributes) {
       $this->value = $this->resolveHandle($callable, $attributes);
     }, $attributes);
     return $this;
   }
 
-  protected function refineRule($callable, $attributes = null) {
+  protected function refineRule(string|callable $callable, array $attributes = null) {
     $this->addRefineRule($callable, $attributes);
     return $this;
   }
 
-  abstract protected function parseCoerce($value, $attributes);
+  abstract protected function parseCoerce($value, array $attributes);
 
   protected function parseRequired($value, $attributes) {
     if (!$this->isValueEmpty())
@@ -178,14 +193,20 @@ abstract class ZodSchema {
     $this->stop();
   }
 
-  protected function parseDefault($value, $attributes) {
+  protected function parseDefault($value, array $attributes) {
     if (!$this->isValueEmpty())
       return;
 
-    $this->value = $this->defaultValue;
+    $defaultValue = $this->_defaultValue;
+
+    if (is_callable($defaultValue)) {
+      $this->value = $defaultValue();
+    } else {
+      $this->value = $this->_defaultValue;
+    }
   }
 
-  protected function addError($message) {
+  protected function addError(ZodErrorValidator $message) {
     $this->errors[] = $message;
   }
 
@@ -213,35 +234,35 @@ abstract class ZodSchema {
     $this->isStop = true;
   }
 
-  protected function setDefaultRule($parserRule, $attributes = null) {
+  protected function setDefaultRule(string $parserRule, array $attributes = null) {
     $this->addRuleValidatorInStack('DEFAULT', $parserRule, $attributes, true);
   }
 
-  protected function addTransformInitialRule($parserRule, $attributes = null) {
+  protected function addTransformInitialRule(string $parserRule, array $attributes = null) {
     $this->addRuleValidatorInStack('TRANSFORMINITIAL', $parserRule, $attributes);
   }
 
-  protected function addTypeValidateRule($parserRule, $attributes = null) {
+  protected function addTypeValidateRule(string $parserRule, array $attributes = null) {
     $this->addRuleValidatorInStack('TYPEVALIDATE', $parserRule, $attributes);
   }
 
-  protected function addTransformRule($parserRule, $attributes = null) {
+  protected function addTransformRule(string $parserRule, array $attributes = null) {
     $this->addRuleValidatorInStack('TRANSFORM', $parserRule, $attributes);
   }
 
-  protected function addRefineRule($parserRule, $attributes = null) {
+  protected function addRefineRule(string $parserRule, array $attributes = null) {
     $this->addRuleValidatorInStack('REFINERULE', $parserRule, $attributes);
   }
 
-  protected function addRefineExtraRule($parserRule, $attributes = null) {
+  protected function addRefineExtraRule(string $parserRule, array $attributes = null) {
     $this->addRuleValidatorInStack('REFINEEXTRA', $parserRule, $attributes);
   }
 
-  protected function addTransformExtraRule($parserRule, $attributes = null) {
+  protected function addTransformExtraRule(string|callable $parserRule, array $attributes = null) {
     $this->addRuleValidatorInStack('TRANSFORMEXTRA', $parserRule, $attributes);
   }
 
-  private function addRuleValidatorInStack($key, $parserRule, $attributes = null, $uniqueRule = false) {
+  private function addRuleValidatorInStack(string $key, $parserRule, string|callable $attributes = null, bool $uniqueRule = false) {
     if (is_string($attributes))
       $attributes = ['message' => $attributes];
 

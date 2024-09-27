@@ -4,35 +4,35 @@ namespace App\Provider\Zod;
 
 class ZodNumberSchema extends ZodSchema {
 
-  private $gt = null;
-  private $gte = null;
-  private $lt = null;
-  private $lte = null;
-  private $multipleOf = null;
+  private int|float|null $gt = null;
+  private int|float|null $gte = null;
+  private int|float|null $lt = null;
+  private int|float|null $lte = null;
+  private int|float|null $multipleOf = null;
 
-  function __construct($attributes = null) {
+  function __construct(array $attributes = null) {
     parent::__construct($attributes, 'number');
   }
 
-  function gt($value, $attributes = null) {
+  function gt(int|float $value, array $attributes = null) {
     $this->gt = $value;
     $this->addRefineRule('parseGt', $attributes);
     return $this;
   }
 
-  function gte($value, $attributes = null) {
+  function gte(int|float $value, array $attributes = null) {
     $this->gte = $value;
     $this->addRefineRule('parseGte', $attributes);
     return $this;
   }
 
-  function lt($value, $attributes = null) {
+  function lt(int|float $value, array $attributes = null) {
     $this->lt = $value;
     $this->addRefineRule('parseLt', $attributes);
     return $this;
   }
 
-  function lte($value, $attributes = null) {
+  function lte(int|float $value, array $attributes = null) {
     $this->lte = $value;
     $this->addRefineRule('parseLte', $attributes);
     return $this;
@@ -43,33 +43,33 @@ class ZodNumberSchema extends ZodSchema {
     return $this;
   }
 
-  function positive($attributes = null) {
+  function positive(array $attributes = null) {
     $this->addRefineRule('parsePositive', $attributes);
     return $this;
   }
 
-  function nonnegative($attributes = null) {
+  function nonnegative(array $attributes = null) {
     $this->addRefineRule('parseNonnegative', $attributes);
     return $this;
   }
 
-  function negative($attributes = null) {
+  function negative(array $attributes = null) {
     $this->addRefineRule('parseNegative', $attributes);
     return $this;
   }
 
-  function nonpositive($attributes = null) {
+  function nonpositive(array $attributes = null) {
     $this->addRefineRule('parseNonpositive', $attributes);
     return $this;
   }
 
-  function multipleOf($value, $attributes = null) {
+  function multipleOf($value, array $attributes = null) {
     $this->multipleOf = $value;
     $this->addRefineRule('parseMultipleOf', $attributes);
     return $this;
   }
 
-  protected function parseCoerce($value, $attributes) {
+  protected function parseCoerce($value, array $attributes) {
     if ($this->isValueEmpty())
       return;
 
@@ -79,7 +79,7 @@ class ZodNumberSchema extends ZodSchema {
       $this->value = (int)$value;
   }
 
-  protected function parseInt($value, $attributes) {
+  protected function parseInt($value, array $attributes) {
     if (is_integer($value))
       return;
 
@@ -88,63 +88,63 @@ class ZodNumberSchema extends ZodSchema {
     $this->addError(new ZodErrorValidator($attributes['invalidType'] ?? "Expect an \"integer\" received \"$type\""));
   }
 
-  protected function parseGt($value, $attributes) {
+  protected function parseGt($value, array $attributes) {
     if ($value > $this->gt)
       return;
 
     $this->addError(new ZodErrorValidator($attributes['message'] ?? "Number must to be greater than \"$this->gt\""));
   }
 
-  protected function parseGte($value, $attributes) {
+  protected function parseGte($value, array $attributes) {
     if ($value >= $this->gte)
       return;
 
     $this->addError(new ZodErrorValidator($attributes['message'] ?? "Number must to be greater or equal than \"$this->gte\""));
   }
 
-  protected function parseLt($value, $attributes) {
+  protected function parseLt($value, array $attributes) {
     if ($value < $this->lt)
       return;
 
     $this->addError(new ZodErrorValidator($attributes['message'] ?? "Number must to be less than \"$this->lt\""));
   }
 
-  protected function parseLte($value, $attributes) {
+  protected function parseLte($value, array $attributes) {
     if ($value <= $this->lte)
       return;
 
     $this->addError(new ZodErrorValidator($attributes['message'] ?? "Number must to be less or equal than \"$this->lte\""));
   }
 
-  protected function parsePositive($value, $attributes) {
+  protected function parsePositive($value, array $attributes) {
     if ($value > 0)
       return;
 
     $this->addError(new ZodErrorValidator($attributes['message'] ?? "Number must be positive"));
   }
 
-  protected function parseNonpositive($value, $attributes) {
+  protected function parseNonpositive($value, array $attributes) {
     if ($value <= 0)
       return;
 
     $this->addError(new ZodErrorValidator($attributes['message'] ?? "Number cannot be positive"));
   }
 
-  protected function parseNegative($value, $attributes) {
+  protected function parseNegative($value, array $attributes) {
     if ($value < 0)
       return;
 
     $this->addError(new ZodErrorValidator($attributes['message'] ?? "Number must be negative"));
   }
 
-  protected function parseNonnegative($value, $attributes) {
+  protected function parseNonnegative($value, array $attributes) {
     if ($value >= 0)
       return;
 
     $this->addError(new ZodErrorValidator($attributes['message'] ?? "Number cannot be negative"));
   }
 
-  protected function parseMultipleOf($value, $attributes) {
+  protected function parseMultipleOf($value, array $attributes) {
     if ($value % $this->multipleOf == 0)
       return;
 

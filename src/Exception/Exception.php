@@ -9,7 +9,7 @@ class Exception extends \Exception {
    * @param array{message: string, causes: array{message: string, origin: ?string}}[] $causes
    */
   function __construct(
-    protected $message = "",
+    protected string $message = "",
     protected array $causes = []
   ) {
   }

@@ -3,7 +3,7 @@
 namespace App\Provider\Zod;
 
 class ZodDateSchema extends ZodSchema {
-  protected static $DATE_FORMAT = [
+  protected static array $DATE_FORMAT = [
     'Y-m-d',       // 2024-08-18
     'd/m/Y',       // 18/08/2024
     'm/d/Y',       // 08/18/2024
@@ -18,12 +18,12 @@ class ZodDateSchema extends ZodSchema {
     'H:i',         // 14:30
     'H',          // 14
   ];
-  private $format = null;
-  private $toFormat = null;
-  private $min = null;
-  private $max = null;
+  private ?string $format = null;
+  private ?string $toFormat = null;
+  private ?int $min = null;
+  private ?int $max = null;
 
-  function __construct($attributes = null) {
+  function __construct(array $attributes = null) {
     parent::__construct($attributes, 'date');
   }
 
@@ -36,25 +36,25 @@ class ZodDateSchema extends ZodSchema {
     return $this;
   }
 
-  function format($format, $attributes = null) {
+  function format(string $format, array $attributes = null) {
     $this->format = $format;
     $this->addTypeValidateRule('parseFormat', $attributes);
     return $this;
   }
 
-  function toFormat($toFormat, $attributes = null) {
+  function toFormat(string $toFormat, array $attributes = null) {
     $this->toFormat = $toFormat;
     $this->addTransformExtraRule('parseToFormat', $attributes);
     return $this;
   }
 
-  function min($min, $attributes = null) {
+  function min(int $min, array $attributes = null) {
     $this->min = $min;
     $this->addRefineRule('parseMin', $attributes);
     return $this;
   }
 
-  function max($max, $attributes = null) {
+  function max(int $max, array $attributes = null) {
     $this->max = $max;
     $this->addRefineRule('parseMax', $attributes);
     return $this;
@@ -63,7 +63,7 @@ class ZodDateSchema extends ZodSchema {
   protected function parseCoerce($value, $attributes) {
   }
 
-  protected function parseFormat($value, $attributes) {
+  protected function parseFormat($value, array $attributes) {
     if (is_date_format($value, $this->format))
       return;
 
@@ -71,29 +71,26 @@ class ZodDateSchema extends ZodSchema {
     $this->stop();
   }
 
-  protected function parseMin($value, $attributes) {
+  protected function parseMin($value, array $attributes) {
     if ($value >= $this->min)
       return;
 
     $this->addError(new ZodErrorValidator($attributes['message'] ?? "Date must be greater than \"$this->min\""));
   }
 
-  protected function parseMax($value, $attributes) {
+  protected function parseMax($value, array $attributes) {
     if ($value <= $this->max)
       return;
 
     $this->addError(new ZodErrorValidator($attributes['message'] ?? "Date must be less than \"$this->max\""));
   }
 
-  protected function parseToFormat($value, $attributes) {
+  protected function parseToFormat($value, array $attributes) {
     $this->value = date_format($value, $this->toFormat);
   }
 
   protected function isValueSameType() {
-    if (!$this->value)
-      return false;
-
-    if (!is_string($this->value))
+    if (!$this->value || !is_string($this->value))
       return false;
 
     if ($this->format && is_date_format($this->value, $this->format))

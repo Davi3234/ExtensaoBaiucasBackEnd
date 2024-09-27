@@ -4,36 +4,36 @@ namespace App\Provider\Zod;
 
 class ZodArraySchema extends ZodSchema {
 
-  protected $schema;
-  private $min = null;
-  private $max = null;
-  protected $length = null;
+  protected ZodArraySchema $schema;
+  private int|float|null $min = null;
+  private int|float|null $max = null;
+  protected int|float|null $length = null;
 
-  function __construct($schema, $attributes = null) {
+  function __construct(ZodArraySchema $schema, array $attributes = null) {
     parent::__construct($attributes, 'array');
 
     $this->schema = $schema;
     $this->addTransformRule('parseResolveValuesSchema');
   }
 
-  function nonempty($attributes = null) {
+  function nonempty(array $attributes = null) {
     $this->addRefineRule('parseNonempty', $attributes);
     return $this;
   }
 
-  function min($min, $attributes = null) {
+  function min(int|float $min, array $attributes = null) {
     $this->min = $min;
     $this->addRefineRule('parseMin', $attributes);
     return $this;
   }
 
-  function max($max, $attributes = null) {
+  function max(int|float $max, array $attributes = null) {
     $this->max = $max;
     $this->addRefineRule('parseMax', $attributes);
     return $this;
   }
 
-  function length($value, $attributes = null) {
+  function length(int|float $value, array $attributes = null) {
     $this->length = $value;
     $this->addRefineRule('parseLength', $attributes);
     return $this;
@@ -42,49 +42,49 @@ class ZodArraySchema extends ZodSchema {
   protected function parseResolveValuesSchema() {
     $valueRaw = [];
 
-    foreach($this->value as $index => $value) {
-      $result = $this->schema->parse($value);
+    foreach ($this->value as $index => $value) {
+      $result = $this->schema->parseSafe($value);
 
       if (!isset($result['errors']))
         $valueRaw[$index] = $result['data'];
       else {
-        foreach($result['errors'] as $error)
-          $this->addError(new ZodErrorValidator($error['message'], $index.($error['path'] ? '.'.$error['path'][0] : '')));
+        foreach ($result['errors'] as $error)
+          $this->addError(new ZodErrorValidator($error['message'], $index . ($error['path'] ? '.' . $error['path'][0] : '')));
       }
     }
 
     $this->value = $valueRaw;
   }
 
-  protected function parseCoerce($value, $attributes) {
+  protected function parseCoerce($value, array $attributes) {
     if (!is_object($value))
       return;
 
     $this->value = (array) $value;
   }
 
-  protected function parseNonempty($value, $attributes) {
+  protected function parseNonempty($value, array $attributes) {
     if ($value)
       return;
 
     $this->addError(new ZodErrorValidator($attributes['message'] ?? "Array cannot be empty"));
   }
 
-    protected function parseMin($value, $attributes) {
+  protected function parseMin($value, array $attributes) {
     if (count($value) >= $this->min)
       return;
 
     $this->addError(new ZodErrorValidator($attributes['message'] ?? "Array must contain \"$this->min\" or more items"));
   }
 
-  protected function parseMax($value, $attributes) {
+  protected function parseMax($value, array $attributes) {
     if (count($value) <= $this->max)
       return;
 
     $this->addError(new ZodErrorValidator($attributes['message'] ?? "Array must contain \"$this->max\" or fewer items"));
   }
 
-  protected function parseLength($value, $attributes) {
+  protected function parseLength($value, array $attributes) {
     if (count($value) == $this->length)
       return;
 

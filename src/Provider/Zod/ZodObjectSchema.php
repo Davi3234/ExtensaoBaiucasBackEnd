@@ -5,16 +5,16 @@ namespace App\Provider\Zod;
 class ZodObjectSchema extends ZodSchema {
 
   /**
-   * @var array<ZodSchema>
+   * @var ZodSchema[]
    */
   private $fields = [];
 
   function __construct($fields = [], $attributes = null) {
     parent::__construct($attributes, 'object');
 
-    foreach($fields as $field => $zodSchema) {
+    foreach ($fields as $field => $zodSchema) {
       if (!$zodSchema instanceof ZodSchema)
-        throw new \Exception("Field \"$field\" must be a instance of the \"ZodSchema\"");
+        throw new ZodSchemaException("Field \"$field\" must be a instance of the \"ZodSchema\"");
     }
 
     $this->fields = $fields;
@@ -46,16 +46,16 @@ class ZodObjectSchema extends ZodSchema {
   protected function parseResolveFieldsSchema() {
     $valueRaw = [];
 
-    foreach($this->fields as $key => $zodSchema) {
+    foreach ($this->fields as $key => $zodSchema) {
       $value = $this->value->$key ?? null;
 
-      $result = $zodSchema->parse($value);
+      $result = $zodSchema->parseSafe($value);
 
       if (!isset($result['errors']))
         $valueRaw[$key] = $result['data'];
       else {
-        foreach($result['errors'] as $error)
-          $this->addError(new ZodErrorValidator($error['message'], $key.($error['path'] ? '.'.$error['path'][0] : '')));
+        foreach ($result['errors'] as $error)
+          $this->addError(new ZodErrorValidator($error['message'], $key . ($error['path'] ? '.' . $error['path'][0] : '')));
       }
     }
 

@@ -9,6 +9,7 @@ use App\Provider\Sql\SelectSQLBuilder;
 use App\Provider\Sql\UpdateSQLBuilder;
 
 abstract class Repository {
+
   protected IDatabase $database;
 
   function __construct(IDatabase $database) {
@@ -33,7 +34,7 @@ abstract class Repository {
     return $this->database->execFromSqlBuilder($deleteBuilder);
   }
 
-  protected function _queryOneModel(SelectSQLBuilder $selectBuilder, string $modelConstructor): object {
+  protected function _queryOneModel(SelectSQLBuilder $selectBuilder, string $modelConstructor): ?object {
     return $this->_queryModel($selectBuilder, $modelConstructor)[0];
   }
 

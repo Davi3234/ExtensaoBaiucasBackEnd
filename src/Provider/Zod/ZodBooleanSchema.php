@@ -4,11 +4,11 @@ namespace App\Provider\Zod;
 
 class ZodBooleanSchema extends ZodSchema {
 
-  function __construct($attributes = null) {
+  function __construct(array $attributes = null) {
     parent::__construct($attributes, 'boolean');
   }
 
-  protected function parseCoerce($value, $attributes) {
+  protected function parseCoerce($value, array $attributes) {
     $this->value = (bool)$value;
   }
 }
