@@ -1,6 +1,6 @@
 <?php
 
-namespace App\RuntimeException\Http;
+namespace App\Exception\Http;
 
 use App\Exception\RuntimeException;
 

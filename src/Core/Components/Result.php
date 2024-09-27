@@ -14,14 +14,14 @@ interface ResultModel {
 }
 
 class Result implements ResultModel {
-  private $ok = true;
-  private $status = 200;
+  private bool $ok = true;
+  private int $status = 200;
   private $value = null;
 
   /**
    * @var array{message: string, causes: array{message: string, origin: ?string}}[]|null
    */
-  private $error = null;
+  private ?array $error = null;
 
   private function __construct(bool $ok, int $status, $value = null, $error = null) {
     if ($ok) {

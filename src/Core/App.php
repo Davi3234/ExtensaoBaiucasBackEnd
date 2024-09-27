@@ -10,7 +10,7 @@ use App\Core\Components\Middleware;
 use App\Enum\StatusCode;
 use App\Exception\Exception;
 use App\Exception\Http\RouterNotFoundException;
-use App\RuntimeException\Http\HttpException;
+use App\Exception\Http\HttpException;
 
 class App {
 
