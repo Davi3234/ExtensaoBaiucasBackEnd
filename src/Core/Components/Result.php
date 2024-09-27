@@ -6,11 +6,19 @@ use App\Exception\Exception;
 
 interface ResultModel {
   function getResponse();
-  function isSuccess();
-  function getValue();
-  function getError();
-  function getStatus();
-  function getResult();
+  function isSuccess(): bool;
+  function getValue(): mixed;
+
+  /**
+   * @return array{message: string, causes: array{message: string, origin: ?string}}[]|null
+   */
+  function getError(): ?array;
+  function getStatus(): int;
+
+  /**
+   * @return array{ok: bool, status: int, value: mixed, error: array{message: string, causes: array{message: string, origin: null|string}}[]|null}
+   */
+  function getResult(): array;
 }
 
 class Result implements ResultModel {
@@ -69,23 +77,23 @@ class Result implements ResultModel {
     return $this->getError();
   }
 
-  function isSuccess() {
+  function isSuccess(): bool {
     return $this->ok;
   }
 
-  function getValue() {
+  function getValue(): mixed {
     return $this->value;
   }
 
-  function getError() {
+  function getError(): ?array {
     return $this->error;
   }
 
-  function getStatus() {
+  function getStatus(): int {
     return $this->status;
   }
 
-  function getResult() {
+  function getResult(): array {
     return ['ok' => $this->ok, 'status' => $this->status, 'value' => $this->value, 'error' => $this->error];
   }
 }

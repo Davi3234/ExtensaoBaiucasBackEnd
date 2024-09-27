@@ -4,10 +4,7 @@ namespace App\Common;
 
 abstract class Model {
 
-  /**
-   * @return static
-   */
-  static function _loadModel(array $raw) {
+  static function _loadModel(array $raw): static {
     $instance = new static;
     $instance->_load($raw);
 
