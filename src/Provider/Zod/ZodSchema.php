@@ -43,6 +43,13 @@ abstract class ZodSchema {
     $this->addTypeValidateRule('parseType', $attributes);
   }
 
+  function __invoke($value) {
+    return $this->parseNoSafe($value);
+  }
+
+  abstract function parseNoSafe($value);
+  abstract function parseSafe($value);
+
   protected function _parseNoSafe($value): array|object {
     $response = $this->_parseSafe($value);
 
