@@ -8,14 +8,17 @@ if ($handle) {
     if (!trim($line))
       continue;
 
-    [$line] = explode('#', $line);
+    [$line] = explode('#', $line, 2);
 
     [$name, $value] = explode('=', $line, 2);
+
+    $name = trim($name);
+    $value = trim($value, '\'"');
 
     if (!$name || !$value)
       continue;
 
-    $variables[$name] = trim($value, '\'"');
+    $variables[$name] = $value;
   }
 
   fclose($handle);

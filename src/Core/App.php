@@ -19,10 +19,7 @@ class App {
    */
   private static $instance = null;
 
-  /**
-   * @return static
-   */
-  static function getInstance() {
+  static function getInstance(): static {
     return self::$instance;
   }
 

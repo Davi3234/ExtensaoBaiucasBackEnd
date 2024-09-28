@@ -19,7 +19,7 @@ use App\Service\PostService;
 
 class PostController {
 
-  private PostService $postService;
+  private readonly PostService $postService;
 
   function __construct() {
     $this->postService = new PostService(

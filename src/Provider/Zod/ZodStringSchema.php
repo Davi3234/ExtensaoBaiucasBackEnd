@@ -16,9 +16,6 @@ class ZodStringSchema extends ZodSchema {
     parent::__construct($attributes, 'string');
   }
 
-  /**
-   * @return string
-   */
   function parseNoSafe($value): string {
     /**
      * @var string

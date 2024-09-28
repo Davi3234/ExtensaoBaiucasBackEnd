@@ -29,9 +29,9 @@ abstract class ZodSchema {
    */
   protected $errors = [];
 
+  private bool $isStop = false;
   protected $value = null;
   protected string $type;
-  private bool $isStop = false;
   protected callable|int|float|string|bool $_defaultValue = null;
   protected bool $isOptional = false;
   protected bool $isCoerce = false;
@@ -54,7 +54,6 @@ abstract class ZodSchema {
   }
 
   /**
-   * 
    * @return array{data: ?mixed, errors: ?array<string|int, array{message: mixed, path: mixed}>}
    */
   protected function _parseSafe($value): array {

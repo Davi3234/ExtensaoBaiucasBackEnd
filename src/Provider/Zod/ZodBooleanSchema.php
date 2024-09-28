@@ -12,9 +12,6 @@ class ZodBooleanSchema extends ZodSchema {
     $this->value = (bool)$value;
   }
 
-  /**
-   * @return bool
-   */
   function parseNoSafe($value): bool {
     /**
      * @var bool

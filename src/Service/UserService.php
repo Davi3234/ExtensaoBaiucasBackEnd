@@ -10,21 +10,20 @@ use App\Repository\IUserRepository;
 class UserService {
 
   function __construct(
-    private IUserRepository $userRepository
+    private readonly IUserRepository $userRepository
   ) {
   }
 
   function query() {
     $users = $this->userRepository->findMany();
 
-    $raw = [];
-    foreach ($users as $user) {
-      $raw[] = [
+    $raw = array_map(function($user) {
+      return [
         'id' => $user->getId(),
         'name' => $user->getName(),
         'login' => $user->getLogin(),
       ];
-    }
+    }, $users);
 
     return $raw;
   }
@@ -39,7 +38,9 @@ class UserService {
 
     $dto = $deleteSchema->parseNoSafe($args);
 
-    return $this->userRepository->findById($dto->id);
+    $user =  $this->userRepository->findById($dto->id);
+
+    return ['user' => $user];
   }
 
   function create(array $args) {
@@ -52,7 +53,7 @@ class UserService {
         ->regex('/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/', 'Login invalid'),
     ]);
 
-    $dto = $createSchema->parseNoSafe($args['name']);
+    $dto = $createSchema->parseNoSafe($args);
     
     $userWithSameLogin = $this->userRepository->findByLogin($dto->login);
 
@@ -73,6 +74,37 @@ class UserService {
     $this->userRepository->create($user);
 
     return ['message' => 'Usuário cadastrado com sucesso'];
+  }
+
+  function update(array $args) {
+    $updateSchema = Z::object([
+      'id' => Z::number(['required' => 'Id do Usuário é obrigatório', 'invalidType' => 'Id do Usuário inválido'])
+        ->coerce()
+        ->int()
+        ->gt(0, 'Id do Usuário inválido'),
+      'name' => Z::string(['required' => 'Nome é obrigatório'])
+        ->trim()
+        ->min(3, 'Nome precisa ter no mínimo 3 caracteres'),
+    ]);
+
+    $dto = $updateSchema->parseNoSafe($args);
+    
+    $user = $this->userRepository->findById($dto->id);
+
+    if (!$user) {
+      throw new BadRequestException(
+        'Não é possível atualizar o usuário',
+        [
+          ['message' => 'Usuário não encontrado', 'cause' => 'id']
+        ]
+      );
+    }
+
+    $user->setName($dto->name);
+
+    $this->userRepository->update($user);
+
+    return ['message' => 'Usuário atualizado com sucesso'];
   }
 
   function delete(array $args) {

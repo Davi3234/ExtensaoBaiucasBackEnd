@@ -14,9 +14,6 @@ class ZodNumberSchema extends ZodSchema {
     parent::__construct($attributes, 'number');
   }
 
-  /**
-   * @return numeric
-   */
   function parseNoSafe($value): int|float {
     /**
      * @var numeric

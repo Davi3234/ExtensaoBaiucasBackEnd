@@ -4,38 +4,36 @@ O `Service` é onde conterá todos os casos de uso junto com as regras de negóc
 
 Exemplo:
 ```php
+use App\Provider\Zod\Z;
+use App\Exception\Http\BadRequestException;
 use App\Repository\IPostRepository;
 use App\Repository\IUserRepository;
-use App\Exception\Http\BadRequestException;
 
 class PostService {
 
   function __construct(
-    private IPostRepository $postRepository,
-    private IUserRepository $userRepository,
+    private readonly IPostRepository $postRepository,
+    private readonly IUserRepository $userRepository,
   ) {
   }
 
   function create(array $args) {
-    $post = new Post;
+    $createSchema = Z::object([
+      'userId' => Z::number(['required' => 'Id do Usuário é obrigatório', 'invalidType' => 'Id do Usuário inválido'])
+        ->coerce()
+        ->int()
+        ->gt(0, 'Id do Usuário inválido'),
+      'subject' => Z::string()
+        ->trim()
+        ->min(0, 'Assunto é obrigatório'),
+      'body' => Z::string()
+        ->trim()
+        ->min(0, 'O Corpo da mensagem é obrigatório'),
+    ]);
 
-    $post->setUserId($args['userId']);
-    $post->setSubject($args['subject']);
-    $post->setBody($args['body']);
+    $dto = $createSchema->parseNoSafe($args);
 
-    $errors = [];
-    if (!$post->getSubject()) {
-      $errors[] = ['message' => 'Subject cannot be empty', 'cause' => 'subject'];
-    }
-    if (!$post->getBody()) {
-      $errors[] = ['message' => 'Body cannot be empty', 'cause' => 'body'];
-    }
-
-    if ($errors) {
-      throw new BadRequestException('Cannot create post', $errors);
-    }
-
-    $user = $this->userRepository->findById($post->getUserId());
+    $user = $this->userRepository->findById($dto->userId);
 
     if (!$user) {
       throw new BadRequestException(
@@ -43,6 +41,12 @@ class PostService {
         [['message' => 'User not found', 'cause' => 'userId']]
       );
     }
+
+    $post = new Post;
+
+    $post->setUserId($dto->userId);
+    $post->setSubject($dto->subject);
+    $post->setBody($dto->body);
 
     $this->postRepository->create($post);
 

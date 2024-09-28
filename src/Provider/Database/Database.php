@@ -8,24 +8,14 @@ use App\Provider\Sql\SQLBuilder;
 
 class DatabaseConnection implements IDatabaseConnection {
 
-  /**
-   * @var DatabaseConnection
-   */
-  private static $globalConnection = null;
-
-  /**
-   * @var \PgSql\Connection
-   */
-  protected $connection = null;
+  private static ?DatabaseConnection $globalConnection = null;
+  protected readonly \PgSql\Connection $connection;
 
   function __construct(?\PgSql\Connection $connection = null) {
     $this->connection = $connection;
   }
 
-  /**
-   * @return static
-   */
-  static function getGlobalConnection() {
+  static function getGlobalConnection(): static {
     if (static::$globalConnection == null) {
       static::$globalConnection = static::newConnection();
     }
@@ -33,10 +23,7 @@ class DatabaseConnection implements IDatabaseConnection {
     return static::$globalConnection;
   }
 
-  /**
-   * @return static
-   */
-  static function newConnection() {
+  static function newConnection(): static {
     $database = new static();
     $database->connect();
 

@@ -16,9 +16,6 @@ class ZodArraySchema extends ZodSchema {
     $this->addTransformRule('parseResolveValuesSchema');
   }
 
-  /**
-   * @return array
-   */
   function parseNoSafe($value): array {
     return parent::_parseNoSafe($value);
   }

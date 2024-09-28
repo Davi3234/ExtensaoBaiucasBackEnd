@@ -7,7 +7,7 @@ class ZodObjectSchema extends ZodSchema {
   /**
    * @var ZodSchema[]
    */
-  private $fields = [];
+  private array $fields = [];
 
   function __construct($fields = [], $attributes = null) {
     parent::__construct($attributes, 'object');
@@ -21,9 +21,6 @@ class ZodObjectSchema extends ZodSchema {
     $this->addTransformRule('parseResolveFieldsSchema');
   }
 
-  /**
-   * @return array|object
-   */
   function parseNoSafe($value): array|object {
     return parent::_parseNoSafe($value);
   }
@@ -63,7 +60,7 @@ class ZodObjectSchema extends ZodSchema {
     foreach ($this->fields as $key => $zodSchema) {
       $value = $this->value->$key ?? null;
 
-      $result = $zodSchema->parseSafe($value);
+      $result = $zodSchema->_parseSafe($value);
 
       if (!isset($result['errors']))
         $valueRaw[$key] = $result['data'];

@@ -22,9 +22,9 @@ interface ResultModel {
 }
 
 class Result implements ResultModel {
-  private bool $ok = true;
-  private int $status = 200;
-  private $value = null;
+  private readonly bool $ok;
+  private readonly int $status;
+  private readonly array|object|int|float|bool|string|null $value;
 
   /**
    * @var array{message: string, causes: array{message: string, origin: ?string}}[]|null
@@ -50,23 +50,22 @@ class Result implements ResultModel {
     $this->error = $error;
   }
 
-  static function success($value, int $status = 200) {
+  static function success(array|object|int|float|bool|string|null $value, int $status = 200): Result {
     return new Result(true, $status, $value);
   }
 
   /**
    * @param array{message: string, causes: array{message: string, origin: ?string}}[] $causes
    * @param int $status
-   * @return Result
    */
-  static function failure(array $error, int $status = 400) {
+  static function failure(array $error, int $status = 400): Result {
     $message = $error['message'] ?? '';
     $causes = $error['causes'] ?? [];
 
     return new Result(false, $status, null, ['message' => $message, 'causes' => $causes,]);
   }
 
-  static function inherit(bool $ok = true, int $status = 200, $value = null, $error = null) {
+  static function inherit(bool $ok = true, int $status = 200, array|object|int|float|bool|string|null $value = null, $error = null) {
     return new Result($ok, $status, $value, $error);
   }
 
@@ -81,7 +80,7 @@ class Result implements ResultModel {
     return $this->ok;
   }
 
-  function getValue(): mixed {
+  function getValue(): array|object|int|float|bool|string|null {
     return $this->value;
   }
 

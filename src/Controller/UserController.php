@@ -8,7 +8,7 @@ use App\Repository\UserRepository;
 use App\Service\UserService;
 
 class UserController {
-  private UserService $userService;
+  private readonly UserService $userService;
 
   function __construct() {
     $this->userService = new UserService(
@@ -34,6 +34,15 @@ class UserController {
     $result = $this->userService->create([
       'name' => $request->getBody('name'),
       'login' => $request->getBody('login'),
+    ]);
+
+    return $result;
+  }
+
+  function update(Request $request) {
+    $result = $this->userService->update([
+      'id' => $request->getParam('id'),
+      'name' => $request->getBody('name'),
     ]);
 
     return $result;

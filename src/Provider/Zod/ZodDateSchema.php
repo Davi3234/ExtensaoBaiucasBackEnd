@@ -27,9 +27,6 @@ class ZodDateSchema extends ZodSchema {
     parent::__construct($attributes, 'date');
   }
 
-  /**
-   * @return string
-   */
   function parseNoSafe($value): string {
     /**
      * @var string
@@ -47,10 +44,8 @@ class ZodDateSchema extends ZodSchema {
 
   /**
    * @deprecated Coerce not working with date
-   * @return static
    */
-  function coerce() {
-    parent::coerce();
+  function coerce(): static {
     return $this;
   }
 
@@ -78,6 +73,9 @@ class ZodDateSchema extends ZodSchema {
     return $this;
   }
 
+  /**
+   * @deprecated Coerce not working with date
+   */
   protected function parseCoerce($value, $attributes) {
   }
 

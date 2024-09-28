@@ -5,7 +5,7 @@ namespace App\Exception\Http;
 use App\Exception\RuntimeException;
 
 class HttpException extends RuntimeException {
-  private $statusCode;
+  private readonly int $statusCode;
 
   function __construct(string $message, int $statusCode, array $causes = []) {
     parent::__construct($message, $causes);
