@@ -2,6 +2,9 @@
 
 namespace App\Provider\Zod;
 
+/**
+ * @extends parent<number>
+ */
 class ZodNumberSchema extends ZodSchema {
 
   private int|float|null $gt = null;
@@ -12,21 +15,6 @@ class ZodNumberSchema extends ZodSchema {
 
   function __construct(array $attributes = null) {
     parent::__construct($attributes, 'number');
-  }
-
-  function parseNoSafe($value): int|float {
-    /**
-     * @var numeric
-     */
-    $result = parent::_parseNoSafe($value);
-    return $result;
-  }
-  
-  /**
-   * @return array{data: ?numeric, errors: ?array<string|int, array{message: mixed, path: mixed}>}
-   */
-  function parseSafe($value): array {
-    return parent::_parseSafe($value);
   }
 
   function gt(int|float $value, array|string $attributes = null) {

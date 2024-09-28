@@ -2,6 +2,9 @@
 
 namespace App\Provider\Zod;
 
+/**
+ * @extends parent<string>
+ */
 class ZodDateSchema extends ZodSchema {
   protected static array $DATE_FORMAT = [
     'Y-m-d',       // 2024-08-18
@@ -25,21 +28,6 @@ class ZodDateSchema extends ZodSchema {
 
   function __construct(array $attributes = null) {
     parent::__construct($attributes, 'date');
-  }
-
-  function parseNoSafe($value): string {
-    /**
-     * @var string
-     */
-    $result = parent::_parseNoSafe($value);
-    return $result;
-  }
-  
-  /**
-   * @return array{data: ?string, errors: ?array<string|int, array{message: mixed, path: mixed}>}
-   */
-  function parseSafe($value): array {
-    return parent::_parseSafe($value);
   }
 
   /**

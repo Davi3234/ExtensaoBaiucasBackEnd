@@ -6,7 +6,7 @@ namespace App\Provider\Sql;
 abstract class SQLBuilder {
 
   /**
-   * @var array<string,array{sqlTemplates: (string|SelectSQLBuilder)[], params: (string|number|boolean|null)[]}[]>
+   * @var array<string, array{sqlTemplates: (string|SelectSQLBuilder)[], params: (string|number|boolean|null)[]}[]>
    */
   protected array $clausules = [];
 

@@ -28,7 +28,7 @@ class UserService {
     return $raw;
   }
 
-  function getById($args) {
+  function getById(array $args) {
     $deleteSchema = Z::object([
       'id' => Z::number(['required' => 'Id do Usuário é obrigatório', 'invalidType' => 'Id do Usuário inválido'])
             ->coerce()

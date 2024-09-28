@@ -2,6 +2,9 @@
 
 namespace App\Provider\Zod;
 
+/**
+ * @extends parent<object|array<array-key, mixed>>
+ */
 class ZodObjectSchema extends ZodSchema {
 
   /**
@@ -19,17 +22,6 @@ class ZodObjectSchema extends ZodSchema {
 
     $this->fields = $fields;
     $this->addTransformRule('parseResolveFieldsSchema');
-  }
-
-  function parseNoSafe($value): array|object {
-    return parent::_parseNoSafe($value);
-  }
-  
-  /**
-   * @return array{data: array|object|null, errors: ?array<string|int, array{message: mixed, path: mixed}>}
-   */
-  function parseSafe($value): array {
-    return parent::_parseSafe($value);
   }
 
   function extendsObject($fields, $attribute = null) {
@@ -60,7 +52,7 @@ class ZodObjectSchema extends ZodSchema {
     foreach ($this->fields as $key => $zodSchema) {
       $value = $this->value->$key ?? null;
 
-      $result = $zodSchema->_parseSafe($value);
+      $result = $zodSchema->parseSafe($value);
 
       if (!isset($result['errors']))
         $valueRaw[$key] = $result['data'];

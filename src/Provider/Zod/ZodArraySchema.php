@@ -2,6 +2,9 @@
 
 namespace App\Provider\Zod;
 
+/**
+ * @extends parent<array>
+ */
 class ZodArraySchema extends ZodSchema {
 
   protected ZodArraySchema $schema;
@@ -14,17 +17,6 @@ class ZodArraySchema extends ZodSchema {
 
     $this->schema = $schema;
     $this->addTransformRule('parseResolveValuesSchema');
-  }
-
-  function parseNoSafe($value): array {
-    return parent::_parseNoSafe($value);
-  }
-  
-  /**
-   * @return array{data: ?mixed[], errors: ?array<string|int, array{message: mixed, path: mixed}>}
-   */
-  function parseSafe($value): array {
-    return parent::_parseSafe($value);
   }
 
   function nonempty(array|string $attributes = null) {

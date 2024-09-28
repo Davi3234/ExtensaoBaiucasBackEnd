@@ -2,6 +2,9 @@
 
 namespace App\Provider\Zod;
 
+/**
+ * @extends parent<string>
+ */
 class ZodStringSchema extends ZodSchema {
 
   protected ?int $length = null;
@@ -14,21 +17,6 @@ class ZodStringSchema extends ZodSchema {
 
   function __construct(array $attributes = null) {
     parent::__construct($attributes, 'string');
-  }
-
-  function parseNoSafe($value): string {
-    /**
-     * @var string
-     */
-    $result = parent::_parseNoSafe($value);
-    return $result;
-  }
-  
-  /**
-   * @return array{data: ?string, errors: ?array<string|int, array{message: mixed, path: mixed}>}
-   */
-  function parseSafe($value): array {
-    return parent::_parseSafe($value);
   }
 
   function trim() {

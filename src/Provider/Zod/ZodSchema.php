@@ -2,6 +2,9 @@
 
 namespace App\Provider\Zod;
 
+/**
+ * @Template TSchemaType
+ */
 abstract class ZodSchema {
 
   /**
@@ -47,11 +50,11 @@ abstract class ZodSchema {
     return $this->parseNoSafe($value);
   }
 
-  abstract function parseNoSafe($value);
-  abstract function parseSafe($value);
-
-  protected function _parseNoSafe($value): array|object {
-    $response = $this->_parseSafe($value);
+  /**
+   * @return TSchemaType
+   */
+  function parseNoSafe($value) {
+    $response = $this->parseSafe($value);
 
     if ($response['errors']) {
       throw new ZodParseException('Invalid data', $response['errors']);
@@ -61,9 +64,9 @@ abstract class ZodSchema {
   }
 
   /**
-   * @return array{data: ?mixed, errors: ?array<string|int, array{message: mixed, path: mixed}>}
+   * @return array{data: ?TSchemaType, errors: ?array<string|int, array{message: mixed, path: mixed}>}
    */
-  protected function _parseSafe($value): array {
+  function parseSafe($value): array {
     $this->setup($value);
     $this->resolveStack();
     $response = $this->getParseResult();
@@ -216,6 +219,9 @@ abstract class ZodSchema {
     $this->errors[] = $message;
   }
 
+  /**
+   * @return array{data: ?TSchemaType, errors: ?array<string|int, array{message: mixed, path: mixed}>}
+   */
   protected function getParseResult() {
     $value = $this->value;
     $errors = $this->errors;
