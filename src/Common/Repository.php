@@ -8,12 +8,14 @@ use App\Provider\Sql\InsertSQLBuilder;
 use App\Provider\Sql\SelectSQLBuilder;
 use App\Provider\Sql\UpdateSQLBuilder;
 
+/**
+ * @template TModel
+ */
 abstract class Repository {
 
-  protected IDatabase $database;
-
-  function __construct(IDatabase $database) {
-    $this->database = $database;
+  function __construct(
+    protected IDatabase $database
+  ) {
   }
 
   protected function _create(InsertSQLBuilder $insertBuilder): array {
@@ -34,29 +36,27 @@ abstract class Repository {
     return $this->database->execFromSqlBuilder($deleteBuilder);
   }
 
-  protected function _queryOneModel(SelectSQLBuilder $selectBuilder, string $modelConstructor): ?object {
-    return $this->_queryModel($selectBuilder, $modelConstructor)[0];
-  }
-
-  /**
-   * @return object[]
-   */
-  protected function _queryModel(SelectSQLBuilder $selectBuilder, string $modelConstructor): array {
-    $result = $this->_query($selectBuilder);
-
-    $dataModel = [];
-    foreach ($result as $raw) {
-      $dataModel[] = $modelConstructor::_loadModel($raw);
-    }
-
-    return $dataModel;
-  }
-
   protected function _queryOne(SelectSQLBuilder $selectBuilder): ?array {
     return $this->_query($selectBuilder)[0];
   }
 
   protected function _query(SelectSQLBuilder $selectBuilder): array {
     return $this->database->queryFromSqlBuilder($selectBuilder);
+  }
+
+  /**
+   * @return TModel[]
+   */
+  protected static function toModelList(array $rawList, string $modelConstructor): array {
+    return array_map(function($raw) use ($modelConstructor) {
+      return self::toModel($raw, $modelConstructor);
+    }, $rawList);
+  }
+
+  /**
+   * @return TModel
+   */
+  protected static function toModel(array $raw, string $modelConstructor): object {
+    return $modelConstructor::_loadModel($raw);
   }
 }
