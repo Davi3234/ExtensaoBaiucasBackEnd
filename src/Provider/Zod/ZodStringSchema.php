@@ -16,6 +16,24 @@ class ZodStringSchema extends ZodSchema {
     parent::__construct($attributes, 'string');
   }
 
+  /**
+   * @return string
+   */
+  function parseNoSafe($value): string {
+    /**
+     * @var string
+     */
+    $result = parent::_parseNoSafe($value);
+    return $result;
+  }
+  
+  /**
+   * @return array{data: ?string, errors: ?array<string|int, array{message: mixed, path: mixed}>}
+   */
+  function parseSafe($value): array {
+    return parent::_parseSafe($value);
+  }
+
   function trim() {
     $this->addTransformRule('parseTrim');
     return $this;

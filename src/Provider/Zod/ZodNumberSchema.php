@@ -14,6 +14,24 @@ class ZodNumberSchema extends ZodSchema {
     parent::__construct($attributes, 'number');
   }
 
+  /**
+   * @return numeric
+   */
+  function parseNoSafe($value): int|float {
+    /**
+     * @var numeric
+     */
+    $result = parent::_parseNoSafe($value);
+    return $result;
+  }
+  
+  /**
+   * @return array{data: ?numeric, errors: ?array<string|int, array{message: mixed, path: mixed}>}
+   */
+  function parseSafe($value): array {
+    return parent::_parseSafe($value);
+  }
+
   function gt(int|float $value, array|string $attributes = null) {
     $this->gt = $value;
     $this->addRefineRule('parseGt', $attributes);
@@ -73,10 +91,10 @@ class ZodNumberSchema extends ZodSchema {
     if ($this->isValueEmpty())
       return;
 
-    if ($this->type == 'number')
-      $this->value = (float)$value;
-    else if ($this->type == 'integer')
+    if (ctype_digit($value) || (is_float($value + 0) && intval($value) == $value))
       $this->value = (int)$value;
+    else
+      $this->value = (float)$value;
   }
 
   protected function parseInt($value, array $attributes) {

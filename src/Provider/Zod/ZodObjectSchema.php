@@ -21,6 +21,20 @@ class ZodObjectSchema extends ZodSchema {
     $this->addTransformRule('parseResolveFieldsSchema');
   }
 
+  /**
+   * @return array|object
+   */
+  function parseNoSafe($value): array|object {
+    return parent::_parseNoSafe($value);
+  }
+  
+  /**
+   * @return array{data: array|object|null, errors: ?array<string|int, array{message: mixed, path: mixed}>}
+   */
+  function parseSafe($value): array {
+    return parent::_parseSafe($value);
+  }
+
   function extendsObject($fields, $attribute = null) {
     $fields = array_merge($this->fields, $fields);
 

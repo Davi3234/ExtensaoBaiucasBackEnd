@@ -43,8 +43,8 @@ abstract class ZodSchema {
     $this->addTypeValidateRule('parseType', $attributes);
   }
 
-  function parseNoSafe($value): array|object {
-    $response = $this->parseSafe($value);
+  protected function _parseNoSafe($value): array|object {
+    $response = $this->_parseSafe($value);
 
     if ($response['errors']) {
       throw new ZodParseException('Invalid data', $response['errors']);
@@ -55,9 +55,9 @@ abstract class ZodSchema {
 
   /**
    * 
-   * @return array{data: mixed, errors: array<string|int, array{message: mixed, path: mixed}>}
+   * @return array{data: ?mixed, errors: ?array<string|int, array{message: mixed, path: mixed}>}
    */
-  function parseSafe($value): array {
+  protected function _parseSafe($value): array {
     $this->setup($value);
     $this->resolveStack();
     $response = $this->getParseResult();

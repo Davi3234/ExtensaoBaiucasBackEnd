@@ -16,6 +16,20 @@ class ZodArraySchema extends ZodSchema {
     $this->addTransformRule('parseResolveValuesSchema');
   }
 
+  /**
+   * @return array
+   */
+  function parseNoSafe($value): array {
+    return parent::_parseNoSafe($value);
+  }
+  
+  /**
+   * @return array{data: ?mixed[], errors: ?array<string|int, array{message: mixed, path: mixed}>}
+   */
+  function parseSafe($value): array {
+    return parent::_parseSafe($value);
+  }
+
   function nonempty(array|string $attributes = null) {
     $this->addRefineRule('parseNonempty', $attributes);
     return $this;
