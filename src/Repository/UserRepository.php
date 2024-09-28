@@ -38,12 +38,12 @@ class UserRepository extends Repository implements IUserRepository {
     return $userUpdated;
   }
 
-  function delete(User $user): User {
+  function deleteById(int $id): User {
     /** @var User */
     $userDeleted = parent::_delete(
       SQL::deleteFrom('"user"')
         ->where(
-          SQL::eq('id', $user->getId())
+          SQL::eq('id', $id)
         )
     );
 
@@ -66,6 +66,18 @@ class UserRepository extends Repository implements IUserRepository {
         ->from('"user"')
         ->where(
           SQL::eq('id', $id)
+        )
+        ->limit(1),
+      User::class
+    );
+  }
+
+  function findByLogin(string $login): ?User {
+    return parent::_queryOneModel(
+      SQL::select()
+        ->from('"user"')
+        ->where(
+          SQL::eq('login', $login)
         )
         ->limit(1),
       User::class

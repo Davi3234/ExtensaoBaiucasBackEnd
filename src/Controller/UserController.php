@@ -18,13 +18,15 @@ class UserController {
 
   function query() {
     $result = $this->userService->query();
+
     return $result;
   }
 
   function getOne(Request $request) {
-    $result = $this->userService->getOne([
+    $result = $this->userService->getById([
       'id' => $request->getParam('id'),
     ]);
+
     return $result;
   }
 
@@ -33,6 +35,7 @@ class UserController {
       'name' => $request->getBody('name'),
       'login' => $request->getBody('login'),
     ]);
+
     return $result;
   }
 
@@ -40,6 +43,7 @@ class UserController {
     $result = $this->userService->delete([
       'id' => $request->getParam('id'),
     ]);
+
     return $result;
   }
 }

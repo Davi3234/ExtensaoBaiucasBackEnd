@@ -15,15 +15,27 @@ class User extends Model {
     $this->login = $raw['login'];
   }
 
-  function getName() {
-    return $this->name;
-  }
+	public function getId() : int {
+		return $this->id;
+	}
 
-  function getLogin() {
-    return $this->login;
-  }
+	public function setId(int $value) {
+		$this->id = $value;
+	}
 
-  function getId() {
-    return $this->id;
-  }
+	public function getName() : string {
+		return $this->name;
+	}
+
+	public function setName(string $value) {
+		$this->name = $value;
+	}
+
+	public function getLogin() : string {
+		return $this->login;
+	}
+
+	public function setLogin(string $value) {
+		$this->login = $value;
+	}
 }
