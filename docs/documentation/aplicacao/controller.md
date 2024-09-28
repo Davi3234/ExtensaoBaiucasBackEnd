@@ -22,9 +22,11 @@ class PostController {
   private readonly PostService $postService;
 
   function __construct() {
-    $this->postService = new PostService(
-      new PostRepository(Database::getGlobalConnection()),
-      new UserRepository(Database::getGlobalConnection()),
+    $databaseConnection = Database::getGlobalConnection();
+
+    $this->userService = new UserService(
+      new PostRepository($databaseConnection),
+      new UserRepository($databaseConnection),
     );
   }
 
