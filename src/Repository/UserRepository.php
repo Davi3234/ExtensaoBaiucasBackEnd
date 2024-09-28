@@ -12,7 +12,7 @@ use App\Model\User;
 class UserRepository extends Repository implements IUserRepository {
 
   function create(User $user): User {
-    $result = parent::_create(
+    $result = parent::__exec(
       SQL::insertInto('"user"')
         ->params('name', 'login')
         ->values([
@@ -25,7 +25,7 @@ class UserRepository extends Repository implements IUserRepository {
   }
 
   function update(User $user): User {
-    $result = parent::_update(
+    $result = parent::__exec(
       SQL::update('"user"')
         ->values([
           'name' => $user->getName(),
@@ -40,7 +40,7 @@ class UserRepository extends Repository implements IUserRepository {
   }
 
   function deleteById(int $id): User {
-    $result = parent::_delete(
+    $result = parent::__exec(
       SQL::deleteFrom('"user"')
         ->where(
           SQL::eq('id', $id)
@@ -54,7 +54,7 @@ class UserRepository extends Repository implements IUserRepository {
    * @return User[]
    */
   function findMany(): array {
-    $result = parent::_query(
+    $result = parent::__findMany(
       SQL::select('us.*')->from('"user"', 'us')
     );
 
@@ -62,7 +62,7 @@ class UserRepository extends Repository implements IUserRepository {
   }
 
   function findById(int $id): ?User {
-    $result = parent::_queryOne(
+    $result = parent::__findOne(
       SQL::select()
         ->from('"user"')
         ->where(
@@ -75,7 +75,7 @@ class UserRepository extends Repository implements IUserRepository {
   }
 
   function findByLogin(string $login): ?User {
-    $result = parent::_queryOne(
+    $result = parent::__findOne(
       SQL::select()
         ->from('"user"')
         ->where(

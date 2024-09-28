@@ -9,7 +9,7 @@ class User extends Model {
   private string $name;
   private string $login;
 
-  protected function _load(array $raw) {
+  protected function __load(array $raw) {
     $this->id = $raw['id'];
     $this->name = $raw['name'];
     $this->login = $raw['login'];

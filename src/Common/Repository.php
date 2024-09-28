@@ -9,42 +9,38 @@ use App\Provider\Sql\SelectSQLBuilder;
 use App\Provider\Sql\UpdateSQLBuilder;
 
 /**
- * @template TModel
+ * @template TModel of Model
  */
 abstract class Repository {
 
   function __construct(
     protected IDatabase $database
-  ) {
+  ) { }
+
+  protected function __execSql(string $sql, $params = []): array|bool {
+    return $this->database->exec($sql, $params);
   }
 
-  protected function _create(InsertSQLBuilder $insertBuilder): array {
-    $insertBuilder->returning('*');
-
-    return $this->database->execFromSqlBuilder($insertBuilder);
+  protected function __querySql(string $sql, $params = []): array {
+    return $this->database->query($sql, $params);
   }
 
-  protected function _update(UpdateSQLBuilder $updateBuilder): array {
-    $updateBuilder->returning('*');
+  protected function __exec(InsertSQLBuilder|UpdateSQLBuilder|DeleteSQLBuilder $sqlBuilder): array {
+    $sqlBuilder->returning('*');
 
-    return $this->database->execFromSqlBuilder($updateBuilder);
+    return $this->database->execFromSqlBuilder($sqlBuilder);
   }
 
-  protected function _delete(DeleteSQLBuilder $deleteBuilder): array {
-    $deleteBuilder->returning('*');
-
-    return $this->database->execFromSqlBuilder($deleteBuilder);
+  protected function __findOne(SelectSQLBuilder $selectBuilder): ?array {
+    return $this->__findMany($selectBuilder)[0];
   }
 
-  protected function _queryOne(SelectSQLBuilder $selectBuilder): ?array {
-    return $this->_query($selectBuilder)[0];
-  }
-
-  protected function _query(SelectSQLBuilder $selectBuilder): array {
+  protected function __findMany(SelectSQLBuilder $selectBuilder): array {
     return $this->database->queryFromSqlBuilder($selectBuilder);
   }
 
   /**
+   * @param class-string<TModel> $modelConstructor
    * @return TModel[]
    */
   protected static function toModelList(array $rawList, string $modelConstructor): array {
@@ -54,9 +50,10 @@ abstract class Repository {
   }
 
   /**
-   * @return TModel
+   * @param class-string<TModel> $modelConstructor
+   * @return ?TModel
    */
-  protected static function toModel(array $raw, string $modelConstructor): object {
-    return $modelConstructor::_loadModel($raw);
+  protected static function toModel(array|null $raw, string $modelConstructor): object {
+    return $raw ? $modelConstructor::__loadModel($raw) : null;
   }
 }

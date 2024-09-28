@@ -4,12 +4,12 @@ namespace App\Common;
 
 abstract class Model {
 
-  static function _loadModel(array $raw): static {
+  static function __loadModel(array $raw): static {
     $instance = new static;
-    $instance->_load($raw);
+    $instance->__load($raw);
 
     return $instance;
   }
 
-  abstract protected function _load(array $raw);
+  abstract protected function __load(array $raw);
 }

@@ -79,9 +79,7 @@ class Database extends DatabaseConnection implements IDatabase {
   function queryFromSqlBuilder(SQLBuilder $sqlBuilder): array {
     $sql = $sqlBuilder->build();
 
-    $result = $this->query($sql['sql'], $sql['params']);
-
-    return $result;
+    return $this->query($sql['sql'], $sql['params']);
   }
 
   function query(string $sql, $params = []): array|bool {

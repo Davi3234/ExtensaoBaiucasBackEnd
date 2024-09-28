@@ -117,7 +117,7 @@ class UserService {
 
     $dto = $deleteSchema->parseNoSafe($args);
 
-    $userToDelete = $this->getById($dto->id);
+    $userToDelete = $this->getById($dto->id)['user'];
 
     if ($userToDelete) {
       throw new BadRequestException(
