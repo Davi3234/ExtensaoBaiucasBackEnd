@@ -36,7 +36,7 @@ Router::put('/users/:id', function(Request $request, Response $response) {
 });
 ```
 
-# Obtendo os dados do corpo
+## Obtendo os dados do corpo
 
 Para se obter os dados do corpo da requisição, utiliza-se o método `getAllBody` ou `getBody`. Exemplo:
 

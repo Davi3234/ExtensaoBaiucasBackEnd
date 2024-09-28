@@ -2,7 +2,7 @@
 
 Será adotado um padrão de estrutura de dados retornado pela API que é *Result*. Segue a estrutura de retorno:
 
-```json
+```jsonc
 {
   "ok": true, // Se a requisição deu certo ou não
   "status": 200, // Status code da requisição HTTP
