@@ -38,7 +38,9 @@ class PostService {
     if (!$user) {
       throw new BadRequestException(
         'Cannot create post',
-        [['message' => 'User not found', 'cause' => 'userId']]
+        [
+          ['message' => 'User not found', 'cause' => 'userId']
+        ]
       );
     }
 

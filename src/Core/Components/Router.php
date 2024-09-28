@@ -3,7 +3,7 @@
 namespace App\Core\Components;
 
 use App\Enum\RouterMethod;
-use App\Exception\Http\InternalServerErrorException;
+use App\Exception\CriticalException;
 
 class Router {
 
@@ -52,7 +52,7 @@ class Router {
   function addRouterGroup(array ...$args) {
     foreach ($args as $arg) {
       if (isset($this->routersGroup[$arg['prefix']]))
-        throw new InternalServerErrorException("Prefix router group \"{$arg['prefix']}\" already defined");
+        throw new CriticalException("Prefix router group \"{$arg['prefix']}\" already defined");
 
       $this->routersGroup[$arg['prefix']] = $arg;
     }
@@ -70,7 +70,7 @@ class Router {
     }
 
     if (isset($this->routers[$method][$path]))
-      throw new InternalServerErrorException("Router \"$method\" \"$path\" already defined");
+      throw new CriticalException("Router \"$method\" \"$path\" already defined");
 
     $this->routers[$method][$path] = [
       'router' => $path,

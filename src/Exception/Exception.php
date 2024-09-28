@@ -2,6 +2,8 @@
 
 namespace App\Exception;
 
+use App\Core\Components\Result;
+
 class Exception extends \Exception {
 
   /**
@@ -16,6 +18,10 @@ class Exception extends \Exception {
 
   function getCauses() {
     return $this->causes;
+  }
+
+  function toResult() {
+    return Result::failure($this->getInfoError());
   }
 
   function getInfoError() {

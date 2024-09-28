@@ -2,22 +2,19 @@
 
 namespace App\Core;
 
+use App\Exception\Exception;
+use App\Exception\CriticalException;
+use App\Exception\Http\RouterNotFoundException;
 use App\Core\Components\Request;
 use App\Core\Components\Response;
 use App\Core\Components\Result;
 use App\Core\Components\Router;
 use App\Core\Components\Middleware;
 use App\Enum\StatusCode;
-use App\Exception\Exception;
-use App\Exception\Http\RouterNotFoundException;
-use App\Exception\Http\HttpException;
 
 class App {
 
-  /**
-   * @var static
-   */
-  private static $instance = null;
+  private static $instance;
 
   static function getInstance(): static {
     return self::$instance;
@@ -30,36 +27,25 @@ class App {
   private $path = '';
   private $method = '';
 
-  /**
-   * @var Router
-   */
-  private $router = null;
-  private $routerRequested = null;
-  /**
-   * @var Request
-   */
-  private $request = null;
-  /**
-   * @var Response
-   */
-  private $response = null;
+  private Router $router;
+  private array $routerRequested;
+  private Request $request;
+  private Response $response;
 
-  private function __construct() {
-  }
+  private function __construct() { }
 
   static function CreateApp() {
-    $path = '/';
-
     if (!isset($_GET['url']))
       $_GET['url'] = $_SERVER['REQUEST_URI'];
 
-    isset($_GET['url']) && $path .= $_GET['url'];
+    if (!$_GET['url'])
+      $_GET['url'] = '/';
 
-    $path = str_replace('//', '/', $path);
+    $_GET['url'] = str_replace('//', '/', $_GET['url']);
 
     $method = $_SERVER['REQUEST_METHOD'] ?? '';
 
-    self::makeApp($path, $method);
+    self::makeApp($_GET['url'], $method);
 
     return App::getInstance();
   }
@@ -82,18 +68,8 @@ class App {
 
       $this->request = Request::createRequestInstance($path, $method, $params);
       $this->response = Response::getInstance();
-    } catch (Exception $err) {
-      $status = 400;
-
-      if ($err instanceof HttpException) {
-        $status = $err->getStatusCode();
-      }
-
-      Response::getInstance()
-        ->sendJson(Result::failure($err->getInfoError(), $status));
     } catch (\Exception $err) {
-      Response::getInstance()
-        ->sendJson(Result::failure(['message' => $err->getMessage()], StatusCode::INTERNAL_SERVER_ERROR->value));
+      Response::getInstance()->sendJson(self::resolveErrorToResult($err));
     }
   }
 
@@ -109,18 +85,8 @@ class App {
   function Run() {
     try {
       $this->resolveHandlers($this->routerRequested['handlers']);
-    } catch (Exception $err) {
-      $status = 400;
-
-      if ($err instanceof HttpException) {
-        $status = $err->getStatusCode();
-      }
-
-      Response::getInstance()
-        ->sendJson(Result::failure($err->getInfoError(), $status));
     } catch (\Exception $err) {
-      Response::getInstance()
-        ->sendJson(Result::failure(['message' => $err->getMessage()], StatusCode::INTERNAL_SERVER_ERROR->value));
+      Response::getInstance()->sendJson(self::resolveErrorToResult($err));
     }
   }
 
@@ -175,5 +141,22 @@ class App {
       $this->response->sendJson($response);
 
     $this->response->setDataResponse($response);
+  }
+
+  static function resolveErrorToResult(\Exception $err) {
+    if ($err instanceof CriticalException)
+      return Result::failure(self::resolveCriticalErrorMessage($err->getInfoError()), StatusCode::INTERNAL_SERVER_ERROR->value);
+
+    if ($err instanceof Exception)
+      return $err->toResult();
+
+    return Result::failure(self::resolveCriticalErrorMessage(['message' => $err->getMessage()]), StatusCode::INTERNAL_SERVER_ERROR->value);
+  }
+
+  private static function resolveCriticalErrorMessage($message) {
+    if (get_env('ENV') == 'PROD')
+      return ['message' => 'Internal server error. Please try again later'];
+
+    return $message;
   }
 }

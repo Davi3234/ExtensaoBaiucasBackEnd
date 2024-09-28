@@ -2,6 +2,7 @@
 
 namespace App\Exception\Http;
 
+use App\Core\Components\Result;
 use App\Exception\RuntimeException;
 
 class HttpException extends RuntimeException {
@@ -15,5 +16,9 @@ class HttpException extends RuntimeException {
 
   function getStatusCode() {
     return $this->statusCode;
+  }
+
+  function toResult() {
+    return Result::failure($this->getInfoError(), $this->statusCode);
   }
 }

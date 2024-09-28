@@ -76,10 +76,10 @@ class ZodNumberSchema extends ZodSchema {
     if ($this->isValueEmpty())
       return;
 
-    if (ctype_digit($value) || (is_float($value + 0) && intval($value) == $value))
-      $this->value = (int)$value;
-    else
+    if (is_decimal($value))
       $this->value = (float)$value;
+    else
+      $this->value = (int)$value;
   }
 
   protected function parseInt($value, array $attributes) {

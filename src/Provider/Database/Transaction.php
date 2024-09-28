@@ -19,7 +19,7 @@ class Transaction implements ITransaction {
 
   function begin() {
     if ($this->active)
-      throw new \Exception('Transaction already active');
+      throw new DatabaseException('Transaction already active');
 
     $this->database->exec('BEGIN');
     $this->active = true;
@@ -28,7 +28,7 @@ class Transaction implements ITransaction {
 
   function commit() {
     if (!$this->active)
-      throw new \Exception('Transaction not active');
+      throw new DatabaseException('Transaction not active');
 
     $this->database->exec('COMMIT');
     $this->active = false;
@@ -37,7 +37,7 @@ class Transaction implements ITransaction {
 
   function rollback() {
     if (!$this->active)
-      throw new \Exception('Transaction not active');
+      throw new DatabaseException('Transaction not active');
 
     $this->database->exec('ROLLBACK');
     $this->active = false;
@@ -59,7 +59,7 @@ class TransactionCheckpoint implements ITransactionCheckpoint {
    */
   protected $database = null;
   protected $active = false;
-  private $name;
+  private string $name;
 
   function __construct(IDatabase $database) {
     $this->database = $database;
@@ -68,7 +68,7 @@ class TransactionCheckpoint implements ITransactionCheckpoint {
 
   function save() {
     if ($this->active)
-      throw new \Exception('Checkpoint transaction already active');
+      throw new DatabaseException('Checkpoint transaction already active');
 
     $this->database->exec("SAVEPOINT \"$this->name\"");
     $this->active = true;
@@ -77,7 +77,7 @@ class TransactionCheckpoint implements ITransactionCheckpoint {
 
   function release() {
     if (!$this->active)
-      throw new \Exception('Checkpoint transaction not active');
+      throw new DatabaseException('Checkpoint transaction not active');
 
     $this->database->exec("RELEASE SAVEPOINT \"$this->name\"");
     $this->active = false;
@@ -86,7 +86,7 @@ class TransactionCheckpoint implements ITransactionCheckpoint {
 
   function rollback() {
     if (!$this->active)
-      throw new \Exception('Checkpoint transaction not active');
+      throw new DatabaseException('Checkpoint transaction not active');
 
     $this->database->exec("ROLLBACK TO SAVEPOINT \"$this->name\"");
     $this->active = false;

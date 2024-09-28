@@ -29,14 +29,14 @@ class UserService {
   }
 
   function getById(array $args) {
-    $deleteSchema = Z::object([
+    $getSchema = Z::object([
       'id' => Z::number(['required' => 'Id do Usuário é obrigatório', 'invalidType' => 'Id do Usuário inválido'])
             ->coerce()
             ->int()
             ->gt(0, 'Id do Usuário inválido')
-    ]);
+    ])->coerce();
 
-    $dto = $deleteSchema->parseNoSafe($args);
+    $dto = $getSchema->parseNoSafe($args);
 
     $user =  $this->userRepository->findById($dto->id);
 
@@ -51,7 +51,7 @@ class UserService {
       'login' => Z::string(['required' => 'Login é obrigatório'])
         ->trim()
         ->regex('/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/', 'Login invalid'),
-    ]);
+    ])->coerce();
 
     $dto = $createSchema->parseNoSafe($args);
     
@@ -85,7 +85,7 @@ class UserService {
       'name' => Z::string(['required' => 'Nome é obrigatório'])
         ->trim()
         ->min(3, 'Nome precisa ter no mínimo 3 caracteres'),
-    ]);
+    ])->coerce();
 
     $dto = $updateSchema->parseNoSafe($args);
     
@@ -113,7 +113,7 @@ class UserService {
       ->coerce()
       ->int()
       ->gt(0, 'Id do Usuário inválido')
-    ]);
+    ])->coerce();
 
     $dto = $deleteSchema->parseNoSafe($args);
 

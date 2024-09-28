@@ -133,6 +133,15 @@ class SQL extends SQLFormat {
   }
 
   private static function prepareTemplatesLeftRightArgsCondition(string $field, string $operator, string|int|float|bool|SelectSQLBuilder $value) {
+    if ($field === '') {
+      throw new SqlBuilderException(
+        'SQL Builder: Where',
+        [
+          ['message' => "Left operator of condition \"$operator\" cannot be empty"]
+        ]
+      );
+    }
+
     $sqlTemplates = ["$field $operator ", ''];
     $params = [$value];
 
@@ -187,6 +196,15 @@ class SQL extends SQLFormat {
   }
 
   private static function prepareTemplatesBetweenCondition(string $field, string $operator, string|int|float|SelectSQLBuilder $valueLess, string|int|float|SelectSQLBuilder $valueGreater) {
+    if ($field === '') {
+      throw new SqlBuilderException(
+        'SQL Builder: Where',
+        [
+          ['message' => "Left operator of condition \"$operator\" cannot be empty"]
+        ]
+      );
+    }
+
     $sqlTemplates = ["$field $operator ", ' AND ', ''];
     $params = [$valueLess, $valueGreater];
 
@@ -220,6 +238,15 @@ class SQL extends SQLFormat {
   }
 
   private static function prepareTemplatesMultiValuesCondition(string $field, string $operator, array $values) {
+    if ($field === '') {
+      throw new SqlBuilderException(
+        'SQL Builder: Where',
+        [
+          ['message' => "Left operator of condition \"$operator\" cannot be empty"]
+        ]
+      );
+    }
+
     $sqlTemplates = ["$field $operator "];
     $params = [];
 

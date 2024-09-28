@@ -35,7 +35,7 @@ abstract class ZodSchema {
   private bool $isStop = false;
   protected $value = null;
   protected string $type;
-  protected callable|int|float|string|bool $_defaultValue = null;
+  protected $_defaultValue = null;
   protected bool $isOptional = false;
   protected bool $isCoerce = false;
 
@@ -277,6 +277,10 @@ abstract class ZodSchema {
   private function addRuleValidatorInStack(string $key, string|callable $parserRule, string|array $attributes = null, bool $uniqueRule = false) {
     if (is_string($attributes))
       $attributes = ['message' => $attributes];
+
+    if (!$attributes) {
+      $attributes = [];
+    }
 
     $raw = [
       'parser' => $parserRule,

@@ -2,7 +2,7 @@
 
 namespace App\Core\Components;
 
-use App\Exception\Exception;
+use App\Exception\CriticalException;
 
 interface ResultModel {
   function getResponse();
@@ -34,14 +34,18 @@ class Result implements ResultModel {
   private function __construct(bool $ok, int $status, $value = null, $error = null) {
     if ($ok) {
       if ($status >= 400)
-        throw new Exception(
+        throw new CriticalException(
           "It is not possible to define a status code greater than or equal to 400 when the result is success",
-          [['message' => "Status code received was \"$status\"", 'origin' => 'status']]
+          [
+            ['message' => "Status code received was \"$status\"", 'origin' => 'status']
+          ]
         );
     } else if ($status < 400)
-      throw new Exception(
+      throw new CriticalException(
         "It is not possible to set a status code lower than 400 when the result is failure",
-        [['message' => "Status code received was \"$status\"", 'origin' => 'status']]
+        [
+          ['message' => "Status code received was \"$status\"", 'origin' => 'status']
+        ]
       );
 
     $this->ok = $ok;
@@ -62,7 +66,7 @@ class Result implements ResultModel {
     $message = $error['message'] ?? '';
     $causes = $error['causes'] ?? [];
 
-    return new Result(false, $status, null, ['message' => $message, 'causes' => $causes,]);
+    return new Result(false, $status, null, ['message' => $message, 'causes' => $causes]);
   }
 
   static function inherit(bool $ok = true, int $status = 200, array|object|int|float|bool|string|null $value = null, $error = null) {

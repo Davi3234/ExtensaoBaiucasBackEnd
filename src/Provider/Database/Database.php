@@ -3,13 +3,12 @@
 namespace App\Provider\Database;
 
 use App\Exception\Exception;
-use App\Exception\Http\InternalServerErrorException;
 use App\Provider\Sql\SQLBuilder;
 
 class DatabaseConnection implements IDatabaseConnection {
 
   private static ?DatabaseConnection $globalConnection = null;
-  protected readonly \PgSql\Connection $connection;
+  protected ?\PgSql\Connection $connection;
 
   function __construct(?\PgSql\Connection $connection = null) {
     $this->connection = $connection;
@@ -46,7 +45,7 @@ class DatabaseConnection implements IDatabaseConnection {
     $this->connection = @pg_connect(get_env('DATABASE_URL'));
 
     if ($this->connection === false)
-      throw new InternalServerErrorException('Failed to connect to the database');
+      throw new DatabaseException('Failed to connect to the database');
   }
 
   function close() {
@@ -107,7 +106,7 @@ class Database extends DatabaseConnection implements IDatabase {
     } catch (Exception $err) {
       throw $err;
     } catch (\Exception $err) {
-      throw new InternalServerErrorException($err->getMessage());
+      throw new DatabaseException($err->getMessage());
     }
   }
 
