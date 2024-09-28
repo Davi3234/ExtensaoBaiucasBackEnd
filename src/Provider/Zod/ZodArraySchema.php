@@ -16,24 +16,24 @@ class ZodArraySchema extends ZodSchema {
     $this->addTransformRule('parseResolveValuesSchema');
   }
 
-  function nonempty(array $attributes = null) {
+  function nonempty(array|string $attributes = null) {
     $this->addRefineRule('parseNonempty', $attributes);
     return $this;
   }
 
-  function min(int|float $min, array $attributes = null) {
+  function min(int|float $min, array|string $attributes = null) {
     $this->min = $min;
     $this->addRefineRule('parseMin', $attributes);
     return $this;
   }
 
-  function max(int|float $max, array $attributes = null) {
+  function max(int|float $max, array|string $attributes = null) {
     $this->max = $max;
     $this->addRefineRule('parseMax', $attributes);
     return $this;
   }
 
-  function length(int|float $value, array $attributes = null) {
+  function length(int|float $value, array|string $attributes = null) {
     $this->length = $value;
     $this->addRefineRule('parseLength', $attributes);
     return $this;

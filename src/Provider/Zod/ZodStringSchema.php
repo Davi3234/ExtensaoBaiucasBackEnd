@@ -31,43 +31,53 @@ class ZodStringSchema extends ZodSchema {
     return $this;
   }
 
-  function length(int $value, array $attributes = null) {
+  function lowerCase() {
+    $this->addTransformRule('parseLowerCase');
+    return $this;
+  }
+
+  function upperCase() {
+    $this->addTransformRule('parseUpperCase');
+    return $this;
+  }
+
+  function length(int $value, array|string $attributes = null) {
     $this->length = $value;
     $this->addRefineRule('parseLength', $attributes);
     return $this;
   }
 
-  function min(int $value, array $attributes = null) {
+  function min(int $value, array|string $attributes = null) {
     $this->min = $value;
     $this->addRefineRule('parseMin', $attributes);
     return $this;
   }
 
-  function max(int $value, array $attributes = null) {
+  function max(int $value, array|string $attributes = null) {
     $this->max = $value;
     $this->addRefineRule('parseMax', $attributes);
     return $this;
   }
 
-  function includes(string $value, array $attributes = null) {
+  function includes(string $value, array|string $attributes = null) {
     $this->includes = $value;
     $this->addRefineRule('parseIncludes', $attributes);
     return $this;
   }
 
-  function startsWith(string $value, array $attributes = null) {
+  function startsWith(string $value, array|string $attributes = null) {
     $this->startsWith = $value;
     $this->addRefineRule('parseStartsWith', $attributes);
     return $this;
   }
 
-  function endsWith(string $value, array $attributes = null) {
+  function endsWith(string $value, array|string $attributes = null) {
     $this->endsWith = $value;
     $this->addRefineRule('parseEndsWith', $attributes);
     return $this;
   }
 
-  function regex(string $value, array $attributes = null) {
+  function regex(string $value, array|string $attributes = null) {
     $this->regex = $value;
     $this->addRefineRule('parseRegex', $attributes);
     return $this;
@@ -78,24 +88,29 @@ class ZodStringSchema extends ZodSchema {
   }
 
   protected function parseTrim($value, array $attributes) {
-    if (!$this->isValueSameType())
-      return;
-
     $this->value = trim($value);
   }
 
   protected function parseToUpperCase($value, array $attributes) {
-    if (!$this->isValueSameType())
-      return;
-
     $this->value = strtoupper($value);
   }
 
   protected function parseToLowerCase($value, array $attributes) {
-    if (!$this->isValueSameType())
+    $this->value = strtolower($value);
+  }
+
+  protected function parseLowerCase($value, array $attributes) {
+    if ($value === strtolower($value))
       return;
 
-    $this->value = strtolower($value);
+    $this->addError(new ZodErrorValidator($attributes['message'] ?? "The value must be in lowercase letters"));
+  }
+
+  protected function parseUpperCase($value, array $attributes) {
+    if ($value === strtoupper($value))
+      return;
+
+    $this->addError(new ZodErrorValidator($attributes['message'] ?? "The value must be in capital letters"));
   }
 
   protected function parseLength($value, array $attributes) {

@@ -147,19 +147,19 @@ abstract class ZodSchema {
     return $this;
   }
 
-  function refine(string|callable $callable, array $attributes = null) {
+  function refine(string|callable $callable, array|string $attributes = null) {
     $this->addRefineExtraRule($callable, $attributes);
     return $this;
   }
 
-  function transform(string|callable $callable, array $attributes = null) {
+  function transform(string|callable $callable, array|string $attributes = null) {
     $this->addTransformExtraRule(function () use ($callable, $attributes) {
       $this->value = $this->resolveHandle($callable, $attributes);
     }, $attributes);
     return $this;
   }
 
-  protected function refineRule(string|callable $callable, array $attributes = null) {
+  protected function refineRule(string|callable $callable, array|string $attributes = null) {
     $this->addRefineRule($callable, $attributes);
     return $this;
   }
@@ -234,35 +234,35 @@ abstract class ZodSchema {
     $this->isStop = true;
   }
 
-  protected function setDefaultRule(string $parserRule, array $attributes = null) {
+  protected function setDefaultRule(string $parserRule, array|string $attributes = null) {
     $this->addRuleValidatorInStack('DEFAULT', $parserRule, $attributes, true);
   }
 
-  protected function addTransformInitialRule(string $parserRule, array $attributes = null) {
+  protected function addTransformInitialRule(string $parserRule, array|string $attributes = null) {
     $this->addRuleValidatorInStack('TRANSFORMINITIAL', $parserRule, $attributes);
   }
 
-  protected function addTypeValidateRule(string $parserRule, array $attributes = null) {
+  protected function addTypeValidateRule(string $parserRule, array|string $attributes = null) {
     $this->addRuleValidatorInStack('TYPEVALIDATE', $parserRule, $attributes);
   }
 
-  protected function addTransformRule(string $parserRule, array $attributes = null) {
+  protected function addTransformRule(string $parserRule, array|string $attributes = null) {
     $this->addRuleValidatorInStack('TRANSFORM', $parserRule, $attributes);
   }
 
-  protected function addRefineRule(string $parserRule, array $attributes = null) {
+  protected function addRefineRule(string $parserRule, array|string $attributes = null) {
     $this->addRuleValidatorInStack('REFINERULE', $parserRule, $attributes);
   }
 
-  protected function addRefineExtraRule(string $parserRule, array $attributes = null) {
+  protected function addRefineExtraRule(string $parserRule, array|string $attributes = null) {
     $this->addRuleValidatorInStack('REFINEEXTRA', $parserRule, $attributes);
   }
 
-  protected function addTransformExtraRule(string|callable $parserRule, array $attributes = null) {
+  protected function addTransformExtraRule(string|callable $parserRule, array|string $attributes = null) {
     $this->addRuleValidatorInStack('TRANSFORMEXTRA', $parserRule, $attributes);
   }
 
-  private function addRuleValidatorInStack(string $key, $parserRule, string|callable $attributes = null, bool $uniqueRule = false) {
+  private function addRuleValidatorInStack(string $key, string|callable $parserRule, string|array $attributes = null, bool $uniqueRule = false) {
     if (is_string($attributes))
       $attributes = ['message' => $attributes];
 

@@ -36,25 +36,25 @@ class ZodDateSchema extends ZodSchema {
     return $this;
   }
 
-  function format(string $format, array $attributes = null) {
+  function format(string $format, array|string $attributes = null) {
     $this->format = $format;
     $this->addTypeValidateRule('parseFormat', $attributes);
     return $this;
   }
 
-  function toFormat(string $toFormat, array $attributes = null) {
+  function toFormat(string $toFormat, array|string $attributes = null) {
     $this->toFormat = $toFormat;
     $this->addTransformExtraRule('parseToFormat', $attributes);
     return $this;
   }
 
-  function min(int $min, array $attributes = null) {
+  function min(int $min, array|string $attributes = null) {
     $this->min = $min;
     $this->addRefineRule('parseMin', $attributes);
     return $this;
   }
 
-  function max(int $max, array $attributes = null) {
+  function max(int $max, array|string $attributes = null) {
     $this->max = $max;
     $this->addRefineRule('parseMax', $attributes);
     return $this;

@@ -14,25 +14,25 @@ class ZodNumberSchema extends ZodSchema {
     parent::__construct($attributes, 'number');
   }
 
-  function gt(int|float $value, array $attributes = null) {
+  function gt(int|float $value, array|string $attributes = null) {
     $this->gt = $value;
     $this->addRefineRule('parseGt', $attributes);
     return $this;
   }
 
-  function gte(int|float $value, array $attributes = null) {
+  function gte(int|float $value, array|string $attributes = null) {
     $this->gte = $value;
     $this->addRefineRule('parseGte', $attributes);
     return $this;
   }
 
-  function lt(int|float $value, array $attributes = null) {
+  function lt(int|float $value, array|string $attributes = null) {
     $this->lt = $value;
     $this->addRefineRule('parseLt', $attributes);
     return $this;
   }
 
-  function lte(int|float $value, array $attributes = null) {
+  function lte(int|float $value, array|string $attributes = null) {
     $this->lte = $value;
     $this->addRefineRule('parseLte', $attributes);
     return $this;
@@ -43,27 +43,27 @@ class ZodNumberSchema extends ZodSchema {
     return $this;
   }
 
-  function positive(array $attributes = null) {
+  function positive(array|string $attributes = null) {
     $this->addRefineRule('parsePositive', $attributes);
     return $this;
   }
 
-  function nonnegative(array $attributes = null) {
+  function nonnegative(array|string $attributes = null) {
     $this->addRefineRule('parseNonnegative', $attributes);
     return $this;
   }
 
-  function negative(array $attributes = null) {
+  function negative(array|string $attributes = null) {
     $this->addRefineRule('parseNegative', $attributes);
     return $this;
   }
 
-  function nonpositive(array $attributes = null) {
+  function nonpositive(array|string $attributes = null) {
     $this->addRefineRule('parseNonpositive', $attributes);
     return $this;
   }
 
-  function multipleOf($value, array $attributes = null) {
+  function multipleOf($value, array|string $attributes = null) {
     $this->multipleOf = $value;
     $this->addRefineRule('parseMultipleOf', $attributes);
     return $this;
