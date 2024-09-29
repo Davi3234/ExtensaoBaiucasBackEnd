@@ -30,7 +30,7 @@ Router::get('/users', function(Request $request, Response $response) {
 // # Por Controller
 class ExemploController {
 
-  listAll(Request $request, Response $response) {
+  function listAll(Request $request, Response $response) {
     // ...
   }
 }

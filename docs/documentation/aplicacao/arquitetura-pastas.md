@@ -1,4 +1,4 @@
-# 2 - Arquitetura de Pastas
+# Arquitetura de Pastas
 
 A aplicação segue a convencional arquitetura de projeto MVC, seguindo esta estrutura de pastas:
 ```
