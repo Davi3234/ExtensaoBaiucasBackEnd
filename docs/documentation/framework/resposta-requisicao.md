@@ -45,7 +45,7 @@ Para retornar uma falha ao usuário deve-se utilizar exceções, informando tant
 ```php
 class UserController {
 
-  create() {
+  function create() {
     // Dispare o erro utilizando a exceção mais cabível pro contexto
     throw new BadRequestException(
       'Erro no cadastro do usuário', // Mensagem genérica do erro. Normalmente referente ao nome da operação
