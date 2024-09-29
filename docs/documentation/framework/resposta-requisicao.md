@@ -51,7 +51,7 @@ class UserController {
       'Erro no cadastro do usuário', // Mensagem genérica do erro. Normalmente referente ao nome da operação
       [
         ['message' => 'Nome é obrigatório', 'origin' => 'name'], // Causa do erro
-        ['message' => 'Login é obrigatório', 'origin' => 'login'] // Causa do erro
+        ['message' => 'Login é obrigatório', 'origin' => 'login'], // Causa do erro
       ]
     );
   }
@@ -150,7 +150,7 @@ class UserController {
     //   'Erro no cadastro do usuário', // Mensagem genérica do erro. Normalmente referente ao título da operação
     //   [
     //     ['message' => 'Nome é obrigatório', 'origin' => 'name'], // Causa do erro
-    //     ['message' => 'Login é obrigatório', 'origin' => 'login'] // Causa do erro
+    //     ['message' => 'Login é obrigatório', 'origin' => 'login'], // Causa do erro
     //   ]
     // );
 
