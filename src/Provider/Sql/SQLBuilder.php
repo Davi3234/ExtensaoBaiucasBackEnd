@@ -8,12 +8,12 @@ abstract class SQLBuilder {
   /**
    * @var array<string, array{sqlTemplates: (string|SelectSQLBuilder)[], params: (string|number|boolean|null)[]}[]>
    */
-  protected array $clausules = [];
+  protected array $clauses = [];
 
   /**
    * @var array<string, string>
    */
-  protected array $clausulesOrder = [];
+  protected array $clausesOrder = [];
 
   function buildSqlOnly() {
     $template = $this->getAllTemplates();
@@ -48,7 +48,7 @@ abstract class SQLBuilder {
     }
 
     return [
-      'sql' => $sql,
+      'sql' => trim($sql),
       'params' => $template['params'],
     ];
   }
@@ -72,7 +72,7 @@ abstract class SQLBuilder {
     $sqlTemplates = [];
     $params = [];
 
-    foreach ($this->clausulesOrder as $clausule => $handler) {
+    foreach ($this->clausesOrder as $handler) {
       if (!method_exists($this, $handler))
         continue;
 

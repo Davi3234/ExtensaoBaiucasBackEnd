@@ -7,11 +7,11 @@ class InsertSQLBuilder extends ReturningSQLBuilder {
   function __construct() {
     parent::__construct();
 
-    $this->clausules["INTO"] = [['sqlTemplates' => [], 'params' => []]];
-    $this->clausules["PARAMS"] = [['sqlTemplates' => [], 'params' => []]];
-    $this->clausules["VALUES"] = [];
+    $this->clauses["INTO"] = [['sqlTemplates' => [], 'params' => []]];
+    $this->clauses["PARAMS"] = [['sqlTemplates' => [], 'params' => []]];
+    $this->clauses["VALUES"] = [];
 
-    $this->clausulesOrder = [
+    $this->clausesOrder = [
       'INTO' => 'getTemplateInto',
       'PARAMS' => 'getTemplateParams',
       'VALUES' => 'getTemplateValue',
@@ -20,13 +20,13 @@ class InsertSQLBuilder extends ReturningSQLBuilder {
   }
 
   function insertInto(string $table) {
-    $this->clausules["INTO"][0]['sqlTemplates'] = [$table];
+    $this->clauses["INTO"][0]['sqlTemplates'] = [$table];
 
     return $this;
   }
 
   function params(string ...$params) {
-    $this->clausules["PARAMS"][0]['sqlTemplates'] = array_merge($this->clausules["PARAMS"][0]['sqlTemplates'], $params);
+    $this->clauses["PARAMS"][0]['sqlTemplates'] = array_merge($this->clauses["PARAMS"][0]['sqlTemplates'], $params);
 
     return $this;
   }
@@ -44,7 +44,7 @@ class InsertSQLBuilder extends ReturningSQLBuilder {
         $paramsSql[$key] = $valueParam;
       }
 
-      $this->clausules["VALUES"][] = [
+      $this->clauses["VALUES"][] = [
         'sqlTemplates' => $paramsName,
         'params' => $paramsSql
       ];
@@ -54,7 +54,7 @@ class InsertSQLBuilder extends ReturningSQLBuilder {
   }
 
   protected function getTemplateInto() {
-    $sqlParams = $this->clausules["INTO"][0]['sqlTemplates'];
+    $sqlParams = $this->clauses["INTO"][0]['sqlTemplates'];
 
     if (!$sqlParams || !$sqlParams[0]) {
       throw new SqlBuilderException('Table name not defined for clause "INSERT INTO"');
@@ -80,7 +80,7 @@ class InsertSQLBuilder extends ReturningSQLBuilder {
   }
 
   protected function getTemplateValue() {
-    $sqlValues = $this->clausules["VALUES"];
+    $sqlValues = $this->clauses["VALUES"];
 
     if (!$sqlValues) {
       throw new SqlBuilderException('Values not defined for clause "INSERT INTO"');
@@ -117,7 +117,7 @@ class InsertSQLBuilder extends ReturningSQLBuilder {
   }
 
   private function getParametersName() {
-    $sqlParams = $this->clausules["PARAMS"][0]['sqlTemplates'];
+    $sqlParams = $this->clauses["PARAMS"][0]['sqlTemplates'];
 
     return $sqlParams;
   }

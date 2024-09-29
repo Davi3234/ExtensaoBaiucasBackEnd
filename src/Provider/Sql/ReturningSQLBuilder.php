@@ -5,34 +5,34 @@ namespace App\Provider\Sql;
 class ReturningSQLBuilder extends SQLBuilder {
 
   function __construct() {
-    $this->clausules['RETURNING'] = [];
+    $this->clauses['RETURNING'] = [];
   }
 
   function returning(string ...$fields) {
-    $this->clausules['RETURNING'] = array_merge($this->clausules['RETURNING'], $fields);
+    $this->clauses['RETURNING'] = array_merge($this->clauses['RETURNING'], $fields);
 
     return $this;
   }
 
   protected function getTemplateReturning() {
-    return getTemplateReturning($this->clausules["RETURNING"]);
+    return getTemplateReturning($this->clauses["RETURNING"]);
   }
 }
 
 class ReturningConditionSQLBuilder extends SQLConditionBuilder {
 
   function __construct() {
-    $this->clausules['RETURNING'] = [];
+    $this->clauses['RETURNING'] = [];
   }
 
   function returning(string ...$fields) {
-    $this->clausules['RETURNING'] = array_merge($this->clausules['RETURNING'], $fields);
+    $this->clauses['RETURNING'] = array_merge($this->clauses['RETURNING'], $fields);
 
     return $this;
   }
 
   protected function getTemplateReturning() {
-    return getTemplateReturning($this->clausules["RETURNING"]);
+    return getTemplateReturning($this->clauses["RETURNING"]);
   }
 }
 

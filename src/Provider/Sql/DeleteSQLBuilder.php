@@ -7,10 +7,10 @@ class DeleteSQLBuilder extends ReturningConditionSQLBuilder {
   function __construct() {
     parent::__construct();
 
-    $this->clausules["DELETEFROM"] = [['sqlTemplates' => [], 'params' => []]];
-    $this->clausules["USING"] = [];
+    $this->clauses["DELETEFROM"] = [['sqlTemplates' => [], 'params' => []]];
+    $this->clauses["USING"] = [];
 
-    $this->clausulesOrder = [
+    $this->clausesOrder = [
       'DELETEFROM' => 'getTemplateDeleteFrom',
       'USING' => 'getTemplateUsing',
       'WHERE' => 'getTemplateWhere',
@@ -18,13 +18,13 @@ class DeleteSQLBuilder extends ReturningConditionSQLBuilder {
   }
 
   function deleteFrom(string $table) {
-    $this->clausules["DELETEFROM"][0]['sqlTemplates'] = [$table];
+    $this->clauses["DELETEFROM"][0]['sqlTemplates'] = [$table];
 
     return $this;
   }
 
   function using(SelectSQLBuilder|string $table, string $alias) {
-    $this->clausules["USING"][] = [
+    $this->clauses["USING"][] = [
       'sqlTemplates' => [$table, $alias],
       'params' => []
     ];
@@ -33,7 +33,7 @@ class DeleteSQLBuilder extends ReturningConditionSQLBuilder {
   }
 
   protected function getTemplateDeleteFrom() {
-    $sqlParams = $this->clausules["DELETEFROM"][0]['sqlTemplates'];
+    $sqlParams = $this->clauses["DELETEFROM"][0]['sqlTemplates'];
 
     if (!$sqlParams || !$sqlParams[0]) {
       throw new SqlBuilderException('Table name not defined for clause "DELETE"');
@@ -46,7 +46,7 @@ class DeleteSQLBuilder extends ReturningConditionSQLBuilder {
   }
 
   protected function getTemplateUsing() {
-    $sqlUsings = $this->clausules['USING'];
+    $sqlUsings = $this->clauses['USING'];
 
     if (!$sqlUsings)
       return [
@@ -86,7 +86,7 @@ class DeleteSQLBuilder extends ReturningConditionSQLBuilder {
   }
 
   protected function getTemplateWhere() {
-    if (!$this->clausules['WHERE']) {
+    if (!$this->clauses['WHERE']) {
       throw new SqlBuilderException('There must be at least one exclusion condition in the "WHERE" statement.');
     }
 
@@ -97,7 +97,7 @@ class DeleteSQLBuilder extends ReturningConditionSQLBuilder {
 $sqlBuilder = SQL::deleteFrom('"user"')
   ->using('perfil', 'pr')
   ->using(SQL::select()->from('perfil'), 'pr1')
-  ->where(
+  ->where([
     SQL::eq('id', 1)
-  )
+  ])
   ->returning('*');

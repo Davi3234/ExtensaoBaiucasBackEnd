@@ -31,9 +31,9 @@ class UserRepository extends Repository implements IUserRepository {
           'name' => $user->getName(),
           'login' => $user->getLogin(),
         ])
-        ->where(
+        ->where([
           SQL::eq('id', $user->getId())
-        )
+        ])
     );
 
     return self::toModel($rowUpdated, User::class);
@@ -42,9 +42,9 @@ class UserRepository extends Repository implements IUserRepository {
   function deleteById(int $id): User {
     $rowDeleted = parent::__exec(
       SQL::deleteFrom('users')
-        ->where(
+        ->where([
           SQL::eq('id', $id)
-        )
+        ])
     );
 
     return self::toModel($rowDeleted, User::class);
@@ -65,9 +65,9 @@ class UserRepository extends Repository implements IUserRepository {
     $row = parent::__findOne(
       SQL::select()
         ->from('users')
-        ->where(
+        ->where([
           SQL::eq('id', $id)
-        )
+        ])
         ->limit(1)
     );
 
@@ -78,9 +78,9 @@ class UserRepository extends Repository implements IUserRepository {
     $row = parent::__findOne(
       SQL::select()
         ->from('users')
-        ->where(
+        ->where([
           SQL::eq('login', $login)
-        )
+        ])
         ->limit(1)
     );
 

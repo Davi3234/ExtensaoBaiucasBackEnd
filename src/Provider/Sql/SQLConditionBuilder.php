@@ -5,12 +5,12 @@ namespace App\Provider\Sql;
 class SQLConditionBuilder extends SQLBuilder {
 
   function __construct() {
-    $this->clausules['WITH'] = [];
-    $this->clausules['WHERE'] = [];
+    $this->clauses['WITH'] = [];
+    $this->clauses['WHERE'] = [];
   }
 
   function with(string $alias, SelectSQLBuilder $selectBuilder) {
-    $this->clausules['WITH'][] = [
+    $this->clauses['WITH'][] = [
       'sqlTemplates' => [$alias, $selectBuilder],
       'params' => [],
     ];
@@ -19,16 +19,16 @@ class SQLConditionBuilder extends SQLBuilder {
   }
 
   /**
-   * @param array{sqlTemplates: string[], params: string|number|boolean|null[]}[] ...$conditions
+   * @param array{sqlTemplates: string[], params: string|number|boolean|null[]}[] $conditions
    */
-  function where(...$conditions) {
-    $this->clausules['WHERE'] = array_merge($this->clausules['WHERE'], $conditions);
+  function where(array $conditions) {
+    $this->clauses['WHERE'] = array_merge($this->clauses['WHERE'], $conditions);
 
     return $this;
   }
 
   protected function getTemplateWith() {
-    $sqlTemplatesWith = $this->clausules['WITH'];
+    $sqlTemplatesWith = $this->clauses['WITH'];
 
     if (!$sqlTemplatesWith)
       return [
@@ -66,7 +66,7 @@ class SQLConditionBuilder extends SQLBuilder {
     $sqlTemplates = ['1 = 1'];
     $params = [];
 
-    foreach ($this->clausules['WHERE'] as $template) {
+    foreach ($this->clauses['WHERE'] as $template) {
       $templates = $this->buildCondition($template);
 
       $sqlTemplates = $this->merge_templates(' AND ', $sqlTemplates, $templates['sqlTemplates']);
@@ -113,5 +113,9 @@ class SQLConditionBuilder extends SQLBuilder {
     }
 
     return $condition;
+  }
+
+  function getWhere() {
+    return $this->clauses['WHERE'];
   }
 }

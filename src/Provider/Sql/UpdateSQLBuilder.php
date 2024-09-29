@@ -7,17 +7,17 @@ class UpdateSQLBuilder extends ReturningConditionSQLBuilder {
   function __construct() {
     parent::__construct();
 
-    $this->clausules["UPDATE"] = [['sqlTemplates' => [], 'params' => []]];
-    $this->clausules["SET"] = [];
+    $this->clauses["UPDATE"] = [['sqlTemplates' => [], 'params' => []]];
+    $this->clauses["SET"] = [];
 
-    $this->clausulesOrder = [
+    $this->clausesOrder = [
       'UPDATE' => 'getTemplateUpdate',
       'SET' => 'getTemplateSet',
     ];
   }
 
   function update(string $table) {
-    $this->clausules["UPDATE"][0]['sqlTemplates'] = [$table];
+    $this->clauses["UPDATE"][0]['sqlTemplates'] = [$table];
 
     return $this;
   }
@@ -26,15 +26,15 @@ class UpdateSQLBuilder extends ReturningConditionSQLBuilder {
    * @param array<string, string|int|float|bool>[] $values
    */
   function values(array $values) {
-    $paramsName = $this->clausules["SET"][0]['sqlTemplates'];
-    $paramsSql = $this->clausules["SET"][0]['params'];
+    $paramsName = $this->clauses["SET"][0]['sqlTemplates'];
+    $paramsSql = $this->clauses["SET"][0]['params'];
 
     foreach ($values as $param => $value) {
       $paramsName[$param] = $param;
       $paramsSql[$param] = $value;
     }
 
-    $this->clausules["SET"][0] = [
+    $this->clauses["SET"][0] = [
       'sqlTemplates' => $paramsName,
       'params' => $paramsSql
     ];
@@ -43,7 +43,7 @@ class UpdateSQLBuilder extends ReturningConditionSQLBuilder {
   }
 
   protected function getTemplateUpdate() {
-    $sqlParams = $this->clausules["UPDATE"][0]['sqlTemplates'];
+    $sqlParams = $this->clauses["UPDATE"][0]['sqlTemplates'];
 
     if (!$sqlParams || !$sqlParams[0]) {
       throw new SqlBuilderException('Table name not defined for clause "UPDATE"');
@@ -56,7 +56,7 @@ class UpdateSQLBuilder extends ReturningConditionSQLBuilder {
   }
 
   protected function getTemplateSet() {
-    $sqlValues = $this->clausules["SET"][0];
+    $sqlValues = $this->clauses["SET"][0];
 
     if (!$sqlValues) {
       throw new SqlBuilderException('Values not defined for clause "UPDATE"');
@@ -79,7 +79,7 @@ class UpdateSQLBuilder extends ReturningConditionSQLBuilder {
   }
 
   protected function getTemplateWhere() {
-    if (!$this->clausules['WHERE']) {
+    if (!$this->clauses['WHERE']) {
       throw new SqlBuilderException('There must be at least one update condition in the "WHERE" statement.');
     }
 

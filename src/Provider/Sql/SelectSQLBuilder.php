@@ -7,14 +7,14 @@ class SelectSQLBuilder extends SQLConditionBuilder {
   function __construct() {
     parent::__construct();
 
-    $this->clausules['SELECT'] = [['sqlTemplates' => [], 'params' => []]];
-    $this->clausules['FROM'] = [];
-    $this->clausules['JOIN'] = [];
-    $this->clausules['ORDERBY'] = [['sqlTemplates' => [], 'params' => []]];
-    $this->clausules['LIMIT'] = [['sqlTemplates' => [], 'params' => []]];
-    $this->clausules['OFFSET'] = [['sqlTemplates' => [], 'params' => []]];
+    $this->clauses['SELECT'] = [['sqlTemplates' => [], 'params' => []]];
+    $this->clauses['FROM'] = [];
+    $this->clauses['JOIN'] = [];
+    $this->clauses['ORDERBY'] = [['sqlTemplates' => [], 'params' => []]];
+    $this->clauses['LIMIT'] = [['sqlTemplates' => [], 'params' => []]];
+    $this->clauses['OFFSET'] = [['sqlTemplates' => [], 'params' => []]];
 
-    $this->clausulesOrder = [
+    $this->clausesOrder = [
       'WITH' => 'getTemplateWith',
       'SELECT' => 'getTemplateSelect',
       'FROM' => 'getTemplateFrom',
@@ -27,13 +27,13 @@ class SelectSQLBuilder extends SQLConditionBuilder {
   }
 
   function select(string ...$fields) {
-    $this->clausules['SELECT'][0]['sqlTemplates'] = array_merge($this->clausules['SELECT'][0]['sqlTemplates'], $fields);
+    $this->clauses['SELECT'][0]['sqlTemplates'] = array_merge($this->clauses['SELECT'][0]['sqlTemplates'], $fields);
 
     return $this;
   }
 
   function from(string|SelectSQLBuilder $table, string $alias = '') {
-    $this->clausules['FROM'][0] = [
+    $this->clauses['FROM'][0] = [
       'sqlTemplates' => [$table, $alias],
       'params' => [],
     ];
@@ -62,7 +62,7 @@ class SelectSQLBuilder extends SQLConditionBuilder {
   }
 
   private function createJoin(string $type, SelectSQLBuilder|string $joinTable, string $alias, string $onRelation) {
-    $this->clausules['JOIN'][] = [
+    $this->clauses['JOIN'][] = [
       'sqlTemplates' => [$type, $joinTable, $alias, $onRelation],
       'params' => [],
     ];
@@ -71,7 +71,7 @@ class SelectSQLBuilder extends SQLConditionBuilder {
   }
 
   function orderBy(string|int ...$values) {
-    $sqlTemplate = $this->clausules['ORDERBY'][0]['sqlTemplates'];
+    $sqlTemplate = $this->clauses['ORDERBY'][0]['sqlTemplates'];
 
     foreach ($values as &$value) {
       $value = is_string($value) ? trim($value) : (string) $value;
@@ -88,27 +88,27 @@ class SelectSQLBuilder extends SQLConditionBuilder {
       $sqlTemplate[] = $direction;
     }
 
-    $this->clausules['ORDERBY'][0]['sqlTemplates'] = $sqlTemplate;
-    $this->clausules['ORDERBY'][0]['params'] = array_merge($this->clausules['ORDERBY'][0]['params'], $values);
+    $this->clauses['ORDERBY'][0]['sqlTemplates'] = $sqlTemplate;
+    $this->clauses['ORDERBY'][0]['params'] = array_merge($this->clauses['ORDERBY'][0]['params'], $values);
 
     return $this;
   }
 
   function limit(string|int $value) {
-    $this->clausules['LIMIT'][0] = ['sqlTemplates' => [''], 'params' => [$value]];
+    $this->clauses['LIMIT'][0] = ['sqlTemplates' => [''], 'params' => [$value]];
 
     return $this;
   }
 
   function offset(string|int $value) {
-    $this->clausules['OFFSET'][0] = ['sqlTemplates' => [''], 'params' => [$value]];
+    $this->clauses['OFFSET'][0] = ['sqlTemplates' => [''], 'params' => [$value]];
 
     return $this;
   }
 
   protected function getTemplateSelect() {
-    $sqlTemplates = $this->clausules['SELECT'][0]['sqlTemplates'];
-    $params = $this->clausules['SELECT'][0]['params'];
+    $sqlTemplates = $this->clauses['SELECT'][0]['sqlTemplates'];
+    $params = $this->clauses['SELECT'][0]['params'];
 
     if (!$sqlTemplates)
       $sqlTemplates = ['*'];
@@ -120,7 +120,7 @@ class SelectSQLBuilder extends SQLConditionBuilder {
   }
 
   protected function getTemplateJoin() {
-    $sqlJoins = $this->clausules['JOIN'];
+    $sqlJoins = $this->clauses['JOIN'];
 
     if (!$sqlJoins)
       return [
@@ -155,9 +155,9 @@ class SelectSQLBuilder extends SQLConditionBuilder {
 
   protected function getTemplateFrom() {
     $sqlTemplates = [];
-    $params = $this->clausules['FROM'][0]['params'];
+    $params = $this->clauses['FROM'][0]['params'];
 
-    foreach ($this->clausules['FROM'][0]['sqlTemplates'] as $template) {
+    foreach ($this->clauses['FROM'][0]['sqlTemplates'] as $template) {
       if ($template instanceof SelectSQLBuilder) {
         $templates = $template->getAllTemplatesWithParentheses();
 
@@ -175,8 +175,8 @@ class SelectSQLBuilder extends SQLConditionBuilder {
   }
 
   protected function getTemplateOrderBy() {
-    $sqlTemplates = $this->clausules['ORDERBY'][0]['sqlTemplates'];
-    $params = $this->clausules['ORDERBY'][0]['params'];
+    $sqlTemplates = $this->clauses['ORDERBY'][0]['sqlTemplates'];
+    $params = $this->clauses['ORDERBY'][0]['params'];
 
     if (!$sqlTemplates)
       return [
@@ -201,7 +201,7 @@ class SelectSQLBuilder extends SQLConditionBuilder {
   }
 
   protected function getTemplateLimit() {
-    $params = $this->clausules['LIMIT'][0]['params'];
+    $params = $this->clauses['LIMIT'][0]['params'];
 
     if (!$params)
       return [
@@ -216,7 +216,7 @@ class SelectSQLBuilder extends SQLConditionBuilder {
   }
 
   protected function getTemplateOffset() {
-    $params = $this->clausules['OFFSET'][0]['params'];
+    $params = $this->clauses['OFFSET'][0]['params'];
 
     if (!$params)
       return [
@@ -235,32 +235,34 @@ $sqlBuilder = SQL::with(
   'user_with',
   SQL::select()
     ->from('"user"')
-    ->where(SQL::eq('name', 'dan'))
+    ->where([SQL::eq('name', 'dan')])
 )
   ->with(
     'user_with2',
     SQL::select()
       ->from('"user"')
-      ->where(SQL::eq('name', 'dan'))
+      ->where([SQL::eq('name', 'dan')])
   )
   ->select('name', 'id')
   ->from('"user"', 'us')
   ->join('perfil', 'pr', 'pr.id_user = us.id_user')
   ->leftJoin(
-    SQL::select()->from('perfil')->where(SQL::eq('type', 'ADM')),
+    SQL::select()->from('perfil')->where([SQL::eq('type', 'ADM')]),
     'pr1',
     'pr1.id_user = us.id_user'
   )
-  ->where(
+  ->where([
     SQL::eq('name', 'Dan'),
     SQL::sqlNot(
       SQL::eq('login', 'dan'),
       SQL::eq('active', true),
       SQL::notIn(
         'id',
-        SQL::select('id')
-          ->from('"user"')
-          ->where(SQL::eq('type', 'ADM'))
+        [
+          SQL::select('id')
+            ->from('"user"')
+            ->where([SQL::eq('type', 'ADM')])
+        ]
       )
     ),
     SQL::sqlAnd(
@@ -268,9 +270,11 @@ $sqlBuilder = SQL::with(
       SQL::eq('active', true),
       SQL::notIn(
         'id',
-        SQL::select('id')
-          ->from('"user"')
-          ->where(SQL::eq('type', 'ADM'))
+        [
+          SQL::select('id')
+            ->from('"user"')
+            ->where([SQL::eq('type', 'ADM')])
+        ]
       )
     ),
     SQL::sqlOr(
@@ -278,12 +282,14 @@ $sqlBuilder = SQL::with(
       SQL::eq('active', true),
       SQL::notIn(
         'id',
-        SQL::select('id')
-          ->from('"user"')
-          ->where(SQL::eq('type', 'ADM'))
+        [
+          SQL::select('id')
+            ->from('"user"')
+            ->where([SQL::eq('type', 'ADM')])
+        ]
       )
     )
-  )
+  ])
   ->orderBy('id', 'name DESC')
   ->limit(1)
   ->offset(2)

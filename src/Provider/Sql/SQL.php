@@ -56,6 +56,14 @@ class SQL extends SQLFormat {
     return self::prepareTemplatesLeftRightArgsCondition($field, 'ILIKE', $value);
   }
 
+  static function notLike(string $field, string|int|float|bool|SelectSQLBuilder $value) {
+    return self::prepareTemplatesLeftRightArgsCondition($field, 'NOT LIKE', $value);
+  }
+
+  static function notIlike(string $field, string|int|float|bool|SelectSQLBuilder $value) {
+    return self::prepareTemplatesLeftRightArgsCondition($field, 'NOT ILIKE', $value);
+  }
+
   static function between(string $field, string|int|float|SelectSQLBuilder $valueLess, string|int|float|SelectSQLBuilder $valueGreater) {
     return self::prepareTemplatesBetweenCondition($field, 'BETWEEN', $valueLess, $valueGreater);
   }
@@ -64,21 +72,21 @@ class SQL extends SQLFormat {
     return self::prepareTemplatesBetweenCondition($field, 'NOT BETWEEN', $valueLess, $valueGreater);
   }
 
-  static function in(string $field, string|int|float|SelectSQLBuilder $value, array ...$values) {
-    if ($value instanceof SelectSQLBuilder) {
-      $values = [$value];
+  static function in(string $field, array $values) {
+    if ($values[0] instanceof SelectSQLBuilder) {
+      $values = [$values[0]];
     } else {
-      array_unshift($values, $value);
+      array_unshift($values, $values[0]);
     }
 
     return self::prepareTemplatesMultiValuesCondition($field, 'IN', $values);
   }
 
-  static function notIn(string $field, string|int|float|SelectSQLBuilder $value, array ...$values) {
-    if ($value instanceof SelectSQLBuilder) {
-      $values = [$value];
+  static function notIn(string $field, array $values) {
+    if ($values[0] instanceof SelectSQLBuilder) {
+      $values = [$values[0]];
     } else {
-      array_unshift($values, $value);
+      array_unshift($values, $values[0]);
     }
 
     return self::prepareTemplatesMultiValuesCondition($field, 'NOT IN', $values);
