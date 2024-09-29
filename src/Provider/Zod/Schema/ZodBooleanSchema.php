@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Provider\Zod;
+namespace App\Provider\Zod\Schema;
 
 /**
  * @extends parent<bool>

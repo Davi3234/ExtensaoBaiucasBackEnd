@@ -1,6 +1,9 @@
 <?php
 
-namespace App\Provider\Zod;
+namespace App\Provider\Zod\Schema;
+
+use App\Provider\Zod\ZodErrorValidator;
+use App\Provider\Zod\ZodParseException;
 
 /**
  * @Template TSchemaType

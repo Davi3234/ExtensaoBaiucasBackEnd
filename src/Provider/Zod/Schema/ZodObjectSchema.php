@@ -1,6 +1,9 @@
 <?php
 
-namespace App\Provider\Zod;
+namespace App\Provider\Zod\Schema;
+
+use App\Provider\Zod\ZodErrorValidator;
+use App\Provider\Zod\ZodSchemaException;
 
 /**
  * @extends parent<object|array<array-key, mixed>>
