@@ -75,7 +75,7 @@ Router::get(
   '/users',
   function(Request $request, Response $response) { /* ... */},
   ExemploMiddleware::class,
-  [ExemploController::class, 'listAll']
+  [ExemploController::class, 'listAll'],
   // Outros handlers...
 );
 ```
