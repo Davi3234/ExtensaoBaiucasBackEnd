@@ -84,10 +84,8 @@ O exemplo acima retornará:
 
 Por baixo dos panos, o que é retornado na API é uma instância da classe `Result`. Ela fornece dois métodos úteis: `success` e `failure`
 
-Exemplo de sucesso:
+Sucesso:
 ```php
-namespace App\Core\Components\Result;
-
 Result::success($value, int $statusCode = 200);
 ```
 
@@ -95,10 +93,8 @@ Result::success($value, int $statusCode = 200);
 - Substitua o `statusCode` pelo status code HTTP com base no contexto do resultado
   - Atenção: Se informar um status code maior ou igual à 400, será disparado um erro com a mensagem: `It is not possible to define a status code greater than or equal to 400 when the result is success`
 
-Exemplo de falha:
+Falha:
 ```php
-namespace App\Core\Components\Result;
-
 Result::failure(array $error, int $statusCode = 400);
 ```
 
