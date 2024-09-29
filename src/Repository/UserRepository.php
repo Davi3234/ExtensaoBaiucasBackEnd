@@ -12,8 +12,8 @@ use App\Model\User;
 class UserRepository extends Repository implements IUserRepository {
 
   function create(User $user): User {
-    $result = parent::__exec(
-      SQL::insertInto('"user"')
+    $rowCreated = parent::__exec(
+      SQL::insertInto('users')
         ->params('name', 'login')
         ->values([
           'name' => $user->getName(),
@@ -21,12 +21,12 @@ class UserRepository extends Repository implements IUserRepository {
         ])
     );
 
-    return self::toModel($result, User::class);
+    return self::toModel($$rowCreated, User::class);
   }
 
   function update(User $user): User {
-    $result = parent::__exec(
-      SQL::update('"user"')
+    $rowUpdated = parent::__exec(
+      SQL::update('users')
         ->values([
           'name' => $user->getName(),
           'login' => $user->getLogin(),
@@ -36,54 +36,54 @@ class UserRepository extends Repository implements IUserRepository {
         )
     );
 
-    return self::toModel($result, User::class);
+    return self::toModel($rowUpdated, User::class);
   }
 
   function deleteById(int $id): User {
-    $result = parent::__exec(
-      SQL::deleteFrom('"user"')
+    $rowDeleted = parent::__exec(
+      SQL::deleteFrom('users')
         ->where(
           SQL::eq('id', $id)
         )
     );
 
-    return self::toModel($result, User::class);
+    return self::toModel($rowDeleted, User::class);
   }
 
   /**
    * @return User[]
    */
   function findMany(): array {
-    $result = parent::__findMany(
-      SQL::select('us.*')->from('"user"', 'us')
+    $rows = parent::__findMany(
+      SQL::select('us.*')->from('users', 'us')
     );
 
-    return self::toModelList($result, User::class);
+    return self::toModelList($rows, User::class);
   }
 
   function findById(int $id): ?User {
-    $result = parent::__findOne(
+    $row = parent::__findOne(
       SQL::select()
-        ->from('"user"')
+        ->from('users')
         ->where(
           SQL::eq('id', $id)
         )
         ->limit(1)
     );
 
-    return self::toModel($result, User::class);
+    return self::toModel($row, User::class);
   }
 
   function findByLogin(string $login): ?User {
-    $result = parent::__findOne(
+    $row = parent::__findOne(
       SQL::select()
-        ->from('"user"')
+        ->from('users')
         ->where(
           SQL::eq('login', $login)
         )
         ->limit(1)
     );
 
-    return self::toModel($result, User::class);
+    return self::toModel($row, User::class);
   }
 }
