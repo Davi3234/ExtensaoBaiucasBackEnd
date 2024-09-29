@@ -14,8 +14,7 @@ class PostService {
   function __construct(
     private readonly IPostRepository $postRepository,
     private readonly IUserRepository $userRepository,
-  ) {
-  }
+  ) { }
 
   function create(array $args) {
     $createSchema = Z::object([

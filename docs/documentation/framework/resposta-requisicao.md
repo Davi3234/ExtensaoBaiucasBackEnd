@@ -23,7 +23,7 @@ Exemplo:
 ```php
 class ExemploController {
 
-  foo() {
+  function foo() {
     return 'Hello World'; // Será retornado no padrão 'Result' na propriedade 'value'
   }
 }
@@ -113,7 +113,7 @@ Ao invés de retornar o próprio resultado em si, é possível também retornar 
 ```php
 class UserController {
 
-  create() {
+  function create() {
     // # Antes
     // return ['message' => 'Usuário criado com sucesso']; // Assim, retornará com o status code padrão (200)
 
@@ -140,7 +140,7 @@ O exemplo acima retornará:
 ```php
 class UserController {
 
-  create() {
+  function create() {
     // # Antes
     // throw new BadRequestException(
     //   'Erro no cadastro do usuário', // Mensagem genérica do erro. Normalmente referente ao título da operação
