@@ -3,6 +3,7 @@
 namespace App\Provider\Zod;
 
 use App\Provider\Zod\Schema\ZodArraySchema;
+use App\Provider\Zod\Schema\ZodEnumSchema;
 use App\Provider\Zod\Schema\ZodMixedSchema;
 use App\Provider\Zod\Schema\ZodObjectSchema;
 use App\Provider\Zod\Schema\ZodStringSchema;
@@ -63,4 +64,26 @@ class Z {
   static function mixed(array $attributes = []) {
     return new ZodMixedSchema($attributes);
   }
+
+  /**
+   * @param enum-string<string|int|float> $enum
+   * @param array{message: string} $attributes
+   */
+  static function enumNative($enum, array $attributes = []) {
+    return self::enum(array_map(fn($case) => $case->value, $enum::cases()), $attributes);
+  }
+
+  /**
+   * @param (number|string)[] $valuesEnable
+   * @param array{message: string} $attributes
+   */
+  static function enum(array $valuesEnable, array $attributes = []) {
+    return new ZodEnumSchema($valuesEnable, $attributes);
+  }
 }
+
+enum Test: int {
+  case A = 1;
+}
+
+Z::enumNative(Test::class);
