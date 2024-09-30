@@ -114,8 +114,4 @@ class SQLConditionBuilder extends SQLBuilder {
 
     return $condition;
   }
-
-  function getWhere() {
-    return $this->clauses['WHERE'];
-  }
 }

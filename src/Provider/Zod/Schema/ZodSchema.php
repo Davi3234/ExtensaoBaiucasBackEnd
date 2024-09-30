@@ -38,6 +38,10 @@ abstract class ZodSchema {
   private bool $isStop = false;
   protected $value = null;
   protected string $type;
+
+  /**
+   * @var array|object|callable|int|float|string|bool|null
+   */
   protected $_defaultValue = null;
   protected bool $isOptional = false;
   protected bool $isCoerce = false;
@@ -153,7 +157,7 @@ abstract class ZodSchema {
     return $this;
   }
 
-  function defaultValue(callable|int|float|string|bool $value) {
+  function defaultValue(array|object|callable|int|float|string|bool $value) {
     $this->_defaultValue = $value;
     $this->setDefaultRule('parseDefault');
     return $this;
@@ -166,7 +170,7 @@ abstract class ZodSchema {
 
   function transform(string|callable $callable, array|string $attributes = null) {
     $this->addTransformExtraRule(function () use ($callable, $attributes) {
-      $this->value = $this->resolveHandle($callable, $attributes);
+      $this->value = $this->resolveHandle($callable, $attributes ?? []);
     }, $attributes);
     return $this;
   }

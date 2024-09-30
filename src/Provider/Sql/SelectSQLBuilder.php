@@ -70,7 +70,10 @@ class SelectSQLBuilder extends SQLConditionBuilder {
     return $this;
   }
 
-  function orderBy(string|int ...$values) {
+  /**
+   * @param (string|int)[] $values
+   */
+  function orderBy(array $values = []) {
     $sqlTemplate = $this->clauses['ORDERBY'][0]['sqlTemplates'];
 
     foreach ($values as &$value) {
@@ -290,7 +293,7 @@ $sqlBuilder = SQL::with(
       )
     )
   ])
-  ->orderBy('id', 'name DESC')
+  ->orderBy(['id', 'name DESC'])
   ->limit(1)
   ->offset(2)
   ->select('login');

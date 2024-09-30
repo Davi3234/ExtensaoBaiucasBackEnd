@@ -9,12 +9,22 @@ use App\Provider\Zod\ZodErrorValidator;
  */
 class ZodArraySchema extends ZodSchema {
 
-  protected ZodArraySchema $schema;
+  protected ZodSchema $schema;
   private int|float|null $min = null;
   private int|float|null $max = null;
   protected int|float|null $length = null;
 
-  function __construct(ZodArraySchema $schema, array $attributes = null) {
+  /**
+   * @var ?callable
+   */
+  protected $_filterCallable = null;
+
+  /**
+   * @var ?callable
+   */
+  protected $_mapCallable = null;
+
+  function __construct(ZodSchema $schema, array $attributes = null) {
     parent::__construct($attributes, 'array');
 
     $this->schema = $schema;
@@ -44,13 +54,25 @@ class ZodArraySchema extends ZodSchema {
     return $this;
   }
 
+  function filter(callable $value) {
+    $this->_filterCallable = $value;
+    $this->addTransformExtraRule('parseFilter');
+    return $this;
+  }
+
+  function map(callable $value, array|string $attributes = null) {
+    $this->_mapCallable = $value;
+    $this->addTransformExtraRule('parseMap', $attributes);
+    return $this;
+  }
+
   protected function parseResolveValuesSchema() {
     $valueRaw = [];
 
     foreach ($this->value as $index => $value) {
       $result = $this->schema->parseSafe($value);
 
-      if (!isset($result['errors']))
+      if (!$result['errors'])
         $valueRaw[$index] = $result['data'];
       else {
         foreach ($result['errors'] as $error)
@@ -62,7 +84,7 @@ class ZodArraySchema extends ZodSchema {
   }
 
   protected function parseCoerce($value, array $attributes) {
-    if (!is_object($value))
+    if (is_object($value))
       return;
 
     $this->value = (array) $value;
@@ -94,5 +116,23 @@ class ZodArraySchema extends ZodSchema {
       return;
 
     $this->addError(new ZodErrorValidator($attributes['message'] ?? "Array must contain \"$this->length\" items exactly"));
+  }
+
+  protected function parseFilter($value, array $attributes) {
+    $filter = $this->_filterCallable;
+
+    if (!$filter || !is_callable($filter))
+      return;
+
+    $this->value = array_filter($value, $filter);
+  }
+
+  protected function parseMap($value, array $attributes) {
+    $map = $this->_mapCallable;
+
+    if (!$map || !is_callable($map))
+      return;
+
+    $this->value = array_map($map, $value);
   }
 }

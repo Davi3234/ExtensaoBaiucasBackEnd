@@ -2,48 +2,144 @@
 
 namespace App\Provider\QueryBuilder;
 
-use App\Provider\QueryBuilder\FieldOperator\BooleanOperator;
-use App\Provider\QueryBuilder\FieldOperator\DateOperator;
-use App\Provider\QueryBuilder\FieldOperator\NumberOperator;
-use App\Provider\QueryBuilder\FieldOperator\StringOperator;
-use App\Provider\Sql\SelectSQLBuilder;
 use App\Provider\Sql\SQL;
+use App\Provider\Zod\Z;
+use App\Provider\QueryBuilder\FieldOperator\BooleanOperator;
+use App\Provider\QueryBuilder\FieldOperator\StringOperator;
+use App\Provider\QueryBuilder\FieldOperator\NumberOperator;
+use App\Provider\QueryBuilder\FieldOperator\DateOperator;
 
 class QueryBuilder {
 
-  private SelectSQLBuilder $selectBuilder;
+  /**
+   * @var array{sqlTemplates: string[], params: string|number|boolean|null[]}[]
+   */
+  private array $conditions = [];
+
+  /**
+   * @var string[]
+   */
+  private array $orderBy = [];
 
   /**
    * @param array<string, array{field: string, type: FieldType}> $filterMap
+   * @param string[]|array<array-key, string> $orderMap
    */
   public function __construct(
-    private readonly array $filterMap
+    private readonly array $filterMap = [],
+    private readonly array $orderMap = []
   ) {
-    $this->selectBuilder = SQL::select()->from('');
+  }
+
+  function toSchema() {
+    return Z::object([
+      'filters' => $this->toSchemaFilter(),
+      'orderBy' => $this->toSchemaOrderBy(),
+    ])->coerce()->toArray()->defaultValue([]);
+  }
+
+  function toSchemaFilter() {
+    return Z::arrayZod(
+      Z::object([
+        'field' => Z::string(),
+        'value' => Z::mixed(),
+        'operator' => Z::string(),
+      ])
+        ->coerce()
+        ->toArray()
+    )
+      ->defaultValue([])
+      ->filter(function ($value) {
+        if (!$value['field'] || !$value['operator'])
+          return false;
+
+        return FilterOperator::tryFrom($value['operator']) != null;
+      });
+  }
+
+  function toSchemaOrderBy() {
+    $orders = [];
+
+    foreach (array_keys($this->orderMap) as $name) {
+      $orders[$name] = Z::string()->toUpperCase()->transform(fn($order) => $order == 'DESC' ? $order : 'ASC');
+    }
+
+    return Z::object($orders)
+      ->coerce()
+      ->toArray();
+  }
+
+  /**
+   * @param array{field: string, value: mixed, operator: string}[] $filters
+   * @param array<string, string> $orders
+   */
+  function parse(array $filters = [], array $orders = [], array $ordersDefault = []) {
+    $conditions = $this->parseFilters($filters);
+    $orderBy = $this->parseOrders($orders, $ordersDefault);
+
+    return [
+      'conditions' => $conditions,
+      'orderBy' => $orderBy,
+    ];
   }
 
   /**
    * @param array{field: string, value: mixed, operator: string}[] $filters
    */
-  function parse(array $filters) {
-    foreach ($filters as $filter) {
-      $fieldFilter = trim($filter['field']);
-      $operatorFilter = trim($filter['operator']);
-      $value = $filter['value'];
+  function parseFilters(array $filters = []) {
+    foreach ($filters as $filter)
+      $this->resolveFilter($filter);
 
-      if (!$fieldFilter || !$operatorFilter)
-        continue;
+    return $this->getWhere();
+  }
 
-      $filterMap = $this->filterMap[$fieldFilter];
+  /**
+   * @param array{field: string, value: mixed, operator: string} $filter
+   */
+  private function resolveFilter(array $filter) {
+    $fieldFilter = trim($filter['field']);
+    $operatorFilter = trim($filter['operator']);
+    $value = $filter['value'];
 
-      if (!$filterMap || !$filterMap['type'])
-        continue;
+    if (!$fieldFilter || !$operatorFilter)
+      return;
 
-      $typeMap = $filterMap['type'];
-      $fieldMap = $filterMap['field'] ?? $fieldFilter;
+    $filterMap = $this->filterMap[$fieldFilter];
 
-      $this->addCondition($fieldMap, $operatorFilter, $value, $typeMap);
-    }
+    if (!$filterMap || !$filterMap['type'])
+      return;
+
+    $typeMap = $filterMap['type'];
+    $fieldMap = $filterMap['field'] ?? $fieldFilter;
+
+    $this->addCondition($fieldMap, $operatorFilter, $value, $typeMap);
+  }
+
+  /**
+   * @param array<string, string> $orders
+   * @param array<string, string> $ordersDefault
+   */
+  function parseOrders(array $orders = [], array $ordersDefault = []) {
+    foreach ($orders as $name => $order)
+      $this->resolveOrderBy($name, $order);
+
+    foreach ($ordersDefault as $name => $order)
+      $this->resolveOrderBy($name, $order);
+
+    return $this->getOrderBy();
+  }
+
+  private function resolveOrderBy($name, $order) {
+    if (!$name || !array_key_exists($name, $this->orderMap))
+      return;
+
+    $orderMap = $this->orderMap[$name];
+
+    $this->addOrderBy((string) $orderMap, strtoupper((string) $order));
+  }
+
+  function addOrderBy(string $orderBy, string $order = 'ASC') {
+    $this->orderBy[] = "$orderBy $order";
   }
 
   /**
@@ -51,21 +147,20 @@ class QueryBuilder {
    * @param string $operator
    * @param mixed $value
    * @param FieldType $typeMap
-   * @return void
    */
   function addCondition(string $field, string $operator, $value, FieldType $typeMap) {
-    switch ($typeMap->value) {
-      case FieldType::STRING->value:
+    switch ($typeMap) {
+      case FieldType::STRING:
         $this->addConditionString($field, $operator, $value);
         break;
-      case FieldType::INTEGER->value:
-      case FieldType::FLOAT->value:
+      case FieldType::INTEGER:
+      case FieldType::FLOAT:
         $this->addConditionNumber($field, $operator, $value);
         break;
-      case FieldType::BOOLEAN->value:
+      case FieldType::BOOLEAN:
         $this->addConditionBoolean($field, $operator, $value);
         break;
-      case FieldType::DATE->value:
+      case FieldType::DATE:
         $this->addConditionDate($field, $operator, $value);
         break;
     };
@@ -75,7 +170,6 @@ class QueryBuilder {
    * @param string $field
    * @param string $operator
    * @param mixed $value
-   * @return void
    */
   function addConditionString(string $field, string $operator, $value) {
     $this->addConditionInSelectBuilder(self::getConditionString($field, $operator, $value));
@@ -85,7 +179,6 @@ class QueryBuilder {
    * @param string $field
    * @param string $operator
    * @param mixed $value
-   * @return void
    */
   function addConditionNumber(string $field, string $operator, $value) {
     $this->addConditionInSelectBuilder(self::getConditionNumber($field, $operator, $value));
@@ -95,7 +188,6 @@ class QueryBuilder {
    * @param string $field
    * @param string $operator
    * @param mixed $value
-   * @return void
    */
   function addConditionDate(string $field, string $operator, $value) {
     $this->addConditionInSelectBuilder(self::getConditionDate($field, $operator, $value));
@@ -105,7 +197,6 @@ class QueryBuilder {
    * @param string $field
    * @param string $operator
    * @param mixed $value
-   * @return void
    */
   function addConditionBoolean(string $field, string $operator, $value) {
     $this->addConditionInSelectBuilder(self::getConditionBoolean($field, $operator, $value));
@@ -115,7 +206,7 @@ class QueryBuilder {
     if (!$condition)
       return;
 
-    $this->selectBuilder->where([$condition]);
+    $this->conditions[] = $condition;
   }
 
   /**
@@ -189,6 +280,10 @@ class QueryBuilder {
   }
 
   function getWhere() {
-    return $this->selectBuilder->getWhere();
+    return $this->conditions;
+  }
+
+  function getOrderBy() {
+    return $this->orderBy;
   }
 }

@@ -3,6 +3,7 @@
 namespace App\Provider\Zod;
 
 use App\Provider\Zod\Schema\ZodArraySchema;
+use App\Provider\Zod\Schema\ZodMixedSchema;
 use App\Provider\Zod\Schema\ZodObjectSchema;
 use App\Provider\Zod\Schema\ZodStringSchema;
 use App\Provider\Zod\Schema\ZodNumberSchema;
@@ -54,5 +55,12 @@ class Z {
    */
   static function arrayZod(ZodSchema $schema, array $attributes = []) {
     return new ZodArraySchema($schema, $attributes);
+  }
+
+  /**
+   * @param array{message: string} $attributes
+   */
+  static function mixed(array $attributes = []) {
+    return new ZodMixedSchema($attributes);
   }
 }
