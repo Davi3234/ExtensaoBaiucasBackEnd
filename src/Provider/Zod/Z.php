@@ -81,9 +81,3 @@ class Z {
     return new ZodEnumSchema($valuesEnable, $attributes);
   }
 }
-
-enum Test: int {
-  case A = 1;
-}
-
-Z::enumNative(Test::class);
