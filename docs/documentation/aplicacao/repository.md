@@ -11,11 +11,11 @@ A classe `Repository` é a classe base para a comunicação e tratamento dos dad
 
 namespace App\Common;
 
-use App\Provider\Database\IDatabase;
-use App\Provider\Sql\DeleteSQLBuilder;
-use App\Provider\Sql\InsertSQLBuilder;
-use App\Provider\Sql\SelectSQLBuilder;
-use App\Provider\Sql\UpdateSQLBuilder;
+use App\Provider\Database\Interface\IDatabase;
+use App\Provider\Sql\Builder\DeleteSQLBuilder;
+use App\Provider\Sql\Builder\InsertSQLBuilder;
+use App\Provider\Sql\Builder\SelectSQLBuilder;
+use App\Provider\Sql\Builder\UpdateSQLBuilder;
 
 /**
  * @template TModel

@@ -24,6 +24,7 @@ class User extends Model {
   private string $name;
   private string $login;
 
+  #[\Override] // Anotação pra indicar que este método sobrescreve um método definido na sua super classe ou na interface que a classe implementa
   protected function __load(array $raw) {
     $this->id = $raw['id'];
     $this->name = $raw['name'];
