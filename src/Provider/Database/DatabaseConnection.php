@@ -26,7 +26,7 @@ class DatabaseConnection implements IDatabaseConnection {
   protected ?PostgresConnection $connection = null;
 
   /**
-   * @param PostgresConnection|string|null $connection Instância de conexão PostgreSQL ou a String da URL de Conexão com o banco
+   * @param PostgresConnection|string|null $connection Instância de conexão PostgreSQL ou a String da URL de Conexão com o banco. Caso não informado, será considerado a URL de conexão definida na variável de ambiente `DATABASE_URL`
    */
   function __construct(PostgresConnection|string|null $connection = null) {
     $databaseUrl = env('DATABASE_URL');
@@ -44,11 +44,16 @@ class DatabaseConnection implements IDatabaseConnection {
 
   /**
    * Returna uma instância da própria classe usando a conexão global com o banco
+   * @param ?string $databaseUrl String da URL de Conexão com o banco. Caso não informado, será considerado a URL de conexão definida na variável de ambiente `DATABASE_URL`
    * @return static Instância da classe DatabaseConnection com a conexão global
    */
-  static function getGlobalConnection(): static {
+  static function getGlobalConnection(?string $databaseUrl = null): static {
+    if (!$databaseUrl) {
+      $databaseUrl = env('DATABASE_URL');
+    }
+
     if (static::$globalConnection == null) {
-      static::$globalConnection = static::newPostgresConnection(env('DATABASE_URL'));
+      static::$globalConnection = static::newPostgresConnection($databaseUrl);
     }
 
     return static::fromConnection(static::$globalConnection);
@@ -116,6 +121,7 @@ class DatabaseConnection implements IDatabaseConnection {
    * Retorna o status atual da conexão banco de dados conectado
    * @return bool Status atual da conexão com o banco de dados
    */
+  #[\Override]
   function status(): bool {
     return pg_ping($this->connection);
   }

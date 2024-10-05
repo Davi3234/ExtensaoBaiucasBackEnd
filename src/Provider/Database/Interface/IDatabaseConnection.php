@@ -21,4 +21,10 @@ interface IDatabaseConnection {
    * @return string Mensagem de erro da última operação realizada
    */
   function getError(): string;
+
+  /**
+   * Retorna o status atual da conexão banco de dados conectado
+   * @return bool Status atual da conexão com o banco de dados
+   */
+  function status(): bool;
 }
