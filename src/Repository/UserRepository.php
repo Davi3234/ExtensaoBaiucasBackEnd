@@ -14,7 +14,7 @@ class UserRepository extends Repository implements IUserRepository {
   #[\Override]
   function create(User $user): User {
     $rowCreated = parent::__exec(
-      SQL::insertInto('users')
+      SQL::insertInto('"user"')
         ->params('name', 'login')
         ->values([
           'name' => $user->getName(),
@@ -28,7 +28,7 @@ class UserRepository extends Repository implements IUserRepository {
   #[\Override]
   function update(User $user): User {
     $rowUpdated = parent::__exec(
-      SQL::update('users')
+      SQL::update('"user"')
         ->values([
           'name' => $user->getName(),
           'login' => $user->getLogin(),
@@ -44,7 +44,7 @@ class UserRepository extends Repository implements IUserRepository {
   #[\Override]
   function deleteById(int $id): User {
     $rowDeleted = parent::__exec(
-      SQL::deleteFrom('users')
+      SQL::deleteFrom('"user"')
         ->where([
           SQL::eq('id', $id)
         ])
@@ -59,7 +59,7 @@ class UserRepository extends Repository implements IUserRepository {
   #[\Override]
   function findMany(): array {
     $rows = parent::__findMany(
-      SQL::select('us.*')->from('users', 'us')
+      SQL::select('us.*')->from('"user"', 'us')
     );
 
     return self::toModelList($rows, User::class);
@@ -69,7 +69,7 @@ class UserRepository extends Repository implements IUserRepository {
   function findById(int $id): ?User {
     $row = parent::__findOne(
       SQL::select()
-        ->from('users')
+        ->from('"user"')
         ->where([
           SQL::eq('id', $id)
         ])
@@ -83,7 +83,7 @@ class UserRepository extends Repository implements IUserRepository {
   function findByLogin(string $login): ?User {
     $row = parent::__findOne(
       SQL::select()
-        ->from('users')
+        ->from('"user"')
         ->where([
           SQL::eq('login', $login)
         ])

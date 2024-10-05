@@ -3,50 +3,95 @@
 namespace App\Provider\Database;
 
 use App\Provider\Database\Interface\IDatabaseConnection;
-use PgSql\Connection;
+use PgSql\Connection as PostgresConnection;
 
+/**
+ * Implementação da interface IDatabaseConnection, gerenciando a conexão com o banco de dados PostgreSQL
+ */
 class DatabaseConnection implements IDatabaseConnection {
 
-  private static ?Connection $globalConnection = null;
-  protected ?Connection $connection;
+  /**
+   * Conexão global com o banco de dados PostgreSQL, utilizada para evitar múltiplas instâncias de conexão
+   */
+  private static ?PostgresConnection $globalConnection = null;
 
-  function __construct(?Connection $connection = null) {
-    $this->connection = $connection;
+  /**
+   * @var string URL de conexão com o banco de dados
+   */
+  private readonly string $databaseUrl;
+
+  /**
+   * Conexão com o banco de dados PostgreSQL
+   */
+  protected ?PostgresConnection $connection = null;
+
+  /**
+   * @param PostgresConnection|string|null $connection Instância de conexão PostgreSQL ou a String da URL de Conexão com o banco
+   */
+  function __construct(PostgresConnection|string|null $connection = null) {
+    $databaseUrl = env('DATABASE_URL');
+    $postgresConnection = null;
+
+    if (is_string($connection)) {
+      $databaseUrl = $connection;
+    } else if ($connection instanceof PostgresConnection) {
+      $postgresConnection = $connection;
+    }
+
+    $this->databaseUrl = $databaseUrl;
+    $this->connection = $postgresConnection;
   }
 
+  /**
+   * Returna uma instância da própria classe usando a conexão global com o banco
+   * @return static Instância da classe DatabaseConnection com a conexão global
+   */
   static function getGlobalConnection(): static {
     if (static::$globalConnection == null) {
-      static::$globalConnection = static::newConnection()->getConnection();
+      static::$globalConnection = static::newPostgresConnection(env('DATABASE_URL'));
     }
 
     return static::fromConnection(static::$globalConnection);
   }
 
-  static function newConnection(): static {
-    $database = new static();
+  /**
+   * Retorna uma instância da própria classe e já realiza a conexão com o banco de dados
+   * @param ?string $databaseUrl URL de Conexão com o banco de dados. Caso não definida, irá considerar da varável env `DATABASE_URL`
+   * @return static Instância da própria classe com uma nova conexão
+   */
+  static function newConnection(?string $databaseUrl = null): static {
+    $database = new static($databaseUrl);
     $database->connect();
 
     return $database;
   }
 
-  static function fromDatabaseConnection(DatabaseConnection $connection) {
-    return static::fromConnection($connection->getConnection());
+  /**
+   * Cria uma instância da própria classe a partir de uma conexão PostgreSQL já existente
+   * @param PostgresConnection $connection Conexão PostgreSQL a ser usada na nova instância
+   * @return static Nova instância da própria classe utilizando a conexão fornecida
+   */
+  static function fromConnection(PostgresConnection $connection): static {
+    return new static($connection);
   }
 
-  static function fromConnection(Connection $connection) {
-    return new static($connection);
+  /**
+   * Função que cria uma conexão com o banco de dados
+   * @param string $databaseUrl URL de conexão com o banco de dados
+   * @return PostgresConnection Conexão com o banco de dados PostgreSQL
+   */
+  static function newPostgresConnection(string $databaseUrl): PostgresConnection {
+    $connection = @pg_connect($databaseUrl);
+
+    if ($connection === false)
+      throw new DatabaseException('Failed to connect to the database. Error: "' . error_get_last()['message'] . '"');
+
+    return $connection;
   }
 
   #[\Override]
   function connect() {
-    if ($this->connection != null) {
-      throw new DatabaseException('Connection link database already connected');
-    }
-
-    $this->connection = @pg_connect(env('DATABASE_URL'));
-
-    if ($this->connection === false)
-      throw new DatabaseException('Failed to connect to the database');
+    $this->connection = self::newPostgresConnection($this->databaseUrl);
   }
 
   #[\Override]
@@ -54,12 +99,24 @@ class DatabaseConnection implements IDatabaseConnection {
     pg_close($this->connection);
   }
 
-  function getConnection() {
-    return $this->connection;
-  }
-
   #[\Override]
   function getError(): string {
     return pg_last_error($this->connection);
+  }
+
+  /**
+   * Retorna a conexão atual com o banco de dados PostgreSQL
+   * @return PostgresConnection Conexão PostgreSQL atual
+   */
+  function getConnection(): PostgresConnection {
+    return $this->connection;
+  }
+
+  /**
+   * Retorna o status atual da conexão banco de dados conectado
+   * @return bool Status atual da conexão com o banco de dados
+   */
+  function status(): bool {
+    return pg_ping($this->connection);
   }
 }

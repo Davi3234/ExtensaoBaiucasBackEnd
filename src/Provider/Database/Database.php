@@ -3,24 +3,18 @@
 namespace App\Provider\Database;
 
 use App\Provider\Database\Interface\IDatabase;
-use App\Exception\Exception;
 use App\Provider\Sql\Builder\SQLBuilder;
+use App\Exception\Exception;
 
 class Database extends DatabaseConnection implements IDatabase {
 
+  #[\Override]
   function execFromSqlBuilder(SQLBuilder $sqlBuilder): array|bool {
     $sql = $sqlBuilder->build();
 
     $result = $this->exec($sql['sql'], $sql['params']);
 
     return $result;
-  }
-
-  #[\Override]
-  function exec(string $sql, $params = []): array|bool {
-    $result = $this->sendPgQueryParam($sql, $params);
-
-    return $result ?: true;
   }
 
   #[\Override]
@@ -31,13 +25,20 @@ class Database extends DatabaseConnection implements IDatabase {
   }
 
   #[\Override]
+  function exec(string $sql, $params = []): array|bool {
+    $result = $this->sendPgQueryParam($sql, $params);
+
+    return $result ?: true;
+  }
+
+  #[\Override]
   function query(string $sql, $params = []): array {
     $result = $this->sendPgQueryParam($sql, $params);
 
     return $result ?: [];
   }
 
-  private function sendPgQueryParam($sql, $params = []) {
+  private function sendPgQueryParam($sql, $params = []): array {
     try {
       $result = @pg_query_params($this->connection, $sql, $params);
 

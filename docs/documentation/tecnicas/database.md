@@ -176,3 +176,35 @@ interface ITransactionCheckpoint {
 
 ## Da classe `DatabaseConnection`
 
+A classe `DatabaseConnection` implementa a classe `IDatabaseConnection`, implementando os métodos usando os recursos do [PostgreSQL Functions](https://www.php.net/manual/en/book.pgsql.php)
+
+API da classe `DatabaseConnection`:
+```php
+namespace App\Provider\Database;
+
+use App\Provider\Database\Interface\IDatabaseConnection;
+use PgSql\Connection as PostgresConnection;
+
+class DatabaseConnection implements IDatabaseConnection {
+
+  private static ?PostgresConnection $globalConnection = null;
+  protected ?PostgresConnection $connection;
+
+  function __construct(
+    protected ?PostgresConnection $connection = null
+  ) { }
+
+  static function getGlobalConnection(): static;
+
+  static function newConnection(): static;
+
+  static function fromDatabaseConnection(DatabaseConnection $connection): static;
+
+  static function fromConnection(PostgresConnection $connection): static;
+
+  function getConnection(): PostgresConnection;
+
+  /* Demais métodos implementados conforme a interface IDatabaseConnection... */
+
+}
+```

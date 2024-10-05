@@ -13,8 +13,6 @@ class HttpException extends RuntimeException {
     array $causes = []
   ) {
     parent::__construct($message, $causes);
-
-    $this->statusCode = $statusCode;
   }
 
   function getStatusCode() {
