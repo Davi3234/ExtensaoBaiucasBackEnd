@@ -73,6 +73,7 @@ class Result implements ResultModel {
     return new Result($ok, $status, $value, $error);
   }
 
+  #[\Override]
   function getResponse() {
     if ($this->isSuccess())
       return $this->getValue();
@@ -80,22 +81,27 @@ class Result implements ResultModel {
     return $this->getError();
   }
 
+  #[\Override]
   function isSuccess(): bool {
     return $this->ok;
   }
 
+  #[\Override]
   function getValue(): array|object|int|float|bool|string|null {
     return $this->value;
   }
 
+  #[\Override]
   function getError(): ?array {
     return $this->error;
   }
 
+  #[\Override]
   function getStatus(): int {
     return $this->status;
   }
 
+  #[\Override]
   function getResult(): array {
     return ['ok' => $this->ok, 'status' => $this->status, 'value' => $this->value, 'error' => $this->error];
   }

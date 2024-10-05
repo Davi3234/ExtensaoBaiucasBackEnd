@@ -4,6 +4,14 @@ namespace App\Core\Components;
 
 class Request {
   private static $instance = null;
+  private $body = [];
+  private $params = [];
+  private $attributes = [];
+  private $router = '/';
+  private $method = '';
+
+  private function __construct() {
+  }
 
   static function getInstance() {
     return static::$instance;
@@ -16,13 +24,14 @@ class Request {
     return static::$instance;
   }
 
-  private $body = [];
-  private $params = [];
-  private $attributes = [];
-  private $router = '/';
-  private $method = '';
+  static function getData() {
+    $dataJson = file_get_contents('php://input');
+    $data = json_decode($dataJson, true);
 
-  private function __construct() {
+    return [
+      'body' => $data,
+      'params' => $_GET,
+    ];
   }
 
   private function loadComponents(string $router, string $method, array $params = []) {
@@ -32,16 +41,6 @@ class Request {
     $this->router = $router;
     $this->method = $method;
     $this->params = array_merge($data['params'], $params);
-  }
-
-  static function getData() {
-    $dataJson = file_get_contents('php://input');
-    $data = json_decode($dataJson, true);
-
-    return [
-      'body' => $data,
-      'params' => $_GET,
-    ];
   }
 
   function getParams() {

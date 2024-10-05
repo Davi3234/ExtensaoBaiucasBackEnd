@@ -18,6 +18,7 @@ class HttpException extends RuntimeException {
     return $this->statusCode;
   }
 
+  #[\Override]
   function toResult() {
     return Result::failure($this->getInfoError(), $this->statusCode);
   }

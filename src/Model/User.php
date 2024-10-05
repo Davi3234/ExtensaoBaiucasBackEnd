@@ -5,17 +5,18 @@ namespace App\Model;
 use App\Common\Model;
 
 class User extends Model {
-  public int $id;
-  private string $name;
-  private string $login;
+	public int $id;
+	private string $name;
+	private string $login;
 
-  protected function __load(array $raw) {
-    $this->id = $raw['id'];
-    $this->name = $raw['name'];
-    $this->login = $raw['login'];
-  }
+	#[\Override]
+	protected function __load(array $raw) {
+		$this->id = $raw['id'];
+		$this->name = $raw['name'];
+		$this->login = $raw['login'];
+	}
 
-	public function getId() : int {
+	public function getId(): int {
 		return $this->id;
 	}
 
@@ -23,7 +24,7 @@ class User extends Model {
 		$this->id = $value;
 	}
 
-	public function getName() : string {
+	public function getName(): string {
 		return $this->name;
 	}
 
@@ -31,7 +32,7 @@ class User extends Model {
 		$this->name = $value;
 	}
 
-	public function getLogin() : string {
+	public function getLogin(): string {
 		return $this->login;
 	}
 

@@ -9,6 +9,7 @@ use App\Exception\Http\UnauthorizedException;
 
 class AuthenticationMiddleware extends Middleware {
 
+  #[\Override]
   function perform(Request $request, Response $response): void {
     // throw new UnauthorizedException('Usuário não autenticado');
   }

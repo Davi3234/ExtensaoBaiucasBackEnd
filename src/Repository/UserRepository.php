@@ -11,6 +11,7 @@ use App\Model\User;
  */
 class UserRepository extends Repository implements IUserRepository {
 
+  #[\Override]
   function create(User $user): User {
     $rowCreated = parent::__exec(
       SQL::insertInto('users')
@@ -24,6 +25,7 @@ class UserRepository extends Repository implements IUserRepository {
     return self::toModel($$rowCreated, User::class);
   }
 
+  #[\Override]
   function update(User $user): User {
     $rowUpdated = parent::__exec(
       SQL::update('users')
@@ -39,6 +41,7 @@ class UserRepository extends Repository implements IUserRepository {
     return self::toModel($rowUpdated, User::class);
   }
 
+  #[\Override]
   function deleteById(int $id): User {
     $rowDeleted = parent::__exec(
       SQL::deleteFrom('users')
@@ -53,6 +56,7 @@ class UserRepository extends Repository implements IUserRepository {
   /**
    * @return User[]
    */
+  #[\Override]
   function findMany(): array {
     $rows = parent::__findMany(
       SQL::select('us.*')->from('users', 'us')
@@ -61,6 +65,7 @@ class UserRepository extends Repository implements IUserRepository {
     return self::toModelList($rows, User::class);
   }
 
+  #[\Override]
   function findById(int $id): ?User {
     $row = parent::__findOne(
       SQL::select()
@@ -74,6 +79,7 @@ class UserRepository extends Repository implements IUserRepository {
     return self::toModel($row, User::class);
   }
 
+  #[\Override]
   function findByLogin(string $login): ?User {
     $row = parent::__findOne(
       SQL::select()
