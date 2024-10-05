@@ -42,7 +42,7 @@ class DatabaseConnection implements IDatabaseConnection {
       throw new DatabaseException('Connection link database already connected');
     }
 
-    $this->connection = @pg_connect(get_env('DATABASE_URL'));
+    $this->connection = @pg_connect(env('DATABASE_URL'));
 
     if ($this->connection === false)
       throw new DatabaseException('Failed to connect to the database');

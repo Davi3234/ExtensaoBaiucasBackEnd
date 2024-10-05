@@ -32,7 +32,8 @@ class App {
   private Request $request;
   private Response $response;
 
-  private function __construct() { }
+  private function __construct() {
+  }
 
   static function CreateApp() {
     if (!isset($_GET['url']))
@@ -154,7 +155,7 @@ class App {
   }
 
   private static function resolveCriticalErrorMessage($message) {
-    if (get_env('ENV') == 'PROD')
+    if (env('ENV') == 'PROD')
       return ['message' => 'Internal server error. Please try again later'];
 
     return $message;
