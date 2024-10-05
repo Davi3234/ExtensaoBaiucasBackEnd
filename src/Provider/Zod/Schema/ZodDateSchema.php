@@ -35,6 +35,7 @@ class ZodDateSchema extends ZodSchema {
   /**
    * @deprecated Coerce not working with date
    */
+  #[\Override]
   function coerce(): static {
     return $this;
   }
@@ -66,6 +67,7 @@ class ZodDateSchema extends ZodSchema {
   /**
    * @deprecated Coerce not working with date
    */
+  #[\Override]
   protected function parseCoerce($value, $attributes) {
   }
 
@@ -95,6 +97,7 @@ class ZodDateSchema extends ZodSchema {
     $this->value = date_format($value, $this->toFormat);
   }
 
+  #[\Override]
   protected function isValueSameType() {
     if (!$this->value || !is_string($this->value))
       return false;

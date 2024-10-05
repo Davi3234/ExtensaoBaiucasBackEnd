@@ -1,6 +1,9 @@
 <?php
 
-namespace App\Provider\Sql;
+namespace App\Provider\Sql\Builder;
+
+use App\Provider\Sql\SQL;
+use App\Provider\Sql\SqlBuilderException;
 
 class InsertSQLBuilder extends ReturningSQLBuilder {
 

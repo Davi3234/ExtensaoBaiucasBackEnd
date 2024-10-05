@@ -1,7 +1,6 @@
 <?php
 
-namespace App\Provider\Sql;
-
+namespace App\Provider\Sql\Builder;
 
 abstract class SQLBuilder {
 
@@ -31,6 +30,7 @@ abstract class SQLBuilder {
 
         $sql .= " $param ";
       }
+
       $sql .= $sqlTemplates;
     }
 

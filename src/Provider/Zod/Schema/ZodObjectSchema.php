@@ -48,6 +48,7 @@ class ZodObjectSchema extends ZodSchema {
     return $this;
   }
 
+  #[\Override]
   protected function parseCoerce($value, $attributes) {
     if (!is_array($value))
       return;

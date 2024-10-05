@@ -1,6 +1,9 @@
 <?php
 
-namespace App\Provider\Sql;
+namespace App\Provider\Sql\Builder;
+
+use App\Provider\Sql\SQL;
+use App\Provider\Sql\SqlBuilderException;
 
 class DeleteSQLBuilder extends ReturningConditionSQLBuilder {
 
@@ -85,6 +88,7 @@ class DeleteSQLBuilder extends ReturningConditionSQLBuilder {
     ];
   }
 
+  #[\Override]
   protected function getTemplateWhere() {
     if (!$this->clauses['WHERE']) {
       throw new SqlBuilderException('There must be at least one exclusion condition in the "WHERE" statement.');

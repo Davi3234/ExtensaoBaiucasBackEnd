@@ -14,6 +14,7 @@ class ZodMixedSchema extends ZodSchema {
   /**
    * @deprecated Coerce not working with date
    */
+  #[\Override]
   function coerce(): static {
     return $this;
   }
@@ -21,9 +22,11 @@ class ZodMixedSchema extends ZodSchema {
   /**
    * @deprecated Coerce not working with date
    */
+  #[\Override]
   protected function parseCoerce($value, $attributes) {
   }
 
+  #[\Override]
   protected function isValueSameType() {
     return true;
   }

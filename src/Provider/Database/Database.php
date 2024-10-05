@@ -4,9 +4,10 @@ namespace App\Provider\Database;
 
 use App\Provider\Database\Interface\IDatabase;
 use App\Exception\Exception;
-use App\Provider\Sql\SQLBuilder;
+use App\Provider\Sql\Builder\SQLBuilder;
 
 class Database extends DatabaseConnection implements IDatabase {
+
   function execFromSqlBuilder(SQLBuilder $sqlBuilder): array|bool {
     $sql = $sqlBuilder->build();
 
@@ -15,18 +16,21 @@ class Database extends DatabaseConnection implements IDatabase {
     return $result;
   }
 
+  #[\Override]
   function exec(string $sql, $params = []): array|bool {
     $result = $this->sendPgQueryParam($sql, $params);
 
     return $result ?: true;
   }
 
+  #[\Override]
   function queryFromSqlBuilder(SQLBuilder $sqlBuilder): array {
     $sql = $sqlBuilder->build();
 
     return $this->query($sql['sql'], $sql['params']);
   }
 
+  #[\Override]
   function query(string $sql, $params = []): array {
     $result = $this->sendPgQueryParam($sql, $params);
 
@@ -53,10 +57,12 @@ class Database extends DatabaseConnection implements IDatabase {
     }
   }
 
+  #[\Override]
   function begin(): Transaction {
     return $this->transaction()->begin();
   }
 
+  #[\Override]
   function transaction(): Transaction {
     return Transaction::fromDatabase($this);
   }

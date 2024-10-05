@@ -11,6 +11,7 @@ class ZodBooleanSchema extends ZodSchema {
     parent::__construct($attributes, 'boolean');
   }
 
+  #[\Override]
   protected function parseCoerce($value, array $attributes) {
     $this->value = (bool)$value;
   }

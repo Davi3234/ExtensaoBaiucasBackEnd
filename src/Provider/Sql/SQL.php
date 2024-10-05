@@ -2,6 +2,11 @@
 
 namespace App\Provider\Sql;
 
+use App\Provider\Sql\Builder\InsertSQLBuilder;
+use App\Provider\Sql\Builder\SelectSQLBuilder;
+use App\Provider\Sql\Builder\UpdateSQLBuilder;
+use App\Provider\Sql\Builder\DeleteSQLBuilder;
+
 class SQL extends SQLFormat {
 
   static function with(string $alias, SelectSQLBuilder $selectBuilder) {
@@ -13,7 +18,7 @@ class SQL extends SQLFormat {
   }
 
   static function insertInto(string $table) {
-    return (new InsertSQLBuilder)->insertInto($table);
+    return (new InsertSQLBuilder())->insertInto($table);
   }
 
   static function update(string $table) {

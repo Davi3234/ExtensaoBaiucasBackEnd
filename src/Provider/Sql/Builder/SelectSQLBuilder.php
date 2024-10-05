@@ -1,6 +1,8 @@
 <?php
 
-namespace App\Provider\Sql;
+namespace App\Provider\Sql\Builder;
+
+use App\Provider\Sql\SQL;
 
 class SelectSQLBuilder extends SQLConditionBuilder {
 

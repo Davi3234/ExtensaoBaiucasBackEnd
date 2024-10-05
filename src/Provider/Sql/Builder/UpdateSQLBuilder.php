@@ -1,6 +1,9 @@
 <?php
 
-namespace App\Provider\Sql;
+namespace App\Provider\Sql\Builder;
+
+use App\Provider\Sql\SQL;
+use App\Provider\Sql\SqlBuilderException;
 
 class UpdateSQLBuilder extends ReturningConditionSQLBuilder {
 
@@ -78,6 +81,7 @@ class UpdateSQLBuilder extends ReturningConditionSQLBuilder {
     ];
   }
 
+  #[\Override]
   protected function getTemplateWhere() {
     if (!$this->clauses['WHERE']) {
       throw new SqlBuilderException('There must be at least one update condition in the "WHERE" statement.');

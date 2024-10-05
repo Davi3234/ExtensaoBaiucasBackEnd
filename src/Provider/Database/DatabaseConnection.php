@@ -37,6 +37,7 @@ class DatabaseConnection implements IDatabaseConnection {
     return new static($connection);
   }
 
+  #[\Override]
   function connect() {
     if ($this->connection != null) {
       throw new DatabaseException('Connection link database already connected');
@@ -48,6 +49,7 @@ class DatabaseConnection implements IDatabaseConnection {
       throw new DatabaseException('Failed to connect to the database');
   }
 
+  #[\Override]
   function close() {
     pg_close($this->connection);
   }
@@ -56,6 +58,7 @@ class DatabaseConnection implements IDatabaseConnection {
     return $this->connection;
   }
 
+  #[\Override]
   function getError(): string {
     return pg_last_error($this->connection);
   }

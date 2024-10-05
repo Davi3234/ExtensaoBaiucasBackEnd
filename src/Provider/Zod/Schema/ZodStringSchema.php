@@ -88,6 +88,7 @@ class ZodStringSchema extends ZodSchema {
     return $this;
   }
 
+  #[\Override]
   protected function parseCoerce($value, array $attributes) {
     $this->value = (string) $value;
   }
@@ -169,6 +170,7 @@ class ZodStringSchema extends ZodSchema {
     $this->addError(new ZodErrorValidator($attributes['message'] ?? 'Value invalid'));
   }
 
+  #[\Override]
   protected function isValueEmpty() {
     return is_null($this->value) || $this->value === '';
   }

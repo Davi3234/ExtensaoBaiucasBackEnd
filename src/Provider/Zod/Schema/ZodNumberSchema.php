@@ -74,6 +74,7 @@ class ZodNumberSchema extends ZodSchema {
     return $this;
   }
 
+  #[\Override]
   protected function parseCoerce($value, array $attributes) {
     if ($this->isValueEmpty())
       return;
@@ -156,10 +157,12 @@ class ZodNumberSchema extends ZodSchema {
     $this->addError(new ZodErrorValidator($attributes['message'] ?? "Number must be a multiple of \"$this->multipleOf\""));
   }
 
+  #[\Override]
   protected function isValueSameType() {
     return !is_string($this->value) && is_numeric($this->value);
   }
 
+  #[\Override]
   protected function isValueEmpty() {
     return is_null($this->value) || $this->value === '';
   }

@@ -83,6 +83,7 @@ class ZodArraySchema extends ZodSchema {
     $this->value = $valueRaw;
   }
 
+  #[\Override]
   protected function parseCoerce($value, array $attributes) {
     if (is_object($value))
       return;

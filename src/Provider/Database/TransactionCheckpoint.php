@@ -18,6 +18,11 @@ class TransactionCheckpoint implements ITransactionCheckpoint {
     $this->name = uuid();
   }
 
+  static function fromDatabase(IDatabase $connection) {
+    return new static($connection);
+  }
+
+  #[\Override]
   function save(): self {
     if ($this->active)
       throw new DatabaseException('Checkpoint transaction already active');
@@ -27,6 +32,7 @@ class TransactionCheckpoint implements ITransactionCheckpoint {
     return $this;
   }
 
+  #[\Override]
   function release(): self {
     if (!$this->active)
       throw new DatabaseException('Checkpoint transaction not active');
@@ -36,6 +42,7 @@ class TransactionCheckpoint implements ITransactionCheckpoint {
     return $this;
   }
 
+  #[\Override]
   function rollback(): self {
     if (!$this->active)
       throw new DatabaseException('Checkpoint transaction not active');
@@ -43,9 +50,5 @@ class TransactionCheckpoint implements ITransactionCheckpoint {
     $this->database->exec("ROLLBACK TO SAVEPOINT \"$this->name\"");
     $this->active = false;
     return $this;
-  }
-
-  static function fromDatabase(IDatabase $connection) {
-    return new static($connection);
   }
 }

@@ -20,6 +20,7 @@ class Transaction implements ITransaction {
     return new static($connection);
   }
 
+  #[\Override]
   function begin(): self {
     if ($this->active)
       throw new DatabaseException('Transaction already active');
@@ -29,6 +30,7 @@ class Transaction implements ITransaction {
     return $this;
   }
 
+  #[\Override]
   function commit(): self {
     if (!$this->active)
       throw new DatabaseException('Transaction not active');
@@ -38,6 +40,7 @@ class Transaction implements ITransaction {
     return $this;
   }
 
+  #[\Override]
   function rollback(): self {
     if (!$this->active)
       throw new DatabaseException('Transaction not active');
@@ -47,10 +50,12 @@ class Transaction implements ITransaction {
     return $this;
   }
 
+  #[\Override]
   function save(): TransactionCheckpoint {
     return $this->checkpoint()->save();
   }
 
+  #[\Override]
   function checkpoint(): TransactionCheckpoint {
     return TransactionCheckpoint::fromDatabase($this->database);
   }
