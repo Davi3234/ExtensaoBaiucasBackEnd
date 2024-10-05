@@ -5,62 +5,6 @@ namespace App\Provider\Database;
 use App\Exception\Exception;
 use App\Provider\Sql\SQLBuilder;
 
-class DatabaseConnection implements IDatabaseConnection {
-
-  private static ?DatabaseConnection $globalConnection = null;
-  protected ?\PgSql\Connection $connection;
-
-  function __construct(?\PgSql\Connection $connection = null) {
-    $this->connection = $connection;
-  }
-
-  static function getGlobalConnection(): static {
-    if (static::$globalConnection == null) {
-      static::$globalConnection = static::newConnection();
-    }
-
-    return static::$globalConnection;
-  }
-
-  static function newConnection(): static {
-    $database = new static();
-    $database->connect();
-
-    return $database;
-  }
-
-  static function fromDatabaseConnection(DatabaseConnection $connection) {
-    return static::fromConnection($connection->getConnection());
-  }
-
-  static function fromConnection(\PgSql\Connection $connection) {
-    return new static($connection);
-  }
-
-  function connect() {
-    if ($this->connection != null) {
-      throw new DatabaseException('Connection link database already connected');
-    }
-
-    $this->connection = @pg_connect(env('DATABASE_URL'));
-
-    if ($this->connection === false)
-      throw new DatabaseException('Failed to connect to the database');
-  }
-
-  function close() {
-    pg_close($this->connection);
-  }
-
-  function getConnection() {
-    return $this->connection;
-  }
-
-  function getError(): string {
-    return pg_last_error($this->connection);
-  }
-}
-
 class Database extends DatabaseConnection implements IDatabase {
   function execFromSqlBuilder(SQLBuilder $sqlBuilder): array|bool {
     $sql = $sqlBuilder->build();
@@ -82,7 +26,7 @@ class Database extends DatabaseConnection implements IDatabase {
     return $this->query($sql['sql'], $sql['params']);
   }
 
-  function query(string $sql, $params = []): array|bool {
+  function query(string $sql, $params = []): array {
     $result = $this->sendPgQueryParam($sql, $params);
 
     return $result ?: [];

@@ -14,7 +14,7 @@ interface IDatabase extends IDatabaseConnection {
   function execFromSqlBuilder(SQLBuilder $sqlBuilder): array|bool;
   function exec(string $sql, $params = []): array|bool;
   function queryFromSqlBuilder(SQLBuilder $sqlBuilder): array;
-  function query(string $sql, $params = []): array|bool;
+  function query(string $sql, $params = []): array;
 }
 
 interface ITransaction {
