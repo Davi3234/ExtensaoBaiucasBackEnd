@@ -68,7 +68,7 @@ class ZodObjectSchema extends ZodSchema {
         $valueRaw[$key] = $result['data'];
       else {
         foreach ($result['errors'] as $error)
-          $this->addError(new ZodErrorValidator($error['message'], $key . ($error['path'] ? '.' . $error['path'][0] : '')));
+          $this->addError($error['message'], [$key . ($error['path'] ? '.' . $error['path'][0] : '')]);
       }
     }
 

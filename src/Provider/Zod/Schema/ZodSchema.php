@@ -131,9 +131,9 @@ abstract class ZodSchema {
 
   protected function resolveResultHandleValidator($response, array $attributes) {
     if ($response === false)
-      $this->addError(new ZodErrorValidator($attributes['message'] ?? 'Value invalid'));
+      $this->addError($attributes['message'] ?? 'Value invalid');
     else if ($response && isset($response['message']))
-      $this->addError(new ZodErrorValidator($response['message']));
+      $this->addError($response['message']);
   }
 
   protected function setup($value = null) {
@@ -187,7 +187,7 @@ abstract class ZodSchema {
       return;
 
     if (!$this->isOptional)
-      $this->addError(new ZodErrorValidator('Value is required'));
+      $this->addError('Value is required');
 
     $this->stop();
   }
@@ -205,7 +205,7 @@ abstract class ZodSchema {
 
     $type = gettype($value);
 
-    $this->addError(new ZodErrorValidator($attributes['invalidType'] ?? "Expect an \"$this->type\" received \"$type\""));
+    $this->addError($attributes['invalidType'] ?? "Expect an \"$this->type\" received \"$type\"");
     $this->stop();
   }
 
@@ -222,8 +222,8 @@ abstract class ZodSchema {
     }
   }
 
-  protected function addError(ZodErrorValidator $message) {
-    $this->errors[] = $message;
+  protected function addError(string $message, array $paths = []) {
+    $this->errors[] = new ZodErrorValidator($message, ...$paths);
   }
 
   /**

@@ -25,6 +25,6 @@ class ZodEnumSchema extends ZodMixedSchema {
     if (in_array($value, $this->valuesEnable))
       return;
 
-    $this->addError(new ZodErrorValidator($attributes['message'] ?? ""));
+    $this->addError($attributes['message'] ?? 'Invalid value, expect "' . implode('", "', $this->valuesEnable) . "\" received $value");
   }
 }
