@@ -2,6 +2,7 @@
 
 namespace App\Provider\Database;
 
+use App\Provider\Database\Interface\IDatabase;
 use App\Exception\Exception;
 use App\Provider\Sql\SQLBuilder;
 

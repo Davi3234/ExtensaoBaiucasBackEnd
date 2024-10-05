@@ -2,7 +2,7 @@
 
 namespace App\Common;
 
-use App\Provider\Database\IDatabase;
+use App\Provider\Database\Interface\IDatabase;
 use App\Provider\Sql\DeleteSQLBuilder;
 use App\Provider\Sql\InsertSQLBuilder;
 use App\Provider\Sql\SelectSQLBuilder;
@@ -15,7 +15,8 @@ abstract class Repository {
 
   function __construct(
     protected IDatabase $database
-  ) { }
+  ) {
+  }
 
   protected function __execSql(string $sql, $params = []): array|bool {
     return $this->database->exec($sql, $params);
@@ -44,7 +45,7 @@ abstract class Repository {
    * @return TModel[]
    */
   protected static function toModelList(array $rawList, string $modelConstructor): array {
-    return array_map(function($raw) use ($modelConstructor) {
+    return array_map(function ($raw) use ($modelConstructor) {
       return self::toModel($raw, $modelConstructor);
     }, $rawList);
   }

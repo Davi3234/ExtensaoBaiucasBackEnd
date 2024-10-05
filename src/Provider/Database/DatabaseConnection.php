@@ -2,6 +2,7 @@
 
 namespace App\Provider\Database;
 
+use App\Provider\Database\Interface\IDatabaseConnection;
 use PgSql\Connection;
 
 class DatabaseConnection implements IDatabaseConnection {

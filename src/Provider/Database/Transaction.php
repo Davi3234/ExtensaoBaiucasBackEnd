@@ -2,6 +2,9 @@
 
 namespace App\Provider\Database;
 
+use App\Provider\Database\Interface\IDatabase;
+use App\Provider\Database\Interface\ITransaction;
+
 class Transaction implements ITransaction {
   /**
    * @var IDatabase

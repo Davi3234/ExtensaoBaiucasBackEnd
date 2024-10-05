@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Provider\Database;
+namespace App\Provider\Database\Interface;
 
 interface ITransaction {
   function begin(): self;

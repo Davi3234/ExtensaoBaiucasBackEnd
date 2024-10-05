@@ -2,6 +2,9 @@
 
 namespace App\Provider\Database;
 
+use App\Provider\Database\Interface\IDatabase;
+use App\Provider\Database\Interface\ITransactionCheckpoint;
+
 class TransactionCheckpoint implements ITransactionCheckpoint {
   /**
    * @var IDatabase
