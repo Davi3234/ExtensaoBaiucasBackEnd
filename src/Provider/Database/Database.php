@@ -52,11 +52,11 @@ class Database extends DatabaseConnection implements IDatabase {
     }
   }
 
-  function begin() {
+  function begin(): Transaction {
     return $this->transaction()->begin();
   }
 
-  function transaction() {
+  function transaction(): Transaction {
     return Transaction::fromDatabase($this);
   }
 }

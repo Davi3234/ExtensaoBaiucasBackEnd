@@ -17,7 +17,7 @@ class Transaction implements ITransaction {
     return new static($connection);
   }
 
-  function begin() {
+  function begin(): self {
     if ($this->active)
       throw new DatabaseException('Transaction already active');
 
@@ -26,7 +26,7 @@ class Transaction implements ITransaction {
     return $this;
   }
 
-  function commit() {
+  function commit(): self {
     if (!$this->active)
       throw new DatabaseException('Transaction not active');
 
@@ -35,7 +35,7 @@ class Transaction implements ITransaction {
     return $this;
   }
 
-  function rollback() {
+  function rollback(): self {
     if (!$this->active)
       throw new DatabaseException('Transaction not active');
 
@@ -44,56 +44,11 @@ class Transaction implements ITransaction {
     return $this;
   }
 
-  function save() {
+  function save(): TransactionCheckpoint {
     return $this->checkpoint()->save();
   }
 
-  function checkpoint() {
+  function checkpoint(): TransactionCheckpoint {
     return TransactionCheckpoint::fromDatabase($this->database);
-  }
-}
-
-class TransactionCheckpoint implements ITransactionCheckpoint {
-  /**
-   * @var IDatabase
-   */
-  protected $database = null;
-  protected $active = false;
-  private string $name;
-
-  function __construct(IDatabase $database) {
-    $this->database = $database;
-    $this->name = uuid();
-  }
-
-  function save() {
-    if ($this->active)
-      throw new DatabaseException('Checkpoint transaction already active');
-
-    $this->database->exec("SAVEPOINT \"$this->name\"");
-    $this->active = true;
-    return $this;
-  }
-
-  function release() {
-    if (!$this->active)
-      throw new DatabaseException('Checkpoint transaction not active');
-
-    $this->database->exec("RELEASE SAVEPOINT \"$this->name\"");
-    $this->active = false;
-    return $this;
-  }
-
-  function rollback() {
-    if (!$this->active)
-      throw new DatabaseException('Checkpoint transaction not active');
-
-    $this->database->exec("ROLLBACK TO SAVEPOINT \"$this->name\"");
-    $this->active = false;
-    return $this;
-  }
-
-  static function fromDatabase(IDatabase $connection) {
-    return new static($connection);
   }
 }
