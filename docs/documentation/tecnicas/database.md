@@ -30,6 +30,12 @@ interface IDatabaseConnection {
    * @return string Mensagem de erro da última operação realizada
    */
   function getError(): string;
+
+  /**
+   * Retorna o status atual da conexão banco de dados conectado
+   * @return bool Status atual da conexão com o banco de dados
+   */
+  function status(): bool;
 }
 ```
 
@@ -115,21 +121,21 @@ interface ITransaction {
 
   /**
    * Inicia uma nova transação
-   * @return self Retorna a própria instância da transação
+   * @return static Retorna a própria instância da transação
    */
-  function begin(): self;
+  function begin(): static;
 
   /**
    * Reverte todas as operações realizadas desde o início da transação
-   * @return self Retorna a própria instância da transação
+   * @return static Retorna a própria instância da transação
    */
-  function rollback(): self;
+  function rollback(): static;
 
   /**
    * Confirma todas as operações realizadas durante a transação
-   * @return self Retorna a própria instância da transação
+   * @return static Retorna a própria instância da transação
    */
-  function commit(): self;
+  function commit(): static;
 
   /**
    * Cria uma instância de checkpoint da transação da conexão atual com o banco sem iniciar o save do checkpoint (SAVE)
@@ -156,21 +162,21 @@ interface ITransactionCheckpoint {
 
   /**
    * Salva o estado atual da transação no checkpoint
-   * @return self Retorna a própria instância do checkpoint
+   * @return static Retorna a própria instância do checkpoint
    */
-  function save(): self;
+  function save(): static;
 
   /**
    * Libera o ponto de salvamento, confirmando as operações realizadas até o save do checkpoint
-   * @return self Retorna a própria instância do checkpoint
+   * @return static Retorna a própria instância do checkpoint
    */
-  function release(): self;
+  function release(): static;
 
   /**
    * Reverte as operações até o ponto de salvamento
-   * @return self Retorna a própria instância do checkpoint
+   * @return static Retorna a própria instância do checkpoint
    */
-  function rollback(): self;
+  function rollback(): static;
 }
 ```
 
@@ -186,24 +192,9 @@ use App\Provider\Database\Interface\IDatabaseConnection;
 use PgSql\Connection as PostgresConnection;
 
 /**
- * Implementação da interface IDatabaseConnection, gerenciando a conexão com o banco de dados PostgreSQL
+ * Classe DatabaseConnection que implementa da interface IDatabaseConnection, gerenciando a conexão com o banco de dados PostgreSQL
  */
 class DatabaseConnection implements IDatabaseConnection {
-
-  /**
-   * Conexão global com o banco de dados PostgreSQL, utilizada para evitar múltiplas instâncias de conexão
-   */
-  private static ?PostgresConnection $globalConnection = null;
-
-  /**
-   * @var string URL de conexão com o banco de dados
-   */
-  private readonly string $databaseUrl;
-
-  /**
-   * Conexão com o banco de dados PostgreSQL
-   */
-  protected ?PostgresConnection $connection = null;
 
   /**
    * @param PostgresConnection|string|null $connection Instância de conexão PostgreSQL ou a String da URL de Conexão com o banco. Caso não informado, será considerado a URL de conexão definida na variável de ambiente `DATABASE_URL`
@@ -212,10 +203,10 @@ class DatabaseConnection implements IDatabaseConnection {
 
   /**
    * Returna uma instância da própria classe usando a conexão global com o banco
-   * @param ?string $databaseUrl String da URL de Conexão com o banco. Caso não informado, será considerado a URL de conexão definida na variável de ambiente `DATABASE_URL`
+   * @param PostgresConnection|string|null $connection String da URL de Conexão com o banco ou a própria conexão nativa com o banco. Caso não informado, será considerado a URL de conexão definida na variável de ambiente `DATABASE_URL` para fazer a conexão. Se a conexão global já tiver sido estabelecida, este parâmetro será ignorado
    * @return static Instância da classe DatabaseConnection com a conexão global
    */
-  static function getGlobalConnection(?string $databaseUrl = null): static;
+  static function getGlobalConnection(PostgresConnection|string|null $connection = null): static;
 
   /**
    * Retorna uma instância da própria classe e já realiza a conexão com o banco de dados
@@ -245,5 +236,142 @@ class DatabaseConnection implements IDatabaseConnection {
   function getConnection(): PostgresConnection;
 
   /* Demais métodos implementados conforme a interface IDatabaseConnection... */
+}
+```
+
+### Formas de criar uma nova conexão
+
+- Criando uma instância de `DatabaseConnection` e realizando a conexão manualmente:
+  - Forma 1:
+    ```php
+    use App\Provider\Database\DatabaseConnection;
+
+    $databaseUrl = 'dbname=example';
+
+    $database = new DatabaseConnection($databaseUrl);
+    $database->connect();
+    ```
+  - Forma 2 (Alias para a Forma 1):
+    ```php
+    use App\Provider\Database\DatabaseConnection;
+
+    $databaseUrl = 'dbname=example';
+
+    /**
+     * Simplifica o uso do new e da chamada ao método connect
+    */
+    $database = DatabaseConnection::newConnection($databaseUrl);
+    ```
+
+- Caso já tenha uma conexão prévia com o banco de dados usando o `pg_connect` nativo e apenas queira importá-la para a classe `DatabaseConnection`, basta usar o método `fromConnection`:
+  - Forma 1:
+    ```php
+    use App\Provider\Database\DatabaseConnection;
+
+    $databaseUrl = 'dbname=example';
+
+    $connection = pg_connect($databaseUrl);
+
+    $database = new DatabaseConnection($connection);
+    ```
+  - Forma 2:
+    ```php
+    use App\Provider\Database\DatabaseConnection;
+
+    $databaseUrl = 'dbname=example';
+
+    $connection = pg_connect($databaseUrl);
+
+    $database = DatabaseConnection::fromConnection($connection);
+    ```
+- Para criar uma simples conexão nativa com PostgreSQL, pode-se usar o método `newPostgresConnection`, este retornará uma instância de `\PgSql\Connection`:
+  ```php
+  use App\Provider\Database\DatabaseConnection;
+
+  $databaseUrl = 'dbname=example';
+
+  // Conexão global com o banco
+  $connection = DatabaseConnection::newPostgresConnection($databaseUrl);
+  ```
+
+- Caso queira trabalhar com [**singleton**](https://imasters.com.br/back-end/o-padrao-singleton-com-php), utiliza-se o método `getGlobalConnection`, que irá retornar (ou criar, caso ainda não esteja criado) uma instância de `DatabaseConnection` com o link de conexão global:
+  - Forma 1:
+    ```php
+    use App\Provider\Database\DatabaseConnection;
+
+    $databaseUrl = 'dbname=example';
+
+    // Conexão global com o banco
+    $database = DatabaseConnection::getGlobalConnection($databaseUrl);
+    ```
+  - Forma 2:
+    ```php
+    use App\Provider\Database\DatabaseConnection;
+
+    $databaseUrl = 'dbname=example';
+
+    $connection = pg_connect($databaseUrl);
+
+    // Conexão global com o banco
+    $database = DatabaseConnection::getGlobalConnection($connection);
+    ```
+
+O parâmetro da URL do banco de dados para os métodos usados acima é opcional, sendo possível não informar a URL de conexão com o banco. Assim, por baixo dos panos, ele irá considerar a URL de conexão com o banco definida na variável de ambiente `DATABASE_URL`;
+
+## Da classe `Database`
+
+A classe `Database` implementa a classe `IDatabase`, implementando os métodos para realizar as operações de transação, como de execução e consulta
+
+```php
+namespace App\Provider\Database;
+
+use App\Provider\Database\Interface\IDatabase;
+use App\Provider\Sql\Builder\SQLBuilder;
+use App\Exception\Exception;
+
+/**
+ * Classe Database que implementa de operações de banco de dados baseadas em SQL, utilizando a conexão PostgreSQL
+ * Extende a classe DatabaseConnection e implementa a interface IDatabase
+ */
+class Database extends DatabaseConnection implements IDatabase {
+
+  /**
+   * Envia uma operação SQL para o PostgreSQL utilizando parâmetros
+   * @param string $sql Instrução SQL a ser executada
+   * @param array $params Parâmetros a serem substituídos na consulta
+   * @return array Resultado da operação como array
+   */
+  private function sendPgQueryParam($sql, $params = []): array;
+
+  /* Demais métodos implementados conforme a interface IDatabase... */
+}
+```
+
+## Da classe `Transaction`
+
+A classe `Transaction` implementa a classe `ITransaction`, responsável por gerenciar as transações do banco de dados
+
+```php
+namespace App\Provider\Database;
+
+use App\Provider\Database\Interface\IDatabase;
+use App\Provider\Database\Interface\ITransaction;
+
+/**
+ * Classe Transaction que implementa a interface ITransaction, gerenciando transações de banco de dados
+ */
+class Transaction implements ITransaction {
+
+  function __construct(IDatabase $database);
+
+  /**
+   * Cria uma nova instância de Transaction a partir de uma conexão de banco de dados
+   *
+   * @param IDatabase $connection Instância de conexão de banco de dados
+   * @return static Nova instância de Transaction associada à conexão fornecida
+   */
+  static function fromDatabase(IDatabase $connection): static;
+
+  /* Demais métodos implementados conforme a interface IDatabase... */
 }
 ```

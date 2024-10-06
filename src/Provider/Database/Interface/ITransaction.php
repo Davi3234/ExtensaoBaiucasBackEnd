@@ -6,21 +6,21 @@ interface ITransaction {
 
   /**
    * Inicia uma nova transação
-   * @return self Retorna a própria instância da transação
+   * @return static Retorna a própria instância da transação
    */
-  function begin(): self;
+  function begin(): static;
 
   /**
    * Reverte todas as operações realizadas desde o início da transação
-   * @return self Retorna a própria instância da transação
+   * @return static Retorna a própria instância da transação
    */
-  function rollback(): self;
+  function rollback(): static;
 
   /**
    * Confirma todas as operações realizadas durante a transação
-   * @return self Retorna a própria instância da transação
+   * @return static Retorna a própria instância da transação
    */
-  function commit(): self;
+  function commit(): static;
 
   /**
    * Cria uma instância de checkpoint da transação da conexão atual com o banco sem iniciar o save do checkpoint (SAVE)

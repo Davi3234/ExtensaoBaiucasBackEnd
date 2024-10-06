@@ -23,7 +23,7 @@ class TransactionCheckpoint implements ITransactionCheckpoint {
   }
 
   #[\Override]
-  function save(): self {
+  function save(): static {
     if ($this->active)
       throw new DatabaseException('Checkpoint transaction already active');
 
@@ -33,7 +33,7 @@ class TransactionCheckpoint implements ITransactionCheckpoint {
   }
 
   #[\Override]
-  function release(): self {
+  function release(): static {
     if (!$this->active)
       throw new DatabaseException('Checkpoint transaction not active');
 
@@ -43,7 +43,7 @@ class TransactionCheckpoint implements ITransactionCheckpoint {
   }
 
   #[\Override]
-  function rollback(): self {
+  function rollback(): static {
     if (!$this->active)
       throw new DatabaseException('Checkpoint transaction not active');
 

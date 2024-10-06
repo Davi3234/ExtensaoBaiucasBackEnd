@@ -6,19 +6,19 @@ interface ITransactionCheckpoint {
 
   /**
    * Salva o estado atual da transação no checkpoint
-   * @return self Retorna a própria instância do checkpoint
+   * @return static Retorna a própria instância do checkpoint
    */
-  function save(): self;
+  function save(): static;
 
   /**
    * Libera o ponto de salvamento, confirmando as operações realizadas até o save do checkpoint
-   * @return self Retorna a própria instância do checkpoint
+   * @return static Retorna a própria instância do checkpoint
    */
-  function release(): self;
+  function release(): static;
 
   /**
    * Reverte as operações até o ponto de salvamento
-   * @return self Retorna a própria instância do checkpoint
+   * @return static Retorna a própria instância do checkpoint
    */
-  function rollback(): self;
+  function rollback(): static;
 }
