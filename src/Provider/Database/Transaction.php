@@ -7,7 +7,6 @@ use App\Provider\Database\Interface\ITransaction;
 
 /**
  * Classe Database que o implementa de operações de banco de dados baseadas em SQL, utilizando a conexão PostgreSQL
- * Extende a classe DatabaseConnection e implementa a interface IDatabase
  */
 class Transaction implements ITransaction {
 

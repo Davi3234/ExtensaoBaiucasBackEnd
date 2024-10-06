@@ -48,7 +48,7 @@ class Database extends DatabaseConnection implements IDatabase {
    * @param array $params Parâmetros a serem substituídos na consulta.
    * @return array Resultado da operação como array.
    */
-  private function sendOperation($sql, $params = []): array {
+  private function sendOperation(string $sql, array $params = []): array {
     try {
       $result = @pg_query_params($this->connection, $sql, $params);
 

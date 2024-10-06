@@ -239,7 +239,7 @@ class DatabaseConnection implements IDatabaseConnection {
 }
 ```
 
-### Formas de criar uma nova conexão
+### Utilização dos métodos
 
 - Criando uma instância de `DatabaseConnection` e realizando a conexão manualmente:
   - Forma 1:
@@ -248,8 +248,8 @@ class DatabaseConnection implements IDatabaseConnection {
 
     $databaseUrl = 'dbname=example';
 
-    $database = new DatabaseConnection($databaseUrl);
-    $database->connect();
+    $databaseConnection = new DatabaseConnection($databaseUrl);
+    $databaseConnection->connect();
     ```
   - Forma 2 (Alias para a Forma 1):
     ```php
@@ -260,7 +260,7 @@ class DatabaseConnection implements IDatabaseConnection {
     /**
      * Simplifica o uso do new e da chamada ao método connect
     */
-    $database = DatabaseConnection::newConnection($databaseUrl);
+    $databaseConnection = DatabaseConnection::newConnection($databaseUrl);
     ```
 
 - Caso já tenha uma conexão prévia com o banco de dados usando o `pg_connect` nativo e apenas queira importá-la para a classe `DatabaseConnection`, basta usar o método `fromConnection`:
@@ -272,7 +272,7 @@ class DatabaseConnection implements IDatabaseConnection {
 
     $connection = pg_connect($databaseUrl);
 
-    $database = new DatabaseConnection($connection);
+    $databaseConnection = new DatabaseConnection($connection);
     ```
   - Forma 2:
     ```php
@@ -282,7 +282,7 @@ class DatabaseConnection implements IDatabaseConnection {
 
     $connection = pg_connect($databaseUrl);
 
-    $database = DatabaseConnection::fromConnection($connection);
+    $databaseConnection = DatabaseConnection::fromConnection($connection);
     ```
 - Para criar uma simples conexão nativa com PostgreSQL, pode-se usar o método `newPostgresConnection`, este retornará uma instância de `\PgSql\Connection`:
   ```php
@@ -302,7 +302,7 @@ class DatabaseConnection implements IDatabaseConnection {
     $databaseUrl = 'dbname=example';
 
     // Conexão global com o banco
-    $database = DatabaseConnection::getGlobalConnection($databaseUrl);
+    $databaseConnection = DatabaseConnection::getGlobalConnection($databaseUrl);
     ```
   - Forma 2:
     ```php
@@ -313,10 +313,10 @@ class DatabaseConnection implements IDatabaseConnection {
     $connection = pg_connect($databaseUrl);
 
     // Conexão global com o banco
-    $database = DatabaseConnection::getGlobalConnection($connection);
+    $databaseConnection = DatabaseConnection::getGlobalConnection($connection);
     ```
 
-O parâmetro da URL do banco de dados para os métodos usados acima é opcional, sendo possível não informar a URL de conexão com o banco. Assim, por baixo dos panos, ele irá considerar a URL de conexão com o banco definida na variável de ambiente `DATABASE_URL`;
+O parâmetro da URL do banco de dados para os métodos usados nos exemplos acima é opcional para todos, sendo possível não informar a URL de conexão com o banco. Assim, por baixo dos panos, ele irá considerar a URL de conexão com o banco definida na variável de ambiente `DATABASE_URL`
 
 ## Da classe `Database`
 
@@ -346,6 +346,135 @@ class Database extends DatabaseConnection implements IDatabase {
   /* Demais métodos implementados conforme a interface IDatabase... */
 }
 ```
+
+Como a classe `Database` extende a classe `DatabaseConnection`, é possível usar os mesmos métodos para manipular a conexão com o banco assim como no `DatabaseConnection`, já que nela é aplicado o conceito de [**Late Static Bindings**](https://www.php.net/manual/en/language.oop5.late-static-bindings.php)
+
+```php
+$databaseUrl = 'dbname=example';
+
+$database = new Database($databaseUrl);
+$database->connect();
+
+$database = Database::newConnection($databaseUrl);
+
+$connection = Database::newPostgresConnection($databaseUrl);
+
+$database = Database::fromConnection($connection);
+
+$database = Database::getGlobalConnection($connection);
+```
+
+### Utilização dos métodos
+
+Para prevenção de SQL Injection, será usado templates SQL e parâmetros separadamente, onde no template, no local onde seria o próprio valor que está recebendo externamente, será colocado um `?` ou `$1` (`$1`, `$2`, `$3`, ...) para indicar que ali espera-se um parâmetro
+
+- O envia de operações de **INSERT**, **UPDATE** e **DELETE** são muito parecidas. Exemplo com a operação de **INSERT**:
+  ```php
+  $name = $_POST['name'];
+  $login = $_POST['login'];
+
+  try {
+    $database = Database::getGlobalConnection();
+
+    $sql = "INSERT INTO users (name, login) VALUES ($1, $2)";
+    $params = [$name, $login];
+
+    $database->exec($sql, $params);
+  } catch(DatabaseException $err) {
+    echo $err->getMessage();
+  }
+  ```
+  - Para cada operação, é sempre possível retornar os registros que foram inseridos/atualizados/deletados utilizando o [**RETURNING**](https://www.postgresql.org/docs/current/dml-returning.html):
+    ```php
+    $name = 'John Doe';
+    $login = 'john.doe@example.com';
+
+    try {
+      $database = Database::getGlobalConnection();
+
+      $sql = "INSERT INTO users (name, login) VALUES ($1, $2) RETURNING *";
+      $params = [$name, $login];
+
+      $rowAffected = $database->exec($sql, $params);
+
+      var_dump($rowAffected[0]);
+      // ['id' => 1, 'name' => 'John Doe', 'login' => 'john.doe@example.com']
+    } catch(DatabaseException $err) {
+      echo $err->getMessage();
+    }
+    ```
+
+- Realizando consultas:
+  ```php
+  $id = 1;
+
+  try {
+    $database = Database::getGlobalConnection();
+
+    $sql = "SELECT * FROM users WHERE id = $1";
+    $params = [$id];
+
+    $rows = $database->query($sql, $params);
+
+    var_dump($rows[0]);
+    // ['id' => 1, 'name' => 'John Doe', 'login' => 'john.doe@example.com']
+  } catch(DatabaseException $err) {
+    echo $err->getMessage();
+  }
+  ```
+
+- Realizando as operações com [`SQL Builder`](sql-builder.md). Ele constrói o SQL já separando os parâmetros e preparando a String do SQL usando o `$1` (`$1`, `$2`, ...)
+  - Exemplo com **INSERT**:
+    ```php
+    use App\Provider\Sql\SQL;
+
+    $name = 'John Doe';
+    $login = 'john.doe@example.com';
+
+    try {
+      $database = Database::getGlobalConnection();
+
+      $rowAffected = $database->execFromSqlBuilder(
+        SQL::insertInto('users')
+        ->params('name', 'login')
+        ->values([
+          'name' => $name,
+          'login' => $login,
+        ])
+        ->returning('*')
+      );
+
+      var_dump($rowAffected[0]);
+      // ['id' => 1, 'name' => 'John Doe', 'login' => 'john.doe@example.com']
+    } catch(DatabaseException $err) {
+      echo $err->getMessage();
+    }
+    ```
+
+  - Exemplo de consulta:
+    ```php
+    use App\Provider\Sql\SQL;
+
+    $id = 1;
+
+    try {
+      $database = Database::getGlobalConnection();
+
+      $rowAffected = $database->queryFromSqlBuilder(
+        SQL::select()
+          ->from('users')
+          ->where([
+            SQL::eq('id', $id)
+          ])
+          ->limit(1)
+      );
+
+      var_dump($rowAffected[0]);
+      // ['id' => 1, 'name' => 'John Doe', 'login' => 'john.doe@example.com']
+    } catch(DatabaseException $err) {
+      echo $err->getMessage();
+    }
+    ```
 
 ## Da classe `Transaction`
 
