@@ -22,7 +22,7 @@ class UserRepository extends Repository implements IUserRepository {
         ])
     );
 
-    return self::toModel($$rowCreated, User::class);
+    return self::toModel($rowCreated, User::class);
   }
 
   #[\Override]

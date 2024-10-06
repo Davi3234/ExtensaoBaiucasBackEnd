@@ -155,7 +155,7 @@ class UserRepository extends Repository {
         ])
     );
 
-    return self::toModel($$rowCreated, User::class);
+    return self::toModel($rowCreated, User::class);
   }
 
   function update(User $user): User {
