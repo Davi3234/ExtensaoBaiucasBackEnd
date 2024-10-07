@@ -80,8 +80,6 @@ class SQL extends SQLFormat {
   static function in(string $field, array $values) {
     if ($values[0] instanceof SelectSQLBuilder) {
       $values = [$values[0]];
-    } else {
-      array_unshift($values, $values[0]);
     }
 
     return self::prepareTemplatesMultiValuesCondition($field, 'IN', $values);
@@ -90,8 +88,6 @@ class SQL extends SQLFormat {
   static function notIn(string $field, array $values) {
     if ($values[0] instanceof SelectSQLBuilder) {
       $values = [$values[0]];
-    } else {
-      array_unshift($values, $values[0]);
     }
 
     return self::prepareTemplatesMultiValuesCondition($field, 'NOT IN', $values);

@@ -217,11 +217,11 @@ class QueryBuilder {
   static function getConditionString(string $field, string $operator, $value) {
     return match ($operator) {
       StringOperator::EQUALS->value => SQL::eq($field, $value),
-      StringOperator::CONTAINS->value => SQL::like($field, '%' . str_replace(' ', '%', str_replace('  ', ' ', trim($value))) . '%'),
-      StringOperator::NOT_CONTAINS->value => SQL::notLike($field, '%' . str_replace(' ', '%', str_replace('  ', ' ', trim($value))) . '%'),
+      StringOperator::CONTAINS->value => SQL::ilike($field, '%' . str_replace(' ', '%', str_replace('  ', ' ', trim($value))) . '%'),
+      StringOperator::NOT_CONTAINS->value => SQL::notIlike($field, '%' . str_replace(' ', '%', str_replace('  ', ' ', trim($value))) . '%'),
       StringOperator::DIFFERENT->value => SQL::dif($field, $value),
-      StringOperator::STARS_WITH->value => SQL::like($field, '%' . trim($value)),
-      StringOperator::ENDS_WITH->value => SQL::like($field, trim($value) . '%'),
+      StringOperator::STARS_WITH->value => SQL::ilike($field, '%' . trim($value)),
+      StringOperator::ENDS_WITH->value => SQL::ilike($field, trim($value) . '%'),
       StringOperator::FILLED->value => $value ? SQL::isNotNull($field) : SQL::isNull($field),
       default => null,
     };
