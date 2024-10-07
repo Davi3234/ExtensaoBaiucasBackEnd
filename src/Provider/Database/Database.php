@@ -56,12 +56,7 @@ class Database extends DatabaseConnection implements IDatabase {
         throw new DatabaseException($this->getError());
       }
 
-      $raw = [];
-      while ($row = pg_fetch_assoc($result)) {
-        $raw[] = $row;
-      }
-
-      return $raw;
+      return pg_fetch_all($result, PGSQL_ASSOC);
     } catch (Exception $err) {
       throw $err;
     } catch (\Exception $err) {

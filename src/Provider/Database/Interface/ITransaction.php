@@ -33,4 +33,10 @@ interface ITransaction {
    * @return ITransactionCheckpoint Instância de um checkpoint na transação
    */
   function save(): ITransactionCheckpoint;
+
+  /**
+   * Retorna um boolean indicando se a transação está ativa ou não
+   * @return bool Status da transação
+   */
+  function isActive(): bool;
 }

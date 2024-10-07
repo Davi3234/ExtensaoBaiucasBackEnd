@@ -26,7 +26,7 @@ class Transaction implements ITransaction {
 
   #[\Override]
   function begin(): static {
-    if ($this->active)
+    if ($this->isActive())
       throw new DatabaseException('Transaction already active');
 
     $this->database->exec('BEGIN');
@@ -36,7 +36,7 @@ class Transaction implements ITransaction {
 
   #[\Override]
   function commit(): static {
-    if (!$this->active)
+    if (!$this->isActive())
       throw new DatabaseException('Transaction not active');
 
     $this->database->exec('COMMIT');
@@ -46,7 +46,7 @@ class Transaction implements ITransaction {
 
   #[\Override]
   function rollback(): static {
-    if (!$this->active)
+    if (!$this->isActive())
       throw new DatabaseException('Transaction not active');
 
     $this->database->exec('ROLLBACK');
@@ -62,5 +62,10 @@ class Transaction implements ITransaction {
   #[\Override]
   function checkpoint(): TransactionCheckpoint {
     return TransactionCheckpoint::fromDatabase($this->database);
+  }
+
+  #[\Override]
+  function isActive(): bool {
+    return $this->active;
   }
 }
