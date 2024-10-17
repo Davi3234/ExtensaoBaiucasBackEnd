@@ -3,7 +3,6 @@
 namespace App\Controller;
 
 use App\Core\Components\Request;
-use App\Provider\Database\Database;
 use App\Repository\UserRepository;
 use App\Service\UserService;
 
@@ -12,7 +11,7 @@ class UserController {
 
   function __construct() {
     $this->userService = new UserService(
-      new UserRepository(Database::getGlobalConnection())
+      new UserRepository()
     );
   }
 
