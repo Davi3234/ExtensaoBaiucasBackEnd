@@ -12,8 +12,6 @@ use App\Exception\Exception;
  */
 class Database extends DatabaseConnection implements IDatabase {
 
-  error_code = pg_result_error_field($qryClientStatus, PGSQL_DIAG_SQLSTATE);
-
   #[\Override]
   function execFromSqlBuilder(SQLBuilder $sqlBuilder): array|bool {
     $sql = $sqlBuilder->build();
