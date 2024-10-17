@@ -1,0 +1,13 @@
+<?php
+
+require __DIR__ . '/../vendor/autoload.php';
+
+use App\Provider\Database\EntityManagerCreator;
+use Doctrine\ORM\Tools\Console\ConsoleRunner;
+use Doctrine\ORM\Tools\Console\EntityManagerProvider\SingleManagerProvider;
+
+$entityManager = EntityManagerCreator::getInstance()->getEntityManager();
+
+ConsoleRunner::run(
+  new SingleManagerProvider($entityManager)
+);
