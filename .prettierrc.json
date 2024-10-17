@@ -1,0 +1,20 @@
+{
+  "plugins": ["@prettier/plugin-php"],
+  "singleQuote": true,
+  "tabWidth": 2,
+  "arrowParens": "avoid",
+  "bracketSameLine": true,
+  "bracketSpacing": true,
+  "cursorOffset": 0,
+  "embeddedLanguageFormatting": "auto",
+  "endOfLine": "crlf",
+  "printWidth": 160,
+  "proseWrap": "preserve",
+  "quoteProps": "preserve",
+  "semi": false,
+  "singleAttributePerLine": false,
+  "useTabs": false,
+  "functionParenNewline": "never",
+  "arrayInlineSingleLine": true,
+  "objectLiteralInlineSingleLine": true
+}

@@ -2,101 +2,94 @@
 
 namespace App\Repository;
 
-use App\Common\Repository;
-use App\Exception\NotFoundException;
-use App\Model\User;
-use App\Provider\Sql\SelectSQLBuilder;
 use App\Provider\Sql\SQL;
-use App\Provider\Sql\UpdateSQLBuilder;
+use App\Common\Repository;
+use App\Model\User;
 
-class UserRepository extends Repository {
-  function create(User ...$users) {
-    $data = array_map(function ($user) {
-      return [
-        'login' => $user->getLogin(),
-        'name' => $user->getName(),
-      ];
-    }, $users);
+/**
+ * @extends parent<User>
+ */
+class UserRepository extends Repository implements IUserRepository {
 
-    $insertBuilder = SQL::insert('"user"')
-      ->params('login', 'name')
-      ->value(...$data);
+  #[\Override]
+  function create(User $user): User {
+    $rowCreated = parent::__exec(
+      SQL::insertInto('"user"')
+        ->params('name', 'login')
+        ->values([
+          'name' => $user->getName(),
+          'login' => $user->getLogin(),
+        ])
+    );
 
-    $result = parent::_create($insertBuilder);
-
-    return $result;
+    return self::toModel($rowCreated, User::class);
   }
 
-  function update(UpdateSQLBuilder $updateBuilder) {
-    $updateBuilder->update('"user');
+  #[\Override]
+  function update(User $user): User {
+    $rowUpdated = parent::__exec(
+      SQL::update('"user"')
+        ->values([
+          'name' => $user->getName(),
+          'login' => $user->getLogin(),
+        ])
+        ->where([
+          SQL::eq('id', $user->getId())
+        ])
+    );
 
-    $result = parent::_update($updateBuilder);
+    return self::toModel($rowUpdated, User::class);
+  }
 
-    return $result;
+  #[\Override]
+  function deleteById(int $id): User {
+    $rowDeleted = parent::__exec(
+      SQL::deleteFrom('"user"')
+        ->where([
+          SQL::eq('id', $id)
+        ])
+    );
+
+    return self::toModel($rowDeleted, User::class);
   }
 
   /**
-   * @return array{where: array}
+   * @return User[]
    */
-  function delete(array $args) {
-    $deleteBuilder = SQL::delete('"user"')
-      ->where(...$args);
+  #[\Override]
+  function findMany(): array {
+    $rows = parent::__findMany(
+      SQL::select('us.*')->from('"user"', 'us')
+    );
 
-    $result = parent::_delete($deleteBuilder);
-
-    return $result;
+    return self::toModelList($rows, User::class);
   }
 
-  function checkExistsOrTrow(SelectSQLBuilder $selectBuilder) {
-    $result = $this->isExists($selectBuilder);
+  #[\Override]
+  function findById(int $id): ?User {
+    $row = parent::__findOne(
+      SQL::select()
+        ->from('"user"')
+        ->where([
+          SQL::eq('id', $id)
+        ])
+        ->limit(1)
+    );
 
-    if (!$result)
-      throw new NotFoundException('User not found');
+    return self::toModel($row, User::class);
   }
 
-  function isExists(SelectSQLBuilder $selectBuilder) {
-    $result = $this->findFirst($selectBuilder);
+  #[\Override]
+  function findByLogin(string $login): ?User {
+    $row = parent::__findOne(
+      SQL::select()
+        ->from('"user"')
+        ->where([
+          SQL::eq('login', $login)
+        ])
+        ->limit(1)
+    );
 
-    return !!$result;
-  }
-
-  function findFirstOrThrow(SelectSQLBuilder $selectBuilder) {
-    $result = $this->findFirst($selectBuilder);
-
-    if (!$result)
-      throw new NotFoundException('User not found');
-
-    return $result;
-  }
-
-  function findFirst(SelectSQLBuilder $selectBuilder): array|null {
-    $selectBuilder
-      ->from('"user')
-      ->limit(1);
-
-    $result = parent::_query($selectBuilder);
-
-    if (!isset($result[0]))
-      return null;
-
-    return $result[0];
-  }
-
-  function findMany(SelectSQLBuilder $selectBuilder) {
-    $selectBuilder->from('"user"');
-
-    $result = parent::_queryModel($selectBuilder, User::class);
-
-    return $result;
-  }
-
-  function count(SelectSQLBuilder $selectBuilder) {
-    $selectBuilder
-      ->select('COUNT(*)')
-      ->from('"user');
-
-    $result = parent::_query($selectBuilder);
-
-    return $result;
+    return self::toModel($row, User::class);
   }
 }

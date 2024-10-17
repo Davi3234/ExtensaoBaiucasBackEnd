@@ -2,7 +2,7 @@
 
 namespace App\Provider\Sql;
 
-use App\Exception\Exception;
+use App\Exception\CriticalException;
 
-class SqlBuilderException extends Exception {
+class SqlBuilderException extends CriticalException {
 }

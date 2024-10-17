@@ -2,49 +2,59 @@
 
 namespace App\Common;
 
-use App\Provider\Database\IDatabase;
-use App\Provider\Sql\DeleteSQLBuilder;
-use App\Provider\Sql\InsertSQLBuilder;
-use App\Provider\Sql\SelectSQLBuilder;
-use App\Provider\Sql\UpdateSQLBuilder;
+use App\Provider\Database\Interface\IDatabase;
+use App\Provider\Sql\Builder\DeleteSQLBuilder;
+use App\Provider\Sql\Builder\InsertSQLBuilder;
+use App\Provider\Sql\Builder\SelectSQLBuilder;
+use App\Provider\Sql\Builder\UpdateSQLBuilder;
 
+/**
+ * @template TModel of Model
+ */
 abstract class Repository {
-  protected IDatabase $database;
 
-  function __construct(IDatabase $database) {
-    $this->database = $database;
+  function __construct(
+    protected IDatabase $database
+  ) {
   }
 
-  protected function _create(InsertSQLBuilder $insertBuilder) {
-    $insertBuilder->returning('*');
-
-    return $this->database->execFromSqlBuilder($insertBuilder);
+  protected function __execSql(string $sql, $params = []): array|bool {
+    return $this->database->exec($sql, $params);
   }
 
-  protected function _update(UpdateSQLBuilder $updateBuilder) {
-    $updateBuilder->returning('*');
-
-    return $this->database->execFromSqlBuilder($updateBuilder);
+  protected function __querySql(string $sql, $params = []): array {
+    return $this->database->query($sql, $params);
   }
 
-  protected function _delete(DeleteSQLBuilder $deleteBuilder) {
-    $deleteBuilder->returning('*');
+  protected function __exec(InsertSQLBuilder|UpdateSQLBuilder|DeleteSQLBuilder $sqlBuilder): array {
+    $sqlBuilder->returning('*');
 
-    return $this->database->execFromSqlBuilder($deleteBuilder);
+    return $this->database->execFromSqlBuilder($sqlBuilder);
   }
 
-  protected function _query(SelectSQLBuilder $selectBuilder) {
+  protected function __findOne(SelectSQLBuilder $selectBuilder): ?array {
+    return $this->__findMany($selectBuilder)[0];
+  }
+
+  protected function __findMany(SelectSQLBuilder $selectBuilder): array {
     return $this->database->queryFromSqlBuilder($selectBuilder);
   }
 
-  protected function _queryModel(SelectSQLBuilder $selectBuilder, $modelConstructor) {
-    $result = $this->database->queryFromSqlBuilder($selectBuilder);
+  /**
+   * @param class-string<TModel> $modelConstructor
+   * @return TModel[]
+   */
+  protected static function toModelList(array $rawList, string $modelConstructor): array {
+    return array_map(function ($raw) use ($modelConstructor) {
+      return self::toModel($raw, $modelConstructor);
+    }, $rawList);
+  }
 
-    $dataModel = [];
-    foreach ($result as $raw) {
-      $dataModel[] = $modelConstructor::_loadModel($raw);
-    }
-
-    return $dataModel;
+  /**
+   * @param class-string<TModel> $modelConstructor
+   * @return ?TModel
+   */
+  protected static function toModel(array|null $raw, string $modelConstructor): object {
+    return $raw ? $modelConstructor::__loadModel($raw) : null;
   }
 }

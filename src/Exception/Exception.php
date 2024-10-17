@@ -2,12 +2,9 @@
 
 namespace App\Exception;
 
-class Exception extends \Exception {
+use App\Core\Components\Result;
 
-  /**
-   * @var array{message: string, causes: array{message: string, origin: ?string}}[]
-   */
-  private array $causes = [];
+class Exception extends \Exception {
 
   /**
    * @param string $message
@@ -15,13 +12,16 @@ class Exception extends \Exception {
    */
   function __construct(
     protected $message = "",
-    array ...$causes
+    protected array $causes = []
   ) {
-    $this->causes = $causes;
   }
 
   function getCauses() {
     return $this->causes;
+  }
+
+  function toResult() {
+    return Result::failure($this->getInfoError());
   }
 
   function getInfoError() {

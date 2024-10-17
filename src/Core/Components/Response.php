@@ -32,14 +32,14 @@ class Response {
     return $this->dataResponse;
   }
 
-  function sendDataResponse($status = null) {
+  function sendDataResponse(int $status = null) {
     if ($status)
       $this->status($status);
 
     $this->sendJson($this->dataResponse, $status);
   }
 
-  function sendJson($data, $status = null) {
+  function sendJson(array|object $data, int $status = null) {
     if ($data instanceof Result) {
       $status = $data->getStatus();
       $data = $data->getResult();

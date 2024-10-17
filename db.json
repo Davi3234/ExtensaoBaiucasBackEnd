@@ -1,35 +1,34 @@
 {
-    "formularios":[
+  "formularios": [
+    {
+      "id": 1,
+      "title": "Formulário de Login",
+      "lines": [
         {
-          "id": 1,
-          "title": "Formulário de Login",
-          "lines":[
+          "fields": [
             {
-              "fields": [
-                {
-                  "ref": "dsLogin",
-                  "width": 100,
-                  "label": "Login",
-                  "type": "text",
-                  "placeholder": "Digite o nome do usuário",
-                  "required": true
-                }
-              ]
-            },
+              "ref": "dsLogin",
+              "width": 100,
+              "label": "Login",
+              "type": "text",
+              "placeholder": "Digite o nome do usuário",
+              "required": true
+            }
+          ]
+        },
+        {
+          "fields": [
             {
-              "fields": [
-                {
-                  "ref": "dsSenha",
-                  "width": 100,
-                  "label": "Senha",
-                  "type": "password",
-                  "placeholder": "Digite a senha",
-                  "required": true
-                }
-              ]
+              "ref": "dsSenha",
+              "width": 100,
+              "label": "Senha",
+              "type": "password",
+              "placeholder": "Digite a senha",
+              "required": true
             }
           ]
         }
-          
-    ]
-  }
+      ]
+    }
+  ]
+}

@@ -3,14 +3,14 @@
 namespace App\Core\Components;
 
 use App\Enum\RouterMethod;
-use App\Exception\InternalServerErrorException;
+use App\Exception\CriticalException;
 
 class Router {
 
   private static $instance = null;
 
   /**
-   * @return Router
+   * @return static
    */
   static function getInstance() {
     if (!static::$instance)
@@ -20,10 +20,7 @@ class Router {
   }
 
   /**
-   * @var array<string, array{
-   * prefix: string,
-   * filePath: string 
-   * }>
+   * @var array<string, array{prefix: string, filePath: string}>
    */
   protected $routersGroup = [];
 
@@ -49,22 +46,19 @@ class Router {
   ];
 
   /**
-   * @param array<array{
-   * prefix: string,
-   * filePath: string 
-   * }> ...$args
+   * @param array{prefix: string, filePath: string}[] ...$args
    * @return void
    */
-  function addRouterGroup(...$args) {
+  function addRouterGroup(array ...$args) {
     foreach ($args as $arg) {
       if (isset($this->routersGroup[$arg['prefix']]))
-        throw new InternalServerErrorException("Prefix router group \"{$arg['prefix']}\" already defined");
+        throw new CriticalException("Prefix router group \"{$arg['prefix']}\" already defined");
 
       $this->routersGroup[$arg['prefix']] = $arg;
     }
   }
 
-  protected function createRouter($method, $path, $handlers) {
+  protected function createRouter(string $method, string $path, $handlers) {
     $path = str_replace('//', '/', trim("/$path"));
 
     if (!$path || $path == '/')
@@ -76,7 +70,7 @@ class Router {
     }
 
     if (isset($this->routers[$method][$path]))
-      throw new InternalServerErrorException("Router \"$method\" \"$path\" already defined");
+      throw new CriticalException("Router \"$method\" \"$path\" already defined");
 
     $this->routers[$method][$path] = [
       'router' => $path,
@@ -84,7 +78,7 @@ class Router {
     ];
   }
 
-  function getRouteRequested($method, $routerRequest) {
+  function getRouteRequested(string $method, string $routerRequest) {
     $routersGroup = $this->getRoutersGroupByRouter($routerRequest);
 
     foreach ($routersGroup as $routerGroup)
@@ -95,7 +89,7 @@ class Router {
     return $router;
   }
 
-  function getRoutersGroupByRouter($router) {
+  function getRoutersGroupByRouter(string $router) {
     $routersGroup = [];
 
     foreach ($this->routersGroup as $prefix => $routerGroup)
@@ -110,9 +104,9 @@ class Router {
   }
 
   /**
-   * @return array<string>
+   * @return string[]
    */
-  function getAllRoutersPaths($method) {
+  function getAllRoutersPaths(string $method) {
     return array_keys($this->routers[$method]);
   }
 
@@ -120,7 +114,7 @@ class Router {
     return $this->routers;
   }
 
-  function getRouterByMethodAndRouter($method, $routerPath) {
+  function getRouterByMethodAndRouter(string $method, string $routerPath) {
     foreach ($this->routers[$method] as $prefix => $router) {
       if (static::isMathRouterTemplate($prefix, $routerPath)) {
         return $router;
@@ -130,23 +124,23 @@ class Router {
     return null;
   }
 
-  function getRoutersByPrefix($method, $prefix) {
+  function getRoutersByPrefix(string $method, string $prefix) {
     return $this->routers[$method][$prefix] ?: null;
   }
 
-  static function isMathPrefixRouterTemplate($routerTemplate, $router) {
+  static function isMathPrefixRouterTemplate(string $routerTemplate, string $router) {
     $pattern = static::getPatternRouterMatching($routerTemplate);
 
     return preg_match('/^' . $pattern . '/', $router);
   }
 
-  static function isMathRouterTemplate($routerTemplate, $router) {
+  static function isMathRouterTemplate(string $routerTemplate, string $router) {
     $pattern = static::getPatternRouterMatching($routerTemplate);
 
     return preg_match('/^' . $pattern . '$/', $router);
   }
 
-  static function getParamsFromRouter($routerTemplate, $router) {
+  static function getParamsFromRouter(string $routerTemplate, string $router) {
     preg_match_all('/:([a-zA-Z]+)/', $routerTemplate, $params);
     $params = $params[1];
 
@@ -160,87 +154,43 @@ class Router {
     return [];
   }
 
-  static function getPatternRouterMatching($routerTemplate) {
+  static function getPatternRouterMatching(string $routerTemplate) {
     return preg_replace('/:[a-zA-Z]+/', '([a-zA-Z0-9]+)', str_replace('/', '\/', $routerTemplate));
   }
 
-  static function writeRouter(...$args) {
+  static function writeRouter(array ...$args) {
     static::getInstance()->addRouterGroup(...$args);
   }
 
-  static function get($path, ...$handlers) {
+  static function get(string $path, ...$handlers) {
     static::getInstance()->createRouter(RouterMethod::GET->value, $path, $handlers);
   }
 
-  static function post($path, ...$handlers) {
+  static function post(string $path, ...$handlers) {
     static::getInstance()->createRouter(RouterMethod::POST->value, $path, $handlers);
   }
 
-  static function put($path, ...$handlers) {
+  static function put(string $path, ...$handlers) {
     static::getInstance()->createRouter(RouterMethod::PUT->value, $path, $handlers);
   }
 
-  static function patch($path, ...$handlers) {
+  static function patch(string $path, ...$handlers) {
     static::getInstance()->createRouter(RouterMethod::PATCH->value, $path, $handlers);
   }
 
-  static function delete($path, ...$handlers) {
+  static function delete(string $path, ...$handlers) {
     static::getInstance()->createRouter(RouterMethod::DELETE->value, $path, $handlers);
   }
 
-  static function head($path, ...$handlers) {
+  static function head(string $path, ...$handlers) {
     static::getInstance()->createRouter(RouterMethod::HEAD->value, $path, $handlers);
   }
 
-  static function options($path, ...$handlers) {
+  static function options(string $path, ...$handlers) {
     static::getInstance()->createRouter(RouterMethod::OPTIONS->value, $path, $handlers);
   }
 
-  static function maker($prefix = '') {
+  static function maker(string $prefix = '') {
     return new RouterMake($prefix);
-  }
-}
-
-class RouterMake {
-  private $prefix = '';
-
-  function __construct($prefix = '') {
-    $this->prefix = $prefix;
-  }
-
-  function get($path, ...$handlers) {
-    Router::get($this->createPath($path), ...$handlers);
-  }
-
-  function post($path, ...$handlers) {
-    Router::post($this->createPath($path), ...$handlers);
-  }
-
-  function put($path, ...$handlers) {
-    Router::put($this->createPath($path), ...$handlers);
-  }
-
-  function delete($path, ...$handlers) {
-    Router::delete($this->createPath($path), ...$handlers);
-  }
-
-  function patch($path, ...$handlers) {
-    Router::patch($this->createPath($path), $handlers);
-  }
-
-
-  function head($path, ...$handlers) {
-    Router::head($this->createPath($path), $handlers);
-  }
-
-  function options($path, ...$handlers) {
-    Router::options($this->createPath($path), $handlers);
-  }
-
-  protected function createPath($path) {
-    if (!$path || $path == '/')
-      $path = '';
-
-    return $this->prefix . $path;
   }
 }

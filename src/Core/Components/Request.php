@@ -4,21 +4,8 @@ namespace App\Core\Components;
 
 class Request {
   private static $instance = null;
-
-  static function getInstance() {
-    return static::$instance;
-  }
-
-  static function createRequestInstance(string $router, string $method, array $params = []) {
-    self::$instance = new static;
-    self::$instance->loadComponents($router, $method);
-
-    return static::$instance;
-  }
-
   private $body = [];
   private $params = [];
-  private $headers = [];
   private $attributes = [];
   private $router = '/';
   private $method = '';
@@ -26,14 +13,15 @@ class Request {
   private function __construct() {
   }
 
-  private function loadComponents($router, $method) {
-    $data = self::getData();
+  static function getInstance() {
+    return static::$instance;
+  }
 
-    $this->body = $data['body'];
-    $this->params = $data['params'];
-    $this->headers = $data['headers'];
-    $this->router = $router;
-    $this->method = $method;
+  static function createRequestInstance(string $router, string $method, array $params = []) {
+    self::$instance = new static;
+    self::$instance->loadComponents($router, $method, $params);
+
+    return static::$instance;
   }
 
   static function getData() {
@@ -43,24 +31,32 @@ class Request {
     return [
       'body' => $data,
       'params' => $_GET,
-      'headers' => $_SERVER,
     ];
+  }
+
+  private function loadComponents(string $router, string $method, array $params = []) {
+    $data = self::getData();
+
+    $this->body = $data['body'];
+    $this->router = $router;
+    $this->method = $method;
+    $this->params = array_merge($data['params'], $params);
   }
 
   function getParams() {
     return $this->params;
   }
 
-  function getParam($name) {
+  function getParam(string $name) {
     return $this->params[$name] ?: null;
   }
 
   function getHeaders() {
-    return $this->headers;
+    return $this->$_SERVER;
   }
 
-  function getHeader($name) {
-    return $this->headers[$name] ?: null;
+  function getHeader(string $name) {
+    return $_SERVER[$name] ?: null;
   }
 
   function getRouter() {
@@ -75,7 +71,7 @@ class Request {
     return $this->body;
   }
 
-  function getBody($name) {
+  function getBody(string $name) {
     return $this->body[$name] ?: null;
   }
 
@@ -83,11 +79,11 @@ class Request {
     return $this->attributes;
   }
 
-  function getAttribute($name) {
+  function getAttribute(string $name) {
     return $this->attributes[$name] ?: null;
   }
 
-  function setAttribute($name, $value) {
+  function setAttribute(string $name, $value) {
     $this->attributes[$name] = $value;
   }
 }
