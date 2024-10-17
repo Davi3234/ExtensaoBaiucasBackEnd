@@ -1,6 +1,7 @@
 # Arquitetura de Pastas
 
 A aplicação segue a convencional arquitetura de projeto MVC, seguindo esta estrutura de pastas:
+
 ```
 src/
 ├── @tests/           # Testes unitários e de integração para garantir a qualidade do código

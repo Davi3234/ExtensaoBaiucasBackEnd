@@ -3,6 +3,7 @@
 No arquivo `groups-router.php` será definido todos os [grupos de rotas](../framework/criando-rotas.md#grupos-de-rotas) da aplicação
 
 Exemplo:
+
 ```php
 use App\Core\Components\Router;
 

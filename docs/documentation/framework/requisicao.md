@@ -4,10 +4,11 @@ A classe `Request` é uma classe que contém todos os dados da requisição. Ela
 
 ## Parâmetros
 
-Parâmetros são definidos no próprio *path* da rota definida. Eles podem ser definidos de duas maneiras:
+Parâmetros são definidos no próprio _path_ da rota definida. Eles podem ser definidos de duas maneiras:
+
 - **Parâmetro**: no `path`, declare o nome do parâmetro com o `:` no início. Exemplo: `/users/:id`
-- **Query-String**: Ao chamar uma rota da aplicação, é possível passar as *query-strings* depois da chamada da rota. Exemplo: `/users?id=1`
-  - Nota: O parâmetro definido direto na rota sobrescreve a *query-string* que possuir o mesmo nome
+- **Query-String**: Ao chamar uma rota da aplicação, é possível passar as _query-strings_ depois da chamada da rota. Exemplo: `/users?id=1`
+  - Nota: O parâmetro definido direto na rota sobrescreve a _query-string_ que possuir o mesmo nome
 
 Exemplo:
 

@@ -5,6 +5,7 @@
 A classe `Router` provê métodos de definição das rotas que servirão como endpoints da aplicação. É possível definir os endpoints chamando os métodos estáticos equivalentes aos métodos HTTP como `GET`, `POST`, `PUT`, `PATCH`, `DELETE`, `HEAD` e `OPTIONS`.
 
 Sintaxe:
+
 ```php
 use App\Core\Components\Router;
 
@@ -62,9 +63,10 @@ Router::get('/users', [ExemploMiddleware::class, 'perform']);
 ## Nome do endpoint
 
 Considerações:
-- Cuidado ao declarar o mesmo nome de rota para o mesmo método HTTP. Se houver conflito, será disparado uma exceção com a mensagem: `Router "{method_name}" "{path_name}" already defined` 
-- Declarar uma rota vazia `''` ou apenas com *barra* `'/'` surtirá o mesmo efeito
-- Não é necessário colocar uma *barra* `'/'` no final da rota, ela será removida ao fazer quando a aplicação carregá-la. Exemplo: Considere fazer apenas `'/users'` do que `'/users/'`
+
+- Cuidado ao declarar o mesmo nome de rota para o mesmo método HTTP. Se houver conflito, será disparado uma exceção com a mensagem: `Router "{method_name}" "{path_name}" already defined`
+- Declarar uma rota vazia `''` ou apenas com _barra_ `'/'` surtirá o mesmo efeito
+- Não é necessário colocar uma _barra_ `'/'` no final da rota, ela será removida ao fazer quando a aplicação carregá-la. Exemplo: Considere fazer apenas `'/users'` do que `'/users/'`
 
 ## Múltiplos handlers
 
@@ -126,4 +128,4 @@ Router::delete('/users', [UserController::class, 'delete']); // /users
 
 Assim, quando requisita a rota `/users/create`, será primeiramente buscado os grupos de rotas que contém aquele prefixo, para assim ler todas as rotas declaradas dentro dele
 
-ATENÇÃO: O prefixo definido no `writeRouter` não irá ser concatenado junto aos *paths* das rotas definidas no arquivo definido no `filePath`, portanto, este prefixo ainda deve ser declarado nas rotas daquele grupo!
+ATENÇÃO: O prefixo definido no `writeRouter` não irá ser concatenado junto aos _paths_ das rotas definidas no arquivo definido no `filePath`, portanto, este prefixo ainda deve ser declarado nas rotas daquele grupo!

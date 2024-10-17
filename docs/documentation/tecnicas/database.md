@@ -53,7 +53,7 @@ interface IDatabase extends IDatabaseConnection {
   /**
    * Executa uma instrução SQL direta.
    *
-   * Executa a consulta SQL fornecida como string e, opcionalmente, recebe parâmetros para substituição. 
+   * Executa a consulta SQL fornecida como string e, opcionalmente, recebe parâmetros para substituição.
    * Retorna o resultado como array ou `false` em caso de erro.
    *
    * @param string $sql String contendo a instrução SQL a ser executada.
@@ -77,7 +77,7 @@ interface IDatabase extends IDatabaseConnection {
   /**
    * Executa um comando SQL a partir de um SQLBuilder.
    *
-   * Este método utiliza uma instância de SQLBuilder para gerar uma consulta SQL. 
+   * Este método utiliza uma instância de SQLBuilder para gerar uma consulta SQL.
    * Ele executa a consulta e retorna o resultado como array, ou `false` em caso de erro.
    *
    * @param SQLBuilder $sqlBuilder Instância de SQLBuilder que cria a consulta SQL
@@ -191,6 +191,7 @@ interface ITransactionCheckpoint {
 A classe `DatabaseConnection` implementa a classe `IDatabaseConnection`, implementando os métodos usando os recursos do [PostgreSQL Functions](https://www.php.net/manual/en/book.pgsql.php)
 
 API da classe `DatabaseConnection`:
+
 ```php
 namespace App\Provider\Database;
 
@@ -270,7 +271,9 @@ class DatabaseConnection implements IDatabaseConnection {
 ### Utilização dos métodos
 
 - Criando uma instância de `DatabaseConnection` e realizando a conexão manualmente
+
   - Forma 1
+
     ```php
     use App\Provider\Database\DatabaseConnection;
 
@@ -281,6 +284,7 @@ class DatabaseConnection implements IDatabaseConnection {
     ```
 
   - Forma 2 (Alias para a Forma 1)
+
     ```php
     use App\Provider\Database\DatabaseConnection;
 
@@ -293,7 +297,9 @@ class DatabaseConnection implements IDatabaseConnection {
     ```
 
 - Caso já tenha uma conexão prévia com o banco de dados usando o `pg_connect` nativo e apenas queira importá-la para a classe `DatabaseConnection`, basta usar o método `fromConnection`
+
   - Forma 1
+
     ```php
     use App\Provider\Database\DatabaseConnection;
 
@@ -305,6 +311,7 @@ class DatabaseConnection implements IDatabaseConnection {
     ```
 
   - Forma 2
+
     ```php
     use App\Provider\Database\DatabaseConnection;
 
@@ -316,6 +323,7 @@ class DatabaseConnection implements IDatabaseConnection {
     ```
 
 - Para criar uma simples conexão nativa com PostgreSQL, pode-se usar o método `newPostgresConnection`, este retornará uma instância de `\PgSql\Connection`
+
   ```php
   use App\Provider\Database\DatabaseConnection;
 
@@ -326,7 +334,9 @@ class DatabaseConnection implements IDatabaseConnection {
   ```
 
 - Caso queira trabalhar com [**singleton**](https://imasters.com.br/back-end/o-padrao-singleton-com-php), utiliza-se o método `getGlobalConnection`, que irá retornar (ou criar, caso ainda não esteja criado) uma instância de `DatabaseConnection` com o link de conexão global
+
   - Forma 1
+
     ```php
     use App\Provider\Database\DatabaseConnection;
 
@@ -337,6 +347,7 @@ class DatabaseConnection implements IDatabaseConnection {
     ```
 
   - Forma 2
+
     ```php
     use App\Provider\Database\DatabaseConnection;
 
@@ -378,7 +389,7 @@ class Database extends DatabaseConnection implements IDatabase {
   /**
    * Executa uma instrução SQL direta.
    *
-   * Executa a consulta SQL fornecida como string e, opcionalmente, recebe parâmetros para substituição. 
+   * Executa a consulta SQL fornecida como string e, opcionalmente, recebe parâmetros para substituição.
    * Retorna o resultado como array ou `false` em caso de erro.
    *
    * @param string $sql String contendo a instrução SQL a ser executada.
@@ -404,7 +415,7 @@ class Database extends DatabaseConnection implements IDatabase {
   /**
    * Executa um comando SQL a partir de um SQLBuilder.
    *
-   * Este método utiliza uma instância de SQLBuilder para gerar uma consulta SQL. 
+   * Este método utiliza uma instância de SQLBuilder para gerar uma consulta SQL.
    * Ele executa a consulta e retorna o resultado como array, ou `false` em caso de erro.
    *
    * @param SQLBuilder $sqlBuilder Instância de SQLBuilder que cria a consulta SQL
@@ -463,6 +474,7 @@ $database = Database::getGlobalConnection($connection);
 Para prevenção de SQL Injection, será usado templates SQL e parâmetros separadamente, onde no template, no local onde seria o próprio valor que está recebendo externamente, será colocado um `?` ou `$1` (`$1`, `$2`, `$3`, ...) para indicar que ali espera-se um parâmetro
 
 - O envia de operações de **INSERT**, **UPDATE** e **DELETE** são muito parecidas. Exemplo com a operação de **INSERT**
+
   ```php
   $name = $_POST['name'];
   $login = $_POST['login'];
@@ -480,6 +492,7 @@ Para prevenção de SQL Injection, será usado templates SQL e parâmetros separ
   ```
 
   - Para cada operação, é sempre possível retornar os registros que foram inseridos/atualizados/deletados utilizando o [**RETURNING**](https://www.postgresql.org/docs/current/dml-returning.html)
+
     ```php
     $name = 'John Doe';
     $login = 'john.doe@example.com';
@@ -500,6 +513,7 @@ Para prevenção de SQL Injection, será usado templates SQL e parâmetros separ
     ```
 
 - Realizando consultas
+
   ```php
   $id = 1;
 
@@ -519,7 +533,9 @@ Para prevenção de SQL Injection, será usado templates SQL e parâmetros separ
   ```
 
 - Realizando as operações com [`SQL Builder`](sql-builder.md). Ele constrói o SQL já separando os parâmetros e preparando a String do SQL usando o `$1` (`$1`, `$2`, ...)
+
   - Exemplo com **INSERT**
+
     ```php
     use App\Provider\Sql\SQL;
 
@@ -547,6 +563,7 @@ Para prevenção de SQL Injection, será usado templates SQL e parâmetros separ
     ```
 
   - Exemplo de consulta
+
     ```php
     use App\Provider\Sql\SQL;
 
@@ -643,7 +660,9 @@ class Transaction implements ITransaction {
 ### Utilização dos métodos
 
 - Criando uma transação
+
   - A implementação da classe `Transaction` foi feita para que seja independente do banco, portanto, deve-se injetar a instância de um `IDatabase` nela desta forma:
+
     ```php
     use App\Provider\Database\Database;
     use App\Provider\Database\Transaction;
@@ -654,6 +673,7 @@ class Transaction implements ITransaction {
     ```
 
   - Outra forma é a pela própria classe `IDatabase`. Este método simplifica a necessidade de usar o `new` para instanciar a transação, instanciando e injetando nela a própria instância do banco
+
     ```php
     use App\Provider\Database\Database;
 
@@ -663,7 +683,9 @@ class Transaction implements ITransaction {
     ```
 
 - Iniciando um bloco de transação
+
   - Após ter a instância da transação, é possível chamar o método begin da mesma
+
     ```php
     $database = Database::getGlobalConnection();
 
@@ -672,6 +694,7 @@ class Transaction implements ITransaction {
     ```
 
   - Outra forma seria usar o método begin do própria banco de dados, assim, além de criar a instância do banco e injetar nela a instância do próprio banco, ele já inicializa o bloco de transação, retornando a instância da transação
+
     ```php
     $database = Database::getGlobalConnection();
 
@@ -679,7 +702,9 @@ class Transaction implements ITransaction {
     ```
 
 - Concluindo o bloco de transação
+
   - Após realizar as operações com o banco, é possível concluir/reverter a transação usando o `commit` para efetivá-la ou `rollback` para reverte-la
+
     ```php
     $database = Database::getGlobalConnection();
 
@@ -744,6 +769,7 @@ class TransactionCheckpoint implements ITransactionCheckpoint {
 ```
 
 - Para criar um checkpoint de uma transação, utiliza-se o método `checkpoint` da classe `Transaction`
+
   ```php
   use App\Provider\Database\Database;
 
@@ -755,7 +781,9 @@ class TransactionCheckpoint implements ITransactionCheckpoint {
   ```
 
 - Iniciando um checkpoint
+
   - Para iniciar o checkpoint, usa-se o método `save`
+
     ```php
     use App\Provider\Database\Database;
 
@@ -769,6 +797,7 @@ class TransactionCheckpoint implements ITransactionCheckpoint {
     ```
 
   - Da mesma forma que a transação, é possível simplificar isso chamando diretamente o método `save` da transação
+
     ```php
     use App\Provider\Database\Database;
 
@@ -780,7 +809,9 @@ class TransactionCheckpoint implements ITransactionCheckpoint {
     ```
 
 - Concluindo o bloco do checkpoint
+
   - Após realizar as operações com o banco, é possível concluir/reverter o checkpoint usando o `release` para liberar o checkpoint, efetivando o mesmo, ou rollback para reverte-la
+
     ```php
     use App\Provider\Database\Database;
 

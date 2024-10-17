@@ -3,6 +3,7 @@
 O `Service` é onde conterá todos os casos de uso junto com as regras de negócio
 
 Exemplo:
+
 ```php
 use App\Exception\Http\BadRequestException;
 use App\Provider\Zod\Z;
@@ -64,6 +65,7 @@ Analisando o código, é possível perceber o uso de alguns conceitos, como [Inj
 `Services` não devem depender de serviços externos, como comunicação com o banco, envio de email/whatsapp ou comunicação com outra API. Por isso, não é responsabilidade do `Service` conhecer este serviço externo, como um [repositório](./repository.md) para se comunicar com o banco, portanto, esses serviços devem ser passados (Injetados) nele de forma externo em seu construtor - normalmente através de um controller ou de outro service, em outras palavras, "quem usar este `Service` deve passar para ele as instâncias das suas dependências"
 
 Exemplo de injeção de dependência:
+
 ```php
 class PostController {
 

@@ -10,8 +10,8 @@
       "request": "launch",
       "port": 8080,
       "xdebugSettings": {
-        "max_data": -1,
-      },
+        "max_data": -1
+      }
     },
     {
       "name": "Launch currently open script",
@@ -20,12 +20,10 @@
       "program": "${file}",
       "cwd": "${fileDirname}",
       "xdebugSettings": {
-        "max_data": -1,
+        "max_data": -1
       },
       "port": 0,
-      "runtimeArgs": [
-        "-dxdebug.start_with_request=yes"
-      ],
+      "runtimeArgs": ["-dxdebug.start_with_request=yes"],
       "env": {
         "XDEBUG_MODE": "debug,develop",
         "XDEBUG_CONFIG": "client_port=${port}"
@@ -42,7 +40,7 @@
         "localhost:0"
       ],
       "xdebugSettings": {
-        "max_data": -1,
+        "max_data": -1
       },
       "program": "",
       "cwd": "${workspaceRoot}",

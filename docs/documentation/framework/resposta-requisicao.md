@@ -1,13 +1,13 @@
 # Padrão de retorno de dados
 
-Será adotado um padrão de estrutura de dados retornado pela API que é *Result*. Segue a estrutura de retorno:
+Será adotado um padrão de estrutura de dados retornado pela API que é _Result_. Segue a estrutura de retorno:
 
 ```jsonc
 {
   "ok": true, // Se a requisição deu certo ou não
   "status": 200, // Status code da requisição HTTP
   "value": null, // Valor retornado do handler, mas apenas quando a requisição der sucesso
-  "error": null // Informações do erro ocorrido quando ocorrer uma falha na requisição
+  "error": null, // Informações do erro ocorrido quando ocorrer uma falha na requisição
 }
 ```
 
@@ -16,10 +16,12 @@ Será adotado um padrão de estrutura de dados retornado pela API que é *Result
 Para retornar dados de uma requisição, no `handler` basta apenas retornar os dados que deseja ser enviados pelo requisição
 
 Considerações:
+
 - Se o `handler` retorna `void`, será tratado como `null`, pois é dessa forma que o PHP interpreta o `void`
 - Quando uma rota possuir vários `handlers`, apenas será considerado o retorno do último `handler` que retornar algum valor diferente de `null | void`
 
 Exemplo:
+
 ```php
 class ExemploController {
 
@@ -30,6 +32,7 @@ class ExemploController {
 ```
 
 O exemplo acima retornará:
+
 ```json
 {
   "ok": true,
@@ -42,6 +45,7 @@ O exemplo acima retornará:
 ## Retornando um erro
 
 Para retornar uma falha ao usuário deve-se utilizar exceções, informando tanto a mensagem do erro quando as causas do erro (opcional) que servirá para quem solicitar saber exatamente a origem do que ocasionou o erro, desta forma:
+
 ```php
 class UserController {
 
@@ -59,6 +63,7 @@ class UserController {
 ```
 
 O exemplo acima retornará:
+
 ```json
 {
   "ok": false,
@@ -85,6 +90,7 @@ O exemplo acima retornará:
 Por baixo dos panos, o que é retornado na API é uma instância da classe `Result`. Ela fornece dois métodos úteis: `success` e `failure`
 
 Sucesso:
+
 ```php
 Result::success($value, int $statusCode = 200);
 ```
@@ -94,19 +100,20 @@ Result::success($value, int $statusCode = 200);
   - Atenção: Se informar um status code maior ou igual à 400, será disparado um erro com a mensagem: `It is not possible to define a status code greater than or equal to 400 when the result is success`
 
 Falha:
+
 ```php
 Result::failure(array $error, int $statusCode = 400);
 ```
 
 - Substitua o `$error` pelo erro ocorrido informando um array com os seguintes dados:
-  - *message*: Mensagem do erro
-  - *causes[]*:
-    - *message*: Mensagem de erro da causa
-    - *origin?*: Origem da causa
+  - _message_: Mensagem do erro
+  - _causes[]_:
+    - _message_: Mensagem de erro da causa
+    - _origin?_: Origem da causa
 - Substitua o `statusCode` pelo status code HTTP com base no contexto do resultado
   - Atenção: Se informar um status code menor que 400, será disparado um erro com a mensagem: `It is not possible to set a status code lower than 400 when the result is failure`
 
-### Retornando diretamente um *Result*
+### Retornando diretamente um _Result_
 
 Ao invés de retornar o próprio resultado em si, é possível também retornar uma instância de `Result`, dessa forma:
 
@@ -124,6 +131,7 @@ class UserController {
 ```
 
 O exemplo acima retornará:
+
 ```json
 {
   "ok": true,
@@ -166,6 +174,7 @@ class UserController {
 ```
 
 O exemplo acima retornará:
+
 ```json
 {
   "ok": false,

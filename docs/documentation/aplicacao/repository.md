@@ -54,32 +54,33 @@ Todo repositório deve receber uma instância da conexão com o banco de dados (
 
 Para realizar as operações de consulta e execução de SQL pode-se optar em usar dois grupos de métodos: via **String SQL** e [**SQL Builder**](../tecnicas/sql-builder.md)
 
-- **String SQL**: `__execSql` e `__querySql`. Realiza as operação do banco passando diretamente a String do SQL, porém, sua utilização abre brexas para *Injeção de SQL*, portante, se usá-lo, deve-se montar um template de SQL e passar os parâmetros separadamente. Exemplo:
-    ```php
-    // Crie um template de SQL passando os parâmetros de forma separada e no lugar do valor passado na string, escreva '?' para indicar que é um parâmetro
-    $this->__querySql('SELECT * FROM users WHERE login = ? LIMIT 1', [$login]);
-    ```
+- **String SQL**: `__execSql` e `__querySql`. Realiza as operação do banco passando diretamente a String do SQL, porém, sua utilização abre brexas para _Injeção de SQL_, portante, se usá-lo, deve-se montar um template de SQL e passar os parâmetros separadamente. Exemplo:
+  ```php
+  // Crie um template de SQL passando os parâmetros de forma separada e no lugar do valor passado na string, escreva '?' para indicar que é um parâmetro
+  $this->__querySql('SELECT * FROM users WHERE login = ? LIMIT 1', [$login]);
+  ```
 - **SQL Builder**: `__exec`, `__findOne` e `__findMany`. Realiza as operações do banco passando um SQL Builder. Por baixo dos panos, ele realiza a mesma operação de montagem do template do SQL e a separação dos parâmetros, com a vantagem da preparação da estrutura do SQL e de fácil leitura ao programador, já que o mesmo possui a mesma semantica que o SQL. Exemplo:
-    ```php
-    // Crie um template de SQL passando os parâmetros de forma separada e no lugar do valor passado na string, escreva '?' para indicar que é um parâmetro
-    $this->__findOne(
-      SQL::select()
-        ->from('users')
-        ->where(
-          SQL::eq('login', $login)
-        )
-    );
-    ```
+  ```php
+  // Crie um template de SQL passando os parâmetros de forma separada e no lugar do valor passado na string, escreva '?' para indicar que é um parâmetro
+  $this->__findOne(
+    SQL::select()
+      ->from('users')
+      ->where(
+        SQL::eq('login', $login)
+      )
+  );
+  ```
 
 Por debaixo dos panos, estes métodos executa as ações da própria instância do `Database` que foi injetada nela.
 
 ### Tratando o retorno
 
-Ao usar o método `__exec` para realizar operações de inserção, atualização e exclusão de registros, seu retorno será os próprios registros (linhas/tuplas) que foram alteradas, ou seja, ao realizar uma operação de `INSERT`, o mesmo retornará o próprio registro criado com o *id* definido. Veja mais sobre `RETURNING` [aqui](https://www.postgresql.org/docs/current/dml-returning.html)
+Ao usar o método `__exec` para realizar operações de inserção, atualização e exclusão de registros, seu retorno será os próprios registros (linhas/tuplas) que foram alteradas, ou seja, ao realizar uma operação de `INSERT`, o mesmo retornará o próprio registro criado com o _id_ definido. Veja mais sobre `RETURNING` [aqui](https://www.postgresql.org/docs/current/dml-returning.html)
 
 Para transformar o resultado de uma consulta em um model de uma entidade da aplicação, é possível utilizar os métodos `toModel` e `toModelList` que eles irão carregar a instância do model com os dados do resultado. Por baixo dos panos, estes métodos irão chamado o método [`__load`](./model.md) definido no próprio model
 
 Exemplo:
+
 ```php
 // Quando buscar apenas um registro
 $result = $this->__findOne(
@@ -131,6 +132,7 @@ class UserRepository extends Repository {
 Após isso, crie os métodos de operação ao banco que será utilizado pelos [Services](./service.md)
 
 Exemplo de um CRUD completo:
+
 ```php
 <?php
 

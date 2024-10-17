@@ -3,6 +3,7 @@
 O `Controller` terá a responsabilidade de receber as requisições da API por meio dos métodos, conforme mapeados em [`Router`](rotas.md), e repassar para o [`Service`](service.md) realizar o caso de uso junto com as regras de negócio
 
 Exemplo:
+
 ```php
 // Em Router/PostRouter.php
 use App\Core\Components\Router;

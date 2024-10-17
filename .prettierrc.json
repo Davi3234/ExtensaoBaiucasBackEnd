@@ -1,7 +1,5 @@
 {
-  "plugins": [
-    "@prettier/plugin-php"
-  ],
+  "plugins": ["@prettier/plugin-php"],
   "singleQuote": true,
   "tabWidth": 2,
   "arrowParens": "avoid",

@@ -1,5 +1,7 @@
-__________
+---
+
 usuario
+
 - nome
 - email
 - cpf
@@ -7,8 +9,11 @@ usuario
 - data de nascimento
 - permitir notificações
 - tipo_usuario
-__________
+
+---
+
 endereco
+
 - apelido
 - cep
 - cidade
@@ -16,23 +21,38 @@ endereco
 - referencia
 - complemento
 - numero
-__________
+
+---
+
 cardápio
-- Associação de menus a cada cardápio, permitindo ao proprietário a flexibilidade de trocar o cardápio exibido de acordo com as necessidades. 
-__________
+
+- Associação de menus a cada cardápio, permitindo ao proprietário a flexibilidade de trocar o cardápio exibido de acordo com as necessidades.
+
+---
+
 menu
+
 - menupai
 - nome
-__________
+
+---
+
 pedido
+
 - numerodata
 - cliente
 - endereço
 - situação
-__________
+
+---
+
 pedido_item
+
 - idpedido
 - iditem
-__________
+
+---
+
 item
+
 - nome
