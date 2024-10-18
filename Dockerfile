@@ -22,8 +22,13 @@ WORKDIR /var/www/html
 COPY --from=build /var/www/html /var/www/html
 
 RUN adduser -D backend
+
+COPY config/configs.sh /usr/local/bin/configs.sh
+
+RUN chmod +x /usr/local/bin/configs.sh
+
 USER backend
 
 EXPOSE 80
 
-CMD ["php", "-S", "0.0.0.0:80", "-t", "/var/www/html"]
+ENTRYPOINT ["/bin/sh", "/usr/local/bin/configs.sh"]

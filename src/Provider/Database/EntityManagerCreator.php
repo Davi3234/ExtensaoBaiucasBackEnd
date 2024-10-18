@@ -20,11 +20,11 @@ class EntityManagerCreator
 
         $connection = DriverManager::getConnection([
             'driver' => 'pdo_pgsql',
-            'dbname' => 'contatos_bd',
-            'user' => 'postgres',
-            'password' => 'postgres',
-            'host' => 'localhost',
-            'port' => 5432
+            'dbname' => getenv('DBNAME'),
+            'user' => getenv('USER'),
+            'password' => getenv('PASSWORD'),
+            'host' => getenv('HOST'),
+            'port' => getenv('PORT')
         ], $config);
 
         $this->entityManager = new EntityManager($connection, $config);

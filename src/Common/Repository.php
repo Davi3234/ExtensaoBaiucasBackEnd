@@ -10,9 +10,10 @@ use Doctrine\ORM\EntityManager;
  */
 abstract class Repository {
 
-  function __construct(
-    protected EntityManager $entityManager = EntityManagerCreator::getInstance()->getEntityManager()
-  ) {
+  protected EntityManager $entityManager;
+  
+  function __construct() {
+    $this->entityManager = EntityManagerCreator::getInstance()->getEntityManager();
   }
 
   protected function __execSql(string $sql, $params = []) {
