@@ -11,19 +11,19 @@ use App\Model\User;
 class UserRepository extends Repository implements IUserRepository {
 
   #[\Override]
-  function create(User $user): User {
+  public function create(User $user): User {
     return new User();
 
   }
 
   #[\Override]
-  function update(User $user): User {
+  public function update(User $user): User {
     return new User();
 
   }
 
   #[\Override]
-  function deleteById(int $id): User {
+  public function deleteById(int $id): User {
     return new User();
   }
 
@@ -31,17 +31,17 @@ class UserRepository extends Repository implements IUserRepository {
    * @return User[]
    */
   #[\Override]
-  function findMany(): array {
+  public function findMany(): array {
     return [];
   }
 
   #[\Override]
-  function findById(int $id): ?User {
+  public function findById(int $id): ?User {
     return new User();
   }
 
   #[\Override]
-  function findByLogin(string $login): ?User {
+  public function findByLogin(string $login): ?User {
     return new User();
   }
 }
