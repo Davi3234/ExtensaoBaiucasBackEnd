@@ -10,3 +10,8 @@ Router::writeRouter([
   'prefix' => '/users',
   'filePath' => 'Router/UserRouter.php',
 ]);
+
+Router::writeRouter([
+  'prefix' => '/auth',
+  'filePath' => 'Router/AuthRouter.php',
+]);

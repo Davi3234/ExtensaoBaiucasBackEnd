@@ -17,12 +17,12 @@ class EntityManagerCreator {
     );
 
     $connection = DriverManager::getConnection([
-      'driver' => getenv('DB_DRIVER'),
-      'dbname' => getenv('DB_DATABASE'),
-      'host' => getenv('DB_HOST'),
-      'port' => getenv('DB_PORT'),
-      'user' => getenv('DB_USERNAME'),
-      'password' => getenv('DB_PASSWORD'),
+      'driver' => env('DB_DRIVER'),
+      'dbname' => env('DB_DATABASE'),
+      'host' => env('DB_HOST'),
+      'port' => env('DB_PORT'),
+      'user' => env('DB_USERNAME'),
+      'password' => env('DB_PASSWORD'),
     ], $config);
 
     $this->entityManager = new EntityManager($connection, $config);

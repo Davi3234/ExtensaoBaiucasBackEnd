@@ -11,6 +11,9 @@
       "port": 8080,
       "xdebugSettings": {
         "max_data": -1
+      },
+      "pathMappings": {
+        "/var/www/html/": "${workspaceFolder}"
       }
     },
     {
@@ -23,7 +26,9 @@
         "max_data": -1
       },
       "port": 0,
-      "runtimeArgs": ["-dxdebug.start_with_request=yes"],
+      "runtimeArgs": [
+        "-dxdebug.start_with_request=yes"
+      ],
       "env": {
         "XDEBUG_MODE": "debug,develop",
         "XDEBUG_CONFIG": "client_port=${port}"
