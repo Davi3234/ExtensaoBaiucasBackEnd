@@ -2,42 +2,38 @@
 
 namespace App\Common;
 
-use App\Provider\Database\Interface\IDatabase;
-use App\Provider\Sql\Builder\DeleteSQLBuilder;
-use App\Provider\Sql\Builder\InsertSQLBuilder;
-use App\Provider\Sql\Builder\SelectSQLBuilder;
-use App\Provider\Sql\Builder\UpdateSQLBuilder;
+use App\Provider\Database\EntityManagerCreator;
+use Doctrine\ORM\EntityManager;
 
 /**
  * @template TModel of Model
  */
 abstract class Repository {
 
-  function __construct(
-    protected IDatabase $database
-  ) {
+  protected EntityManager $entityManager;
+  
+  function __construct() {
+    $this->entityManager = EntityManagerCreator::getInstance()->getEntityManager();
   }
 
-  protected function __execSql(string $sql, $params = []): array|bool {
-    return $this->database->exec($sql, $params);
+  protected function __execSql(string $sql, $params = []) {
+    return $this->entityManager;
   }
 
-  protected function __querySql(string $sql, $params = []): array {
-    return $this->database->query($sql, $params);
+  protected function __querySql(string $sql, $params = []) {
+    return $this->entityManager;
   }
 
-  protected function __exec(InsertSQLBuilder|UpdateSQLBuilder|DeleteSQLBuilder $sqlBuilder): array {
-    $sqlBuilder->returning('*');
-
-    return $this->database->execFromSqlBuilder($sqlBuilder);
+  protected function __exec() {
+    return $this->entityManager;
   }
 
-  protected function __findOne(SelectSQLBuilder $selectBuilder): ?array {
-    return $this->__findMany($selectBuilder)[0];
+  protected function __findOne() {
+    return $this->__findMany()[0];
   }
 
-  protected function __findMany(SelectSQLBuilder $selectBuilder): array {
-    return $this->database->queryFromSqlBuilder($selectBuilder);
+  protected function __findMany() {
+    return $this->entityManager;
   }
 
   /**

@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
     baiucas-frontend:
         build:
@@ -11,6 +9,8 @@ services:
             - baiucas-backend
         networks:
             - app-network
+        volumes:
+            - ./ExtensaoBaiucas:/var/www/html
 
     baiucas-backend:
         build:
@@ -18,10 +18,14 @@ services:
             dockerfile: Dockerfile
         ports:
             - '80:80'
+        env_file:
+            - ./ExtensaoBaiucasBackEnd/.env
         depends_on:
             - baiucas-db
         networks:
             - app-network
+        volumes:
+            - ./ExtensaoBaiucasBackEnd:/var/www/html
 
     baiucas-db:
         image: postgres:latest
@@ -30,7 +34,7 @@ services:
             POSTGRES_PASSWORD: admin
             POSTGRES_DB: extensao-baiucas
         ports:
-            - '5432:5432'
+            - '5433:5432'
         volumes:
             - pgdata:/var/lib/postgresql/data
         networks:

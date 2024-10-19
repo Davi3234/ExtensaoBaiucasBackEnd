@@ -614,3 +614,6 @@ server/src/resources/database/client
 
 # Packages
 packages/server/*
+
+# Not bin/configs.sh
+!bin/configs.sh

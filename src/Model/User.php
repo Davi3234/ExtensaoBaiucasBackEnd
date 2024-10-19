@@ -3,10 +3,20 @@
 namespace App\Model;
 
 use App\Common\Model;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
 
+#[Entity]
 class User extends Model {
+	#[Id]
+	#[GeneratedValue]
+	#[Column]
 	public int $id;
+	#[Column]
 	private string $name;
+	#[Column]
 	private string $login;
 
 	#[\Override]
