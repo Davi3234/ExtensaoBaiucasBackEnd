@@ -19,7 +19,7 @@ class ZodErrorValidator {
   function getError() {
     return [
       'message' => $this->message,
-      'path' => $this->path,
+      'origin' => implode('.', $this->path),
     ];
   }
 }
