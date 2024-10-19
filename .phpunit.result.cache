@@ -1,1 +1,1 @@
-{"version":1,"defects":{"Tests\\User\\UserTest::deveAcharUsuario":5,"Tests\\User\\UserTest::deveCadastrarUsuario":8},"times":{"Tests\\User\\UserTest::deveAcharUsuario":0.014,"Tests\\User\\UserTest::deveCadastrarUsuario":0.002}}
+{"version":1,"defects":{"Tests\\User\\UserTest::deveAcharUsuario":5,"Tests\\User\\UserTest::deveCadastrarUsuario":5},"times":{"Tests\\User\\UserTest::deveAcharUsuario":0.014,"Tests\\User\\UserTest::deveCadastrarUsuario":0.002}}
