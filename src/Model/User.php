@@ -7,6 +7,7 @@ use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
+use Override;
 
 #[Entity]
 class User extends Model {
@@ -19,11 +20,25 @@ class User extends Model {
 	#[Column]
 	private string $login;
 
+	public function __construct(array $args = []) {
+		$this->id = 0;
+		$this->name = '';
+		$this->login = '';
+		
+		$this->povoaPropriedades($args);
+	}
+
 	#[\Override]
 	protected function __load(array $raw) {
 		$this->id = $raw['id'];
 		$this->name = $raw['name'];
 		$this->login = $raw['login'];
+	}
+
+	protected function povoaPropriedades(array $args = []){
+		foreach($args as $nomeprop => $prop){
+			$this->$nomeprop = $prop;
+		}
 	}
 
 	public function getId(): int {
