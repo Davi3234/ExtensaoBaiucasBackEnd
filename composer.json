@@ -1,4 +1,7 @@
 {
+    "scripts": {
+        "tests": "php vendor/bin/phpunit Tests --colors"
+    },
     "require": {
         "doctrine/orm": "^3",
         "doctrine/dbal": "^4",
