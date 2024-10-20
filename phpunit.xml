@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<phpunit bootstrap="initialize.php" colors="true" verbose="true">
+<phpunit bootstrap="initialize.php" colors="true" verbose="true" requireCoverageMetadata="true">
 
     <testsuites>
         <testsuite name="Application Test Suite">
@@ -7,10 +7,13 @@
         </testsuite>
     </testsuites>
 
-    <filter>
-        <whitelist>
-            <directory suffix=".php">src/</directory>
-        </whitelist>
-    </filter>
 
+    <coverage ignoreDeprecatedCodeUnits="true" pathCoverage="true">
+        <include>
+            <directory suffix=".php">src/Service</directory>
+        </include>
+        <report>
+            <html outputDirectory="build/coverage"/>
+        </report>
+    </coverage>
 </phpunit>

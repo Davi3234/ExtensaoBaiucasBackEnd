@@ -5,56 +5,21 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Listen for Xdebug",
+      "name": "Launch & Profile built-in server",
       "type": "php",
       "request": "launch",
-      "port": 8080,
-      "xdebugSettings": {
-        "max_data": -1
-      },
-      "pathMappings": {
-        "/var/www/html/": "${workspaceFolder}"
-      }
-    },
-    {
-      "name": "Launch currently open script",
-      "type": "php",
-      "request": "launch",
-      "program": "${file}",
-      "cwd": "${fileDirname}",
-      "xdebugSettings": {
-        "max_data": -1
-      },
-      "port": 0,
+      "noDebug": true,
+      "profile": true,
       "runtimeArgs": [
-        "-dxdebug.start_with_request=yes"
-      ],
-      "env": {
-        "XDEBUG_MODE": "debug,develop",
-        "XDEBUG_CONFIG": "client_port=${port}"
-      }
-    },
-    {
-      "name": "Launch Built-in web server",
-      "type": "php",
-      "request": "launch",
-      "runtimeArgs": [
-        "-dxdebug.mode=debug",
-        "-dxdebug.start_with_request=yes",
         "-S",
-        "localhost:0"
+        "localhost:8000",
+        "-t",
+        "."
       ],
-      "xdebugSettings": {
-        "max_data": -1
-      },
-      "program": "",
-      "cwd": "${workspaceRoot}",
-      "port": 9003,
+      "port": 8000,
       "serverReadyAction": {
-        "pattern": "Development Server \\(http://localhost:([0-9]+)\\) started",
-        "uriFormat": "http://localhost:%s",
         "action": "openExternally"
       }
-    }
+    },
   ]
 }

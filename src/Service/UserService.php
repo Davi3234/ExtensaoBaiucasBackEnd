@@ -9,12 +9,12 @@ use App\Repository\IUserRepository;
 
 class UserService {
 
-  function __construct(
+  public function __construct(
     private readonly IUserRepository $userRepository
   ) {
   }
 
-  function query() {
+  public function query() {
     $users = $this->userRepository->findMany();
 
     $raw = array_map(function($user) {
@@ -28,7 +28,12 @@ class UserService {
     return $raw;
   }
 
-  function getById(array $args) {
+  /**
+   * Array de usuário
+   * @param array $args
+   * @return array
+   */
+  public function getById(array $args) {
     $getSchema = Z::object([
       'id' => Z::number(['required' => 'Id do Usuário é obrigatório', 'invalidType' => 'Id do Usuário inválido'])
             ->coerce()
@@ -43,7 +48,7 @@ class UserService {
     return ['user' => $user];
   }
 
-  function create(array $args) {
+  public function create(array $args) {
     $createSchema = Z::object([
       'name' => Z::string(['required' => 'Nome é obrigatório'])
         ->trim()
@@ -76,7 +81,7 @@ class UserService {
     return ['message' => 'Usuário cadastrado com sucesso'];
   }
 
-  function update(array $args) {
+  public function update(array $args) {
     $updateSchema = Z::object([
       'id' => Z::number(['required' => 'Id do Usuário é obrigatório', 'invalidType' => 'Id do Usuário inválido'])
         ->coerce()
@@ -107,7 +112,7 @@ class UserService {
     return ['message' => 'Usuário atualizado com sucesso'];
   }
 
-  function delete(array $args) {
+  public function delete(array $args) {
     $deleteSchema = Z::object([
       'id' => Z::number(['required' => 'Id do Usuário é obrigatório', 'invalidType' => 'Id do Usuário inválido'])
       ->coerce()

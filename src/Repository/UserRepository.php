@@ -4,6 +4,8 @@ namespace App\Repository;
 
 use App\Common\Repository;
 use App\Model\User;
+use App\Exception\Http\InternalServerErrorException;
+use Exception;
 
 /**
  * @extends parent<User>
@@ -12,7 +14,15 @@ class UserRepository extends Repository implements IUserRepository {
 
   #[\Override]
   public function create(User $user): User {
-    return new User();
+    try {
+      $this->entityManager->persist($user);
+      $this->entityManager->flush();
+
+      return $user;
+
+    } catch (Exception $e) {
+      throw new InternalServerErrorException($e->getMessage());
+    }
 
   }
 
