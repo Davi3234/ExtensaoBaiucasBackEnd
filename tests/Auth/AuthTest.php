@@ -122,7 +122,7 @@ class AuthTest extends TestCase {
   }
 
   #[Test]
-  public function testTokenInvalido() {
+  public function testTokenInvalido_EspacoAMais() {
     // Arrange
     $token  = $this->tokenFactory();
     $authorization = "Bearer  $token";
@@ -137,7 +137,7 @@ class AuthTest extends TestCase {
   }
 
   #[Test]
-  public function testTokenInvalido2() {
+  public function testTokenInvalido_SemInformarBearer() {
     // Arrange
     $token  = $this->tokenFactory();
     $authorization = $token;
@@ -152,9 +152,24 @@ class AuthTest extends TestCase {
   }
 
   #[Test]
-  public function testTokenInvalido3() {
+  public function testTokenInvalido_RandomToken() {
     // Arrange
-    $authorization = "ojisauhdibasjndaioshduaisdna.asdsfvgtrefewdcsfgbcdfg.dsfghnjty56y4grevfd";
+    $authorization = "Bearer ojisauhdibasjndaioshduaisdna.asdsfvgtrefewdcsfgbcdfg.dsfghnjty56y4grevfd";
+
+    $this->expectException(UnauthorizedException::class);
+
+    // Action
+    $userRepository = TestCase::createMock(IUserRepository::class);
+    $authService = new AuthService($userRepository);
+
+    $authService->authorization($authorization);
+  }
+
+  #[Test]
+  public function testTokenInvalido_BearerInvalido() {
+    // Arrange
+    $token  = $this->tokenFactory();
+    $authorization = "Beareer $token";
 
     $this->expectException(UnauthorizedException::class);
 
