@@ -5,6 +5,7 @@ namespace App\Service;
 use App\Exception\Exception;
 use App\Exception\Http\BadRequestException;
 use App\Exception\Http\UnauthorizedException;
+use App\Model\User;
 use App\Repository\IUserRepository;
 use App\Provider\Zod\Z;
 use App\Provider\JWT;
@@ -24,7 +25,12 @@ class AuthService {
 
     $dto = $loginSchema->parseNoSafe($args);
 
-    $user = $this->userRepository->findByLogin($dto->login);
+    $user = new User([
+      'id' => 1,
+      'name' => 'Dan Ruan',
+      'login' => 'dan@gmail.com',
+      'password' => md5('sada'),
+    ]); //$this->userRepository->findByLogin($dto->login);
 
     if (!$user || $user->getPassword() != md5($dto->password)) {
       throw new BadRequestException('Login ou senha inválido');
@@ -43,7 +49,9 @@ class AuthService {
     return ['token' => $token];
   }
 
-  function authorization(string $token) {
+  function authorization(array $args) {
+    $token = $args['token'] ?? null;
+
     if (!$token) {
       throw new UnauthorizedException('Inautorizado', ['causes' => 'Token não definido']);
     }

@@ -52,7 +52,7 @@ class Request {
   }
 
   function getHeaders() {
-    return $this->$_SERVER;
+    return $_SERVER;
   }
 
   function getHeader(string $name) {

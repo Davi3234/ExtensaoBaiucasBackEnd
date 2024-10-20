@@ -19,17 +19,14 @@ class UserRepository extends Repository implements IUserRepository {
       $this->entityManager->flush();
 
       return $user;
-
     } catch (Exception $e) {
       throw new InternalServerErrorException($e->getMessage());
     }
-
   }
 
   #[\Override]
   public function update(User $user): User {
     return new User();
-
   }
 
   #[\Override]
@@ -47,11 +44,18 @@ class UserRepository extends Repository implements IUserRepository {
 
   #[\Override]
   public function findById(int $id): ?User {
-    return new User();
+    $user = $this->entityManager->find(User::class, $id);
+
+    return $user;
   }
 
   #[\Override]
   public function findByLogin(string $login): ?User {
+    $query = $this->entityManager->createQuery('SELECT u.* FROM App\Model\User u WHERE u.login = ?1');
+    $query->setParameter(1, $login);
+
+    $result = $query->getResult(); // Não consegui pegar o resultado, dava erro de Driver não definido
+
     return new User();
   }
 }
