@@ -617,3 +617,7 @@ packages/server/*
 
 # Not bin/configs.sh
 !bin/configs.sh
+
+# PHPUnit
+
+.phpunit.result.cache
