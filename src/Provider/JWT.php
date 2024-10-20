@@ -3,6 +3,7 @@
 namespace App\Provider;
 
 use App\Exception\CriticalException;
+use App\Exception\RuntimeException;
 
 class JWT {
 

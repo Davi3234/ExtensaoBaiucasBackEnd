@@ -3,6 +3,7 @@
 namespace Tests\User;
 
 use App\Exception\Http\BadRequestException;
+use App\Exception\Http\UnauthorizedException;
 use App\Model\User;
 use App\Provider\JWT;
 use App\Repository\IUserRepository;
@@ -12,6 +13,7 @@ use App\Service\AuthService;
 
 class AuthTest extends TestCase {
 
+  // Login
   #[Test]
   public function testDeveEfetuarLogin() {
     // Arrange
@@ -100,5 +102,93 @@ class AuthTest extends TestCase {
       'login' => $login,
       'password' => $password,
     ]);
+  }
+
+  // Authentication
+  #[Test]
+  public function testDevePermitirAutorizarUsuario() {
+    // Arrange
+    $token  = $this->tokenFactory();
+    $authorization = "Bearer $token";
+
+    // Action
+    $userRepository = TestCase::createMock(IUserRepository::class);
+    $authService = new AuthService($userRepository);
+
+    $payload = $authService->authorization($authorization);
+
+    // Assertion
+    $this->assertIsObject($payload);
+  }
+
+  #[Test]
+  public function testTokenInvalido() {
+    // Arrange
+    $token  = $this->tokenFactory();
+    $authorization = "Bearer  $token";
+
+    $this->expectException(UnauthorizedException::class);
+
+    // Action
+    $userRepository = TestCase::createMock(IUserRepository::class);
+    $authService = new AuthService($userRepository);
+
+    $authService->authorization($authorization);
+  }
+
+  #[Test]
+  public function testTokenInvalido2() {
+    // Arrange
+    $token  = $this->tokenFactory();
+    $authorization = $token;
+
+    $this->expectException(UnauthorizedException::class);
+
+    // Action
+    $userRepository = TestCase::createMock(IUserRepository::class);
+    $authService = new AuthService($userRepository);
+
+    $authService->authorization($authorization);
+  }
+
+  #[Test]
+  public function testTokenInvalido3() {
+    // Arrange
+    $authorization = "ojisauhdibasjndaioshduaisdna.asdsfvgtrefewdcsfgbcdfg.dsfghnjty56y4grevfd";
+
+    $this->expectException(UnauthorizedException::class);
+
+    // Action
+    $userRepository = TestCase::createMock(IUserRepository::class);
+    $authService = new AuthService($userRepository);
+
+    $authService->authorization($authorization);
+  }
+
+  private function tokenFactory() {
+    $login = 'dan@gmail.com';
+    $password = 'Abc123!@#';
+
+    $userRepository = TestCase::createMock(IUserRepository::class);
+
+    $userRepository->method('findByLogin')
+      ->with($login)
+      ->willReturn(
+        User::__loadModel([
+          'id' => 1,
+          'name' => 'Dan Ruan',
+          'login' => $login,
+          'password' => md5('Abc123!@#')
+        ])
+      );
+
+    $authService = new AuthService($userRepository);
+
+    $result = $authService->login([
+      'login' => $login,
+      'password' => $password,
+    ]);
+
+    return $result['token'];
   }
 }
