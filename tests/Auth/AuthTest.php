@@ -2,7 +2,7 @@
 
 namespace Tests\User;
 
-use App\Exception\CriticalException;
+use App\Exception\Http\BadRequestException;
 use App\Model\User;
 use App\Provider\JWT;
 use App\Repository\IUserRepository;
@@ -20,7 +20,16 @@ class AuthTest extends TestCase {
 
     $userRepository = TestCase::createMock(IUserRepository::class);
 
-    $userRepository->method('findByLogin')->with($login)->willReturn(User::__loadModel(['id' => 1, 'name' => 'Dan Ruan', 'login' => $login, 'password' => md5('Abc123!@#')]));
+    $userRepository->method('findByLogin')
+      ->with($login)
+      ->willReturn(
+        User::__loadModel([
+          'id' => 1,
+          'name' => 'Dan Ruan',
+          'login' => $login,
+          'password' => md5('Abc123!@#')
+        ])
+      );
 
     // Action
     $authService = new AuthService($userRepository);
@@ -38,5 +47,58 @@ class AuthTest extends TestCase {
     $this->assertIsObject($decoded);
     $this->assertEquals($decoded->sub, 1);
     $this->assertEquals($decoded->name, 'Dan Ruan');
+  }
+
+  #[Test]
+  public function testUsuarioNaoEncontrado() {
+    // Arrange
+    $login = 'dan@gmail.com';
+    $password = 'Abc123!@#';
+
+    $userRepository = TestCase::createMock(IUserRepository::class);
+
+    $userRepository->method('findByLogin')->with($login)->willReturn(null);
+
+    // Assertion
+    $this->expectException(BadRequestException::class);
+
+    // Action
+    $authService = new AuthService($userRepository);
+
+    $authService->login([
+      'login' => $login,
+      'password' => $password,
+    ]);
+  }
+
+  #[Test]
+  public function testSenhaInvalida() {
+    // Arrange
+    $login = 'dan@gmail.com';
+    $password = 'Abc123!@#';
+
+    $userRepository = TestCase::createMock(IUserRepository::class);
+
+    $userRepository->method('findByLogin')
+      ->with($login)
+      ->willReturn(
+        User::__loadModel([
+          'id' => 1,
+          'name' => 'Dan Ruan',
+          'login' => $login,
+          'password' => md5('Abc123!@#123435gtbs')
+        ])
+      );
+
+    // Assertion
+    $this->expectException(BadRequestException::class);
+
+    // Action
+    $authService = new AuthService($userRepository);
+
+    $authService->login([
+      'login' => $login,
+      'password' => $password,
+    ]);
   }
 }
