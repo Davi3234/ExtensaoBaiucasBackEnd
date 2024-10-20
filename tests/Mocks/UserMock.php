@@ -6,38 +6,41 @@ use App\Model\User;
 use App\Repository\IUserRepository;
 use Override;
 
-class UserMock implements IUserRepository{
+class UserMock implements IUserRepository {
 
   protected $users = [];
 
-  public function __construct(){
+  public function __construct() {
     $this->users = [
       new User([
-      'id' =>   1,
-      'nome' => "Davi",
-      'login' => "davi3232"
+        'id' =>   1,
+        'nome' => "Davi",
+        'login' => "davi3232",
+        'password' => md5('Abc123!@#')
       ]),
       new User([
-      'id' =>   2,
-      'nome' => "Daiane",
-      'login' => "daianegamer"
+        'id' =>   2,
+        'nome' => "Daiane",
+        'login' => "daianegamer",
+        'password' => md5('Abc123!@#')
       ]),
       new User([
         'id' => 3,
         'nome' => "Danrley",
-        'login' => "danrleygamer"
-        ])
+        'login' => "danrleygamer",
+        'password' => md5('Abc123!@#')
+      ])
     ];
   }
 
   #[Override]
-  public function create(User $user): User{
+  public function create(User $user): User {
     array_push($this->users, $user);
     return $user;
   }
 
   #[Override]
-  public function deleteById(int $id): User{
+  public function deleteById(int $id): User {
 
     $user = $this->findById($id);
 
@@ -49,9 +52,9 @@ class UserMock implements IUserRepository{
   }
 
   #[Override]
-  public function findById(int $id): ?User{
-    foreach($this->users as $user){
-      if($user->getId() == $id){
+  public function findById(int $id): ?User {
+    foreach ($this->users as $user) {
+      if ($user->getId() == $id) {
         return $user;
       }
     }
@@ -60,17 +63,17 @@ class UserMock implements IUserRepository{
   }
 
   #[Override]
-  public function findByLogin(string $login): ?User{
+  public function findByLogin(string $login): ?User {
     return new User();
   }
 
   #[Override]
-  public function findMany(): array{
+  public function findMany(): array {
     return [];
   }
 
   #[Override]
-  public function update(User $user): User{
+  public function update(User $user): User {
     return $user;
   }
 }

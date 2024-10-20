@@ -19,12 +19,15 @@ class User extends Model {
 	private string $name;
 	#[Column]
 	private string $login;
+	#[Column]
+	private string $password;
 
 	public function __construct(array $args = []) {
 		$this->id = 0;
 		$this->name = '';
 		$this->login = '';
-		
+		$this->password = '';
+
 		$this->povoaPropriedades($args);
 	}
 
@@ -33,10 +36,11 @@ class User extends Model {
 		$this->id = $raw['id'];
 		$this->name = $raw['name'];
 		$this->login = $raw['login'];
+		$this->password = $raw['password'];
 	}
 
-	protected function povoaPropriedades(array $args = []){
-		foreach($args as $nomeprop => $prop){
+	protected function povoaPropriedades(array $args = []) {
+		foreach ($args as $nomeprop => $prop) {
 			$this->$nomeprop = $prop;
 		}
 	}
@@ -63,5 +67,13 @@ class User extends Model {
 
 	public function setLogin(string $value) {
 		$this->login = $value;
+	}
+
+	public function getPassword(): string {
+		return $this->password;
+	}
+
+	public function setPassword(string $value) {
+		$this->password = $value;
 	}
 }

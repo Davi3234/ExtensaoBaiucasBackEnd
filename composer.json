@@ -7,9 +7,6 @@
         "firebase/php-jwt": "^6.10"
     },
     "autoload": {
-        "files": [
-            "src/Util/index.php"
-        ],
         "psr-4": {
             "App\\": "src/"
         }

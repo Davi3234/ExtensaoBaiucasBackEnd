@@ -28,15 +28,19 @@ class AuthService {
       throw new BadRequestException('Login or password invalid');
     }
 
+    if ($user->getPassword() != md5($dto->password)) {
+      throw new BadRequestException('Login or password invalid');
+    }
+
     $payload = [
-      'exp' => time() + 10,
+      'exp' => time() + env('JWT_EXP'),
       'iat' => time(),
       'sub' => $user->getId(),
       'name' => $user->getName(),
     ];
 
-    $token = JWT::encode($payload, env('APP_KEY'), 'HS256');
+    $token = JWT::encode($payload, env('JWT_KEY_SECRET'), 'HS256');
 
-    return ['message' => 'Teste', 'payload' => $payload, 'token' => $token];
+    return ['token' => $token];
   }
 }
