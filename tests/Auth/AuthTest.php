@@ -4,11 +4,11 @@ namespace Tests\User;
 
 use App\Exception\CriticalException;
 use App\Model\User;
+use App\Provider\JWT;
 use App\Repository\IUserRepository;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use App\Service\AuthService;
-use Firebase\JWT\JWT;
 
 class UserRepositoryMock implements IUserRepository {
   function create(User $user): User {
@@ -52,12 +52,12 @@ class AuthTest extends TestCase {
     ]);
 
     // Assertion
-    var_dump($result['token']);
-
-    $decoded = JWT::decode($result['token'], env('JWT_KEY_SECRET'));
-
-    var_dump($decoded);
-
     $this->assertIsString($result['token']);
+
+    $decoded = JWT::decode($result['token'], ['key' => env('JWT_KEY_SECRET')]);
+
+    $this->assertIsObject($decoded);
+    $this->assertEquals($decoded->sub, 1);
+    $this->assertEquals($decoded->name, 'Dan Ruan');
   }
 }

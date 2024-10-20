@@ -3,9 +3,9 @@
 namespace App\Service;
 
 use App\Exception\Http\BadRequestException;
-use App\Provider\Zod\Z;
 use App\Repository\IUserRepository;
-use Firebase\JWT\JWT;
+use App\Provider\Zod\Z;
+use App\Provider\JWT;
 
 class AuthService {
 
@@ -24,22 +24,19 @@ class AuthService {
 
     $user = $this->userRepository->findByLogin($dto->login);
 
-    if (!$user) {
-      throw new BadRequestException('Login or password invalid');
-    }
-
-    if ($user->getPassword() != md5($dto->password)) {
+    if (!$user || $user->getPassword() != md5($dto->password)) {
       throw new BadRequestException('Login or password invalid');
     }
 
     $payload = [
-      'exp' => time() + env('JWT_EXP'),
-      'iat' => time(),
       'sub' => $user->getId(),
       'name' => $user->getName(),
     ];
 
-    $token = JWT::encode($payload, env('JWT_KEY_SECRET'), 'HS256');
+    $token = JWT::encode($payload, [
+      'key' => env('JWT_KEY_SECRET'),
+      'exp' => env('JWT_EXP')
+    ]);
 
     return ['token' => $token];
   }
