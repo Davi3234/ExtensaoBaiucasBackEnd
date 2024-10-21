@@ -34,7 +34,7 @@ jobs:
       - name: Run tests and generate XML report
         run: |
           echo "Testando..."
-          composer run tests
+          php vendor/bin/phpunit --colors
 
       - name: Verify test results
         run: |
