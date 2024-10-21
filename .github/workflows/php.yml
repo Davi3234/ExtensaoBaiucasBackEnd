@@ -1,0 +1,30 @@
+name: Test on Main
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Run tests and generate XML report
+        run: |
+          echo "Running tests..."
+          composer run tests
+
+      - name: Verify test results
+        run: |
+          if grep "<failure>" reports/test-report.xml; then
+            echo "Test failed"
+            exit 1
+          else
+            echo "All tests passed"
+          fi
