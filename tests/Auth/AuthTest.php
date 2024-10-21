@@ -115,7 +115,9 @@ class AuthTest extends TestCase {
     $userRepository = TestCase::createMock(IUserRepository::class);
     $authService = new AuthService($userRepository);
 
-    $payload = $authService->authorization($authorization);
+    $payload = $authService->authorization([
+      'token' => $authorization
+    ]);
 
     // Assertion
     $this->assertIsObject($payload);
@@ -133,7 +135,9 @@ class AuthTest extends TestCase {
     $userRepository = TestCase::createMock(IUserRepository::class);
     $authService = new AuthService($userRepository);
 
-    $authService->authorization($authorization);
+    $authService->authorization([
+      'token' => $authorization
+    ]);
   }
 
   #[Test]
@@ -148,7 +152,9 @@ class AuthTest extends TestCase {
     $userRepository = TestCase::createMock(IUserRepository::class);
     $authService = new AuthService($userRepository);
 
-    $authService->authorization($authorization);
+    $authService->authorization([
+      'token' => $authorization
+    ]);
   }
 
   #[Test]
@@ -162,7 +168,9 @@ class AuthTest extends TestCase {
     $userRepository = TestCase::createMock(IUserRepository::class);
     $authService = new AuthService($userRepository);
 
-    $authService->authorization($authorization);
+    $authService->authorization([
+      'token' => $authorization
+    ]);
   }
 
   #[Test]
@@ -177,7 +185,9 @@ class AuthTest extends TestCase {
     $userRepository = TestCase::createMock(IUserRepository::class);
     $authService = new AuthService($userRepository);
 
-    $authService->authorization($authorization);
+    $authService->authorization([
+      'token' => $authorization
+    ]);
   }
 
   private function tokenFactory() {
