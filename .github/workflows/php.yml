@@ -24,11 +24,7 @@ jobs:
         run: composer install
 
       - name: Creating .env file
-        run: cat <<EOL > .env
-              APP_NAME="Extensão Baiucas"
-              JWT_EXP=86400
-              JWT_KEY_SECRET="tests-main"
-              EOL
+        run: cat <<EOL > .env APP_NAME="Extensão Baiucas" JWT_EXP=86400 JWT_KEY_SECRET="tests-main" EOL
 
       - name: Run tests and generate XML report
         run: |
