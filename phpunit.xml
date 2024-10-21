@@ -1,10 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<phpunit bootstrap="initialize.php" colors="true" verbose="true" requireCoverageMetadata="true">
+<phpunit bootstrap="initialize.php" colors="true">
 
     <testsuites>
         <testsuite name="Application Test Suite">
             <directory>tests</directory>
         </testsuite>
     </testsuites>
+
+    <coverage processUncoveredFiles="true">
+        <include>
+            <directory>src/Model</directory>
+        </include>
+    </coverage>
 
 </phpunit>

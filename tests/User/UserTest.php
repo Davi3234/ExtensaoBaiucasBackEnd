@@ -6,6 +6,7 @@ use App\Model\User;
 use App\Repository\IUserRepository;
 use App\Repository\UserRepository;
 use App\Service\UserService;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
