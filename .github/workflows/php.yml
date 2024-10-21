@@ -1,4 +1,4 @@
-name: Test on Main
+name: Run Tests on Main
 
 on:
   push:
@@ -15,13 +15,22 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3.12'
+
+      - name: Install PHP dependencies
+        run: composer install
+
       - name: Run tests and generate XML report
         run: |
-          echo "Running tests..."
+          echo "Testando..."
           composer run tests
 
       - name: Verify test results
         run: |
+          echo "Gerando Relatório"
           if grep "<failure>" reports/test-report.xml; then
             echo "Test failed"
             exit 1
