@@ -34,14 +34,15 @@ jobs:
       - name: Run tests and generate XML report
         run: |
           echo "Testando..."
-          php vendor/bin/phpunit --colors
-
+          php vendor/bin/phpunit --colors --log-junit reports/test-report.xml
+          
       - name: Verify test results
+        id: verify_tests
         run: |
           echo "Gerando Relatório"
           if grep "<failure>" reports/test-report.xml; then
             echo "Test failed"
-            exit 1
+            exit 2
           else
             echo "All tests passed"
           fi
