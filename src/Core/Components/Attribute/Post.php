@@ -2,9 +2,9 @@
 
 namespace App\Core\Components\Attribute;
 
-class Get extends RouterMap {
+class Post extends RouterMap {
 
   function __construct(string $path = '') {
-    parent::__construct('GET', $path);
+    parent::__construct('POST', $path);
   }
 }

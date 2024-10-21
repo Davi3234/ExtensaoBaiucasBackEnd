@@ -1,7 +1,7 @@
 <?php
 
-require_once __DIR__ . '/groups-router.php';
+$routers = require 'routers.php';
 
-use App\Core\App;
+use App\Core\Server;
 
-App::CreateApp()->Run();
+Server::bootstrap($routers);

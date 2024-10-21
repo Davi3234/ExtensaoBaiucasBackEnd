@@ -9,7 +9,7 @@ class RouterMap {
 
   function __construct(
     private readonly string $method,
-    private readonly string $path
+    private readonly string $path = ''
   ) {
   }
 
