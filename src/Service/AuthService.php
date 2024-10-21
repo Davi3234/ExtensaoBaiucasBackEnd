@@ -25,12 +25,7 @@ class AuthService {
 
     $dto = $loginSchema->parseNoSafe($args);
 
-    $user = new User([
-      'id' => 1,
-      'name' => 'Dan Ruan',
-      'login' => 'dan@gmail.com',
-      'password' => md5('sada'),
-    ]); //$this->userRepository->findByLogin($dto->login);
+    $user = $this->userRepository->findByLogin($dto->login);
 
     if (!$user || $user->getPassword() != md5($dto->password)) {
       throw new BadRequestException('Login ou senha inválido');
