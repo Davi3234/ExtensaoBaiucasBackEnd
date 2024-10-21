@@ -1,0 +1,47 @@
+name: Run Tests on Main
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3.12'
+
+      - name: Install PHP dependencies
+        run: composer install
+
+      - name: Creating .env file
+        run: |
+          cat <<EOL > .env
+          APP_NAME="Extensão Baiucas"
+          JWT_EXP=86400
+          JWT_KEY_SECRET="tests-main"
+          EOL
+
+      - name: Run tests and generate XML report
+        run: |
+          echo "Testando..."
+          php vendor/bin/phpunit --colors
+
+      - name: Verify test results
+        run: |
+          echo "Gerando Relatório"
+          if grep "<failure>" reports/test-report.xml; then
+            echo "Test failed"
+            exit 1
+          else
+            echo "All tests passed"
+          fi
