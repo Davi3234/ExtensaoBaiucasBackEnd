@@ -3,19 +3,9 @@
 namespace App\Core\Components;
 
 class Response {
-
-  private static $instance = null;
-
-  static function getInstance() {
-    if (!isset(static::$instance))
-      static::$instance = new static();
-
-    return static::$instance;
-  }
-
   private $dataResponse = null;
 
-  private function __construct() {
+  function __construct() {
     header('charset=UTF-8');
   }
 

@@ -3,7 +3,7 @@
 namespace App\Controller;
 
 use App\Core\Components\Attribute\Controller;
-use App\Core\Components\Attribute\Post;
+use App\Core\Components\Attribute\Get;
 use App\Core\Components\Request;
 use App\Repository\UserRepository;
 use App\Service\AuthService;
@@ -18,7 +18,7 @@ class AuthController {
     );
   }
 
-  #[Post('/login')]
+  #[Get('/login')]
   function login(Request $request) {
     $result = $this->userService->login([
       'login' => $request->getBody('login'),

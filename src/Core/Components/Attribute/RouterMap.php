@@ -8,8 +8,8 @@ use Attribute;
 class RouterMap {
 
   function __construct(
-    private readonly string $method,
-    private readonly string $path = ''
+    public readonly string $method,
+    public readonly string $path = ''
   ) {
   }
 

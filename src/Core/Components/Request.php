@@ -3,44 +3,14 @@
 namespace App\Core\Components;
 
 class Request {
-  private static $instance = null;
-  private $body = [];
-  private $params = [];
-  private $attributes = [];
-  private $router = '/';
-  private $method = '';
 
-  private function __construct() {
-  }
-
-  static function getInstance() {
-    return static::$instance;
-  }
-
-  static function createRequestInstance(string $router, string $method, array $params = []) {
-    self::$instance = new static;
-    self::$instance->loadComponents($router, $method, $params);
-
-    return static::$instance;
-  }
-
-  static function getData() {
-    $dataJson = file_get_contents('php://input');
-    $data = json_decode($dataJson, true);
-
-    return [
-      'body' => $data,
-      'params' => $_GET,
-    ];
-  }
-
-  private function loadComponents(string $router, string $method, array $params = []) {
-    $data = self::getData();
-
-    $this->body = $data['body'];
-    $this->router = $router;
-    $this->method = $method;
-    $this->params = array_merge($data['params'], $params);
+  function __construct(
+    private $body = [],
+    private $params = [],
+    private $attributes = [],
+    private $router = '/',
+    private $method = ''
+  ) {
   }
 
   function getParams() {
