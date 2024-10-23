@@ -8,9 +8,14 @@ use Attribute;
 class RouterMap {
 
   function __construct(
-    public readonly string $method,
-    public readonly string $path = ''
+    private readonly string $method,
+    private string $path = ''
   ) {
+    $this->path = trim($this->path);
+
+    if ($this->path == '/') {
+      $this->path = '';
+    }
   }
 
   function getMethod() {

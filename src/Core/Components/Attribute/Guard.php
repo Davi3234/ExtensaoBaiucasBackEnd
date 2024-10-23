@@ -12,7 +12,7 @@ class Guard {
    * @param class-string<Middleware> $middleware
    */
   function __construct(
-    public readonly string $middleware
+    private readonly string $middleware
   ) {
   }
 

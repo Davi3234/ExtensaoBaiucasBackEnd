@@ -8,7 +8,7 @@ use Attribute;
 class Controller {
 
   function __construct(
-    public readonly string $prefix = ''
+    private readonly string $prefix = ''
   ) {
   }
 

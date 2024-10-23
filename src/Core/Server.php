@@ -11,8 +11,11 @@ use App\Core\Components\Request;
 use App\Core\Components\RequestBuilder;
 use App\Core\Components\Response;
 use App\Core\Components\Router;
+use App\Exception\Http\RouterNotFoundException;
 
 class Server {
+
+  private static $HTTP_METHODS_ATTRIBUTES = [Get::class, Post::class];
 
   private static $instance;
   private RequestBuilder $requestBuilder;
@@ -21,9 +24,7 @@ class Server {
   private string $pathHttp = '';
   private string $methodHttp = '';
 
-  /**
-   * @var array{controllers: class-string[]} $routers
-   */
+  /** @var array{controllers: class-string[]} $routers */
   private array $routers = [];
 
   protected function __construct() {
@@ -73,120 +74,125 @@ class Server {
 
   function Run() {
     try {
-      $controllersRequested = $this->getRequestTargetControllers();
+      $controllerRequested = $this->fetchControllerRequestTarget();
 
-      foreach ($controllersRequested as $controllerRequested) {
-        $reflectionClass = $controllerRequested['reflection'];
-        $controllerAttributes = $controllerRequested['controllerAttributes'];
-
-        $methodsRequested = $this->getRequestTargetMethodsFromReflectionClass($reflectionClass, $controllerAttributes);
-
-        foreach ($methodsRequested as $methodRequested) {
-          $methodName = $methodRequested['methodName'];
-
-          $fullPath = $controllerRequested['controllerAttributes']->getPrefix() . $methodRequested['methodAttribute']->getPath();
-
-          $params = Router::getParamsFromRouter($fullPath, $this->pathHttp);
-
-          $this->requestBuilder->setParams($params);
-
-          $this->request = $this->requestBuilder->build();
-
-          $guards = $this->getMiddlewaresFromMethod($methodRequested['reflection']);
-
-          foreach ($guards as $guard) {
-
-            $middleware = $guard->getMiddleware();
-
-            $middlewareInstance = new $middleware();
-
-            $middlewareInstance->perform($this->request, $this->response);
-          }
-
-          $controllerInstance = $reflectionClass->newInstance();
-
-          $response = $controllerInstance->$methodName($this->request, $this->response);
-        }
+      if (!$controllerRequested) {
+        throw new RouterNotFoundException("Router \"$this->methodHttp\" \"$this->pathHttp\" not found");
       }
+
+      $methodRequested = $this->fetchMethodRequestTargetFromController($controllerRequested['reflectionClass'], $controllerRequested['controllerAttribute']);
+
+      if (!$methodRequested) {
+        throw new RouterNotFoundException("Router \"$this->methodHttp\" \"$this->pathHttp\" not found");
+      }
+
+      $this->handleController($controllerRequested, $methodRequested);
     } catch (\Exception $err) {
       echo $err->getMessage();
     }
   }
 
-  function getRequestTargetControllers() {
-    $controllersRequested = [];
+  /**
+   * @param array{reflectionClass: \ReflectionClass, controllerAttribute: Controller} $controllerRequested
+   * @param array{methodName: string, methodAttribute: RouterMap} $methodRequested
+   * @return void
+   */
+  private function handleController($controllerRequested, $methodRequested) {
+    $controllerInstance = $controllerRequested['reflectionClass']->newInstance();
 
-    foreach ($this->routers['controllers'] as $classController) {
-      $reflectionClass = new \ReflectionClass($classController);
+    $fullPath = $controllerRequested['controllerAttribute']->getPrefix() . $methodRequested['methodAttribute']->getPath();
 
-      $atributesController = $reflectionClass->getAttributes(Controller::class);
+    $params = Router::getParamsFromRouter($fullPath, $this->pathHttp);
 
-      foreach ($atributesController as $attributeController) {
-        $attributeControllerInstance = $attributeController->newInstance();
+    $this->requestBuilder->setParams($params);
 
-        if (!$attributeControllerInstance instanceof Controller) {
-          continue;
-        }
+    $this->request = $this->requestBuilder->build();
 
-        $controllerPrefix = $attributeControllerInstance->getPrefix();
+    $methodName = $methodRequested['methodName'];
+    $controllerInstance = $controllerRequested['reflectionClass']->newInstance();
 
-        if (!Router::isMathPrefixRouterTemplate($this->pathHttp, $controllerPrefix)) {
-          continue;
-        }
+    $controllerInstance->$methodName($this->request, $this->response);
+  }
 
-        $controllersRequested[] = [
-          'classController' => $classController,
-          'reflection' => $reflectionClass,
-          'controllerAttributes' => $attributeControllerInstance
-        ];
+  private function fetchControllerRequestTarget() {
+    foreach ($this->routers['controllers'] as $controllerClass) {
+      $controllerReflectionClass = new \ReflectionClass($controllerClass);
+
+      $controllerReflectionAttributes = $controllerReflectionClass->getAttributes(Controller::class);
+
+      $controllerAttribute = $this->fetchAttributeControllerRequestTarget($controllerReflectionAttributes);
+
+      if (!$controllerAttribute) {
+        continue;
+      }
+
+      return [
+        'reflectionClass' => $controllerReflectionClass,
+        'controllerAttribute' => $controllerAttribute,
+      ];
+    }
+
+    return null;
+  }
+
+  /**
+   * @param \ReflectionAttribute<Controller>[] $atributesController
+   */
+  private function fetchAttributeControllerRequestTarget(array $controllerReflectionAttributes): ?Controller {
+    foreach ($controllerReflectionAttributes as $controllerReflectionAttribute) {
+      /** @var Controller */
+      $attributeControllerInstance = $controllerReflectionAttribute->newInstance();
+
+      if (Router::isMathPrefixRouterTemplate($this->pathHttp, $attributeControllerInstance->getPrefix())) {
+        return $attributeControllerInstance;
       }
     }
 
-    return $controllersRequested;
+    return null;
   }
 
-  function getRequestTargetMethodsFromReflectionClass(\ReflectionClass $reflectionClass, Controller $controllerAttributes) {
-    $methodsRequested = [];
+  private function fetchMethodRequestTargetFromController(\ReflectionClass $reflectionClass, Controller $controllerAttributes) {
+    $reflectionMethods = $reflectionClass->getMethods();
 
-    $methods = $reflectionClass->getMethods();
+    foreach ($reflectionMethods as $reflectionMethod) {
+      $attributesMethod = $this->getAttributesHttpRouterFromMethod($reflectionMethod);
 
-    foreach ($methods as $method) {
-      $attributesMethod = [
-        ...$method->getAttributes(Get::class),
-        ...$method->getAttributes(Post::class),
-      ];
+      foreach ($attributesMethod as $attributeMethod) {
+        /** @var RouterMap */
+        $attributeMethodInstance = $attributeMethod->newInstance();
 
-      foreach ($attributesMethod as $attribute) {
-        $attributeMethodInstance = $attribute->newInstance();
-
-        if (!$attributeMethodInstance instanceof RouterMap) {
-          continue;
-        }
-
-        $fullPath = $controllerAttributes->getPrefix() . $attributeMethodInstance->getPath();
+        $fullPath = trim($controllerAttributes->getPrefix() . $attributeMethodInstance->getPath());
 
         if ($attributeMethodInstance->getMethod() !== $this->methodHttp || !Router::isMathRouterTemplate($this->pathHttp, $fullPath)) {
           continue;
         }
 
-        $methodsRequested[] = [
-          'reflection' => $method,
-          'methodName' => $method->getName(),
+        return [
+          'methodName' => $reflectionMethod->getName(),
           'methodAttribute' => $attributeMethodInstance,
         ];
-
-        return $methodsRequested;
       }
     }
 
-    return $methodsRequested;
+    return null;
+  }
+
+  private function getAttributesHttpRouterFromMethod(\ReflectionMethod $reflectionMethod) {
+    $attributesMethod = [];
+
+    foreach (static::$HTTP_METHODS_ATTRIBUTES as $httpMethod) {
+      /** @var \ReflectionAttribute<RouterMap>[] */
+      $attributesMethod = array_merge($attributesMethod, $reflectionMethod->getAttributes($httpMethod));
+    }
+
+    return $attributesMethod;
   }
 
   /**
    * @param \ReflectionMethod $reflectionMethod
    * @return Guard[]
    */
-  function getMiddlewaresFromMethod(\ReflectionMethod $reflectionMethod) {
+  private function getMiddlewaresFromMethod(\ReflectionMethod $reflectionMethod) {
     return $reflectionMethod->getAttributes(Guard::class);
   }
 }
