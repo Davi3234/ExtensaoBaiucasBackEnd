@@ -10,10 +10,10 @@ use App\Repository\IUserRepository;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use App\Service\AuthService;
+use Override;
 
 class AuthTest extends TestCase {
 
-  // Login
   #[Test]
   public function testDeveEfetuarLogin() {
     // Arrange
@@ -23,22 +23,22 @@ class AuthTest extends TestCase {
     $userRepository = TestCase::createMock(IUserRepository::class);
 
     $userRepository->method('findByLogin')
-      ->with($login)
-      ->willReturn(
-        User::__loadModel([
-          'id' => 1,
-          'name' => 'Dan Ruan',
-          'login' => $login,
-          'password' => md5('Abc123!@#')
-        ])
-      );
+        ->with($login)
+        ->willReturn(
+            User::__loadModel([
+                'id' => 1,
+                'name' => 'Dan Ruan',
+                'login' => $login,
+                'password' => md5('Abc123!@#')
+            ])
+        );
 
     // Action
     $authService = new AuthService($userRepository);
 
     $result = $authService->login([
-      'login' => $login,
-      'password' => $password,
+        'login' => $login,
+        'password' => $password,
     ]);
 
     // Assertion

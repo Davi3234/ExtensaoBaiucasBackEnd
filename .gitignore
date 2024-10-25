@@ -621,3 +621,6 @@ packages/server/*
 # PHPUnit
 
 .phpunit.result.cache
+
+#Reports
+/reports

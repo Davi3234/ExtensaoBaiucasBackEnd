@@ -9,7 +9,9 @@ use App\Model\User;
 use App\Repository\IUserRepository;
 use App\Provider\Zod\Z;
 use App\Provider\JWT;
+use PHPUnit\Framework\Attributes\CoversClass;
 
+#[CoversClass(User::class)]
 class AuthService {
 
   function __construct(

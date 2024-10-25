@@ -12,7 +12,6 @@ use PHPUnit\Framework\TestCase;
 
 use function PHPUnit\Framework\assertEquals;
 
-#[CoversClass(User::class)]
 class UserTest extends TestCase{
 
   #[Test]
