@@ -5,11 +5,11 @@ namespace App\Core\Components;
 class Request {
 
   function __construct(
-    private $body = [],
-    private $params = [],
-    private $attributes = [],
-    private $router = '/',
-    private $method = ''
+    private readonly array $body = [],
+    private readonly array $params = [],
+    private array $attributes = [],
+    private readonly string $router = '/',
+    private readonly string $method = ''
   ) {
   }
 
@@ -55,5 +55,30 @@ class Request {
 
   function setAttribute(string $name, $value) {
     $this->attributes[$name] = $value;
+  }
+
+  static function getPathHttpRequested() {
+    if (!isset($_GET['url']))
+      $_GET['url'] = $_SERVER['REQUEST_URI'];
+
+    if (!$_GET['url'])
+      $_GET['url'] = '/';
+
+    $_GET['url'] = str_replace('//', '/', $_GET['url']);
+
+    return $_GET['url'];
+  }
+
+  static function getMethodHttpRequested() {
+    return $_SERVER['REQUEST_METHOD'] ?? null;
+  }
+
+  static function getBodyRequest() {
+    $dataJson = file_get_contents('php://input');
+    return json_decode($dataJson, true) ?? [];
+  }
+
+  static function getParamsRequest() {
+    return $_GET ?? [];
   }
 }

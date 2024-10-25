@@ -33,22 +33,4 @@ class Router {
   static function getPatternRouterMatching(string $routerTemplate) {
     return preg_replace('/:[a-zA-Z]+/', '([a-zA-Z0-9]+)', str_replace('/', '\/', $routerTemplate));
   }
-
-  static function getPathHttpRequested() {
-    if (!isset($_GET['url']))
-      $_GET['url'] = $_SERVER['REQUEST_URI'];
-
-    if (!$_GET['url'])
-      $_GET['url'] = '/';
-
-    $_GET['url'] = str_replace('//', '/', $_GET['url']);
-
-    $path = $_GET['url'];
-
-    return $path;
-  }
-
-  static function getMethodHttpRequested() {
-    return $_SERVER['REQUEST_METHOD'] ?? '';
-  }
 }
