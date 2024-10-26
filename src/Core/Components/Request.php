@@ -59,7 +59,7 @@ class Request {
 
   static function getPathHttpRequested() {
     if (!isset($_GET['url']))
-      $_GET['url'] = $_SERVER['REQUEST_URI'];
+      $_GET['url'] = $_SERVER['PATH_INFO'];
 
     if (!$_GET['url'])
       $_GET['url'] = '/';

@@ -51,11 +51,13 @@ class UserRepository extends Repository implements IUserRepository {
 
   #[\Override]
   public function findByLogin(string $login): ?User {
-    $query = $this->entityManager->createQuery('SELECT u.* FROM App\Model\User u WHERE u.login = ?1');
-    $query->setParameter(1, $login);
+    $result = $this->entityManager
+      ->createQuery('SELECT u FROM App\Model\User u WHERE u.login = :login')
+      ->setParameters([
+        'login' => $login,
+      ])
+      ->getResult();
 
-    $result = $query->getResult(); // Não consegui pegar o resultado, dava erro de Driver não definido
-
-    return new User();
+    return $result[0] ?? null;
   }
 }

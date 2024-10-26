@@ -50,17 +50,17 @@ class AuthService {
     $token = $args['token'] ?? null;
 
     if (!$token) {
-      throw new UnauthorizedException('Inautorizado', ['causes' => 'Token não definido']);
+      throw new UnauthorizedException('Não Autorizado', ['causes' => 'Token não definido']);
     }
 
     if (count(explode(' ', $token)) != 2) {
-      throw new UnauthorizedException('Inautorizado', ['causes' => 'Token inválido']);
+      throw new UnauthorizedException('Não Autorizado', ['causes' => 'Token inválido']);
     }
 
     [$bearer, $token] = explode(' ', $token);
 
     if ($bearer !== 'Bearer') {
-      throw new UnauthorizedException('Inautorizado', ['causes' => 'Token inválido']);
+      throw new UnauthorizedException('Não Autorizado', ['causes' => 'Token inválido']);
     }
 
     try {
@@ -68,7 +68,7 @@ class AuthService {
 
       return $payload;
     } catch (Exception $err) {
-      throw new UnauthorizedException('Inautorizado', ['causes' => 'Token inválido']);
+      throw new UnauthorizedException('Não Autorizado', ['causes' => 'Token inválido']);
     }
   }
 }

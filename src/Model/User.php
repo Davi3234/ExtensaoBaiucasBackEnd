@@ -7,9 +7,10 @@ use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
-use Override;
+use Doctrine\ORM\Mapping\Table;
 
 #[Entity]
+#[Table(name: 'users')]
 class User extends Model {
 	#[Id]
 	#[GeneratedValue]

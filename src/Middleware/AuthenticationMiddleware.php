@@ -17,8 +17,10 @@ class AuthenticationMiddleware extends Middleware {
 
   #[\Override]
   function perform(Request $request, Response $response): void {
+    $token = $request->getHeader('HTTP_AUTHORIZATION');
+
     $payload = $this->authService->authorization([
-      'token' => $request->getHeader('HTTP_AUTHORIZATION'),
+      'token' => $token,
     ]);
 
     $request->setAttribute('userId', $payload->sub);

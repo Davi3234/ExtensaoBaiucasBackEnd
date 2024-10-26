@@ -21,8 +21,8 @@ class AuthController {
   #[Get('/login')]
   function login(Request $request) {
     $result = $this->userService->login([
-      'login' => $request->getBody('login'),
-      'password' => $request->getBody('password'),
+      'login' => $request->getParam('login'),
+      'password' => $request->getParam('password'),
     ]);
 
     return $result;

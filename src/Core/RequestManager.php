@@ -75,7 +75,7 @@ class RequestManager {
 
     $handlers = array_map(function ($middleware) {
       return [
-        'controller' => $middleware->getName(),
+        'controller' => $middleware->newInstance()->getMiddleware(),
         'method' => 'perform',
       ];
     }, $middlewares);
