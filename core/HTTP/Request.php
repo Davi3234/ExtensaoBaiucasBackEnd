@@ -57,9 +57,13 @@ class Request {
     $this->attributes[$name] = $value;
   }
 
+  static function getHeadersServer() {
+    return $_SERVER;
+  }
+
   static function getRouterRequested() {
     if (!isset($_GET['url']))
-      $_GET['url'] = $_SERVER['PATH_INFO'];
+      $_GET['url'] = $_SERVER['PATH_INFO'] ?: $_SERVER['REQUEST_URI'];
 
     if (!$_GET['url'])
       $_GET['url'] = '/';

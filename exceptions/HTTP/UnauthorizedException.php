@@ -1,6 +1,6 @@
 <?php
 
-namespace Core\Exception\Http;
+namespace Exception\HTTP;
 
 use Core\Enum\StatusCodeHTTP;
 use Exception\HTTP\HttpException;

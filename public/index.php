@@ -2,4 +2,6 @@
 
 require_once __DIR__ . '/../initialize.php';
 
-\Core\Server::Bootstrap([])->dispatch();
+$routers = require __DIR__ . '/routers.php';
+
+\Core\Server::Bootstrap($routers)->dispatch();

@@ -3,13 +3,13 @@
 namespace App\Services;
 
 use PHPUnit\Framework\Attributes\CoversClass;
-use Core\Exception\Http\UnauthorizedException;
 use Exception\Database\JWTException;
 use Exception\HTTP\BadRequestException;
 use Provider\Zod\Z;
 use Provider\JWT\JWT;
 use App\Models\User;
 use App\Repositories\IUserRepository;
+use Exception\HTTP\UnauthorizedException;
 
 #[CoversClass(User::class)]
 class AuthService {
