@@ -7,22 +7,26 @@ use Attribute;
 #[Attribute(Attribute::TARGET_METHOD)]
 class RouterMap {
 
+  private readonly string $endpoint;
+
   function __construct(
     private readonly string $method,
-    private string $path = ''
+    string $endpoint = ''
   ) {
-    $this->path = trim($this->path);
+    $endpoint = trim($endpoint);
 
-    if ($this->path == '/') {
-      $this->path = '';
+    if ($endpoint == '/') {
+      $endpoint = '';
     }
+
+    $this->endpoint = $endpoint;
   }
 
   function getMethod() {
     return $this->method;
   }
 
-  function getPath() {
-    return $this->path;
+  function getEndpoint() {
+    return $this->endpoint;
   }
 }
