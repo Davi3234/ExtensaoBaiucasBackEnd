@@ -1,0 +1,9 @@
+.git
+.gitignore
+.vscode/
+docs/
+node_modules
+vendor
+composer.phar
+README.md
+Dockerfile
