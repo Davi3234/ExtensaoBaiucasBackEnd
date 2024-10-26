@@ -57,7 +57,7 @@ class Request {
     $this->attributes[$name] = $value;
   }
 
-  static function getPathHttpRequested() {
+  static function getRouterRequested() {
     if (!isset($_GET['url']))
       $_GET['url'] = $_SERVER['PATH_INFO'];
 

@@ -2,7 +2,7 @@
 
 namespace Core\Enum;
 
-enum StatusCode: int {
+enum StatusCodeHTTP: int {
   case CONTINUE = 100;
   case SWITCHING_PROTOCOLS = 101;
   case PROCESSING = 102;

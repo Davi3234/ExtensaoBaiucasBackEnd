@@ -2,12 +2,12 @@
 
 namespace Core\Exception\Http;
 
-use Core\Enum\StatusCode;
+use Core\Enum\StatusCodeHTTP;
 use Exception\HTTP\HttpException;
 
 class UnauthorizedException extends HttpException {
 
   function __construct(string $message, array $causes = []) {
-    parent::__construct($message, StatusCode::UNAUTHORIZED->value, $causes);
+    parent::__construct($message, StatusCodeHTTP::UNAUTHORIZED->value, $causes);
   }
 }
