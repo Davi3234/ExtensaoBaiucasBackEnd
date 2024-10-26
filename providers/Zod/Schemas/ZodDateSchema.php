@@ -1,6 +1,6 @@
 <?php
 
-namespace Provider\Zod\Schema;
+namespace Provider\Zod\Schemas;
 
 /**
  * @extends parent<string>

@@ -2,15 +2,15 @@
 
 namespace Provider\Zod;
 
-use Provider\Zod\Schema\ZodArraySchema;
-use Provider\Zod\Schema\ZodEnumSchema;
-use Provider\Zod\Schema\ZodMixedSchema;
-use Provider\Zod\Schema\ZodObjectSchema;
-use Provider\Zod\Schema\ZodStringSchema;
-use Provider\Zod\Schema\ZodNumberSchema;
-use Provider\Zod\Schema\ZodBooleanSchema;
-use Provider\Zod\Schema\ZodDateSchema;
-use Provider\Zod\Schema\ZodSchema;
+use Provider\Zod\Schemas\ZodArraySchema;
+use Provider\Zod\Schemas\ZodEnumSchema;
+use Provider\Zod\Schemas\ZodMixedSchema;
+use Provider\Zod\Schemas\ZodObjectSchema;
+use Provider\Zod\Schemas\ZodStringSchema;
+use Provider\Zod\Schemas\ZodNumberSchema;
+use Provider\Zod\Schemas\ZodBooleanSchema;
+use Provider\Zod\Schemas\ZodDateSchema;
+use Provider\Zod\Schemas\ZodSchema;
 
 class Z {
 

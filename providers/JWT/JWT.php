@@ -1,8 +1,8 @@
 <?php
 
-namespace Provider;
+namespace Provider\JWT;
 
-use Core\Exception\CriticalException;
+use Exception\Database\JWTException;
 
 class JWT {
 
@@ -14,7 +14,7 @@ class JWT {
    */
   static function encode(array $payload, array $options) {
     if (!$options['key'])
-      throw new CriticalException('"Key" option encode JWT not defined', ['message' => '"Key" not defined', 'origin' => 'key']);
+      throw new JWTException('"Key" option encode JWT not defined', ['message' => '"Key" not defined', 'origin' => 'key']);
 
     if ($options['exp'])
       $payload['exp'] = time() + $options['exp'];
@@ -27,7 +27,7 @@ class JWT {
     try {
       return \Firebase\JWT\JWT::encode($payload, $options['key'], $options['alg']);
     } catch (\Exception $err) {
-      throw new CriticalException($err->getMessage());
+      throw new JWTException($err->getMessage());
     }
   }
 
@@ -39,7 +39,7 @@ class JWT {
    */
   static function decode(string $token, array $options) {
     if (!$options['key'])
-      throw new CriticalException('"Key" option decode JWT not defined', ['message' => '"Key" not defined', 'origin' => 'key']);
+      throw new JWTException('"Key" option decode JWT not defined', ['message' => '"Key" not defined', 'origin' => 'key']);
 
     if (!$options['alg'])
       $options['alg'] = 'HS256';
@@ -47,7 +47,7 @@ class JWT {
     try {
       return \Firebase\JWT\JWT::decode($token, new \Firebase\JWT\Key($options['key'], $options['alg']));
     } catch (\Exception $err) {
-      throw new CriticalException($err->getMessage());
+      throw new JWTException($err->getMessage());
     }
   }
 }

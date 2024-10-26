@@ -1,6 +1,6 @@
 <?php
 
-namespace Provider\Zod\Schema;
+namespace Provider\Zod\Schemas;
 
 use Provider\Zod\ZodErrorValidator;
 use Provider\Zod\ZodParseException;
