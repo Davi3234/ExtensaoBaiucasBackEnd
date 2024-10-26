@@ -89,4 +89,13 @@ class Result implements IResult {
   function getResult(): array {
     return ['ok' => $this->ok, 'status' => $this->status, 'value' => $this->value, 'error' => $this->error];
   }
+
+  function __toString() {
+    $ok = str_bool($this->ok);
+    $status = $this->status;
+    $value = json_encode($this->value);
+    $error = json_encode($this->error);
+
+    return "Result{ok: $ok, status: $status, value: $value, error: $error}";
+  }
 }

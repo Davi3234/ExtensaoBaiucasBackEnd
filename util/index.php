@@ -39,6 +39,10 @@ function is_date_format($date, string $format) {
   return $dateTime && strtolower($dateTime->format($format)) === strtolower($date);
 }
 
+function str_bool(bool $value) {
+  return $value ? 'true' : 'false';
+}
+
 function uuid() {
   return sprintf(
     '%04x%04x-%04x-%04x-%04x-%04x%04x%04x',

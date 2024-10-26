@@ -5,7 +5,7 @@ namespace Core\HTTP;
 use Core\Common\Result;
 
 class Response {
-  private $dataResponse = null;
+  private $response = null;
 
   function __construct() {
     header('charset=UTF-8');
@@ -16,36 +16,40 @@ class Response {
     return $this;
   }
 
-  function setDataResponse($dataResponse) {
-    $this->dataResponse = $dataResponse;
+  function setResponse($response) {
+    $this->response = $response;
   }
 
-  function getDataResponse() {
-    return $this->dataResponse;
+  function getResponse() {
+    return $this->response;
   }
 
-  function sendDataResponse(int $status = null) {
+  function sendResponse(int $status = null) {
     if ($status)
       $this->status($status);
 
-    $this->sendJson($this->dataResponse, $status);
+    $this->sendJson($this->response, $status);
   }
 
-  function sendJson(array|object $data, int $status = null) {
-    if ($data instanceof Result) {
-      $status = $data->getStatus();
-      $data = $data->getResult();
+  function sendJson(array|object $response, int $status = null): never {
+    if ($response instanceof Result) {
+      $status = $response->getStatus();
+      $response = $response->getResult();
     }
 
     if ($status)
       $this->status($status);
 
-    if (is_object($data))
-      $data = (object)(array)$data;
+    if (is_object($response))
+      $response = (object)(array)$response;
 
     header('Content-Type: application/json');
-    $data = json_encode($data);
+    $response = json_encode($response);
 
-    exit($data);
+    $this->send($response);
+  }
+
+  function send($response): never {
+    exit($response);
   }
 }
