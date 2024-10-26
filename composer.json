@@ -15,8 +15,12 @@
     "autoload": {
         "psr-4": {
             "App\\": "src/",
+            "Config\\": "config/",
             "Core\\": "core/",
+            "Database\\": "database/",
             "Exception\\": "exceptions/",
+            "Public\\": "public/",
+            "Util\\": "util/",
             "Tests\\": "tests/"
         }
     },
