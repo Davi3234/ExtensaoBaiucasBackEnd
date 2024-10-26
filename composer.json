@@ -14,7 +14,10 @@
     },
     "autoload": {
         "psr-4": {
-            "App\\": "src/"
+            "App\\": "src/",
+            "Core\\": "core/",
+            "Exception\\": "exceptions/",
+            "Tests\\": "tests/"
         }
     },
     "autoload-dev": {
