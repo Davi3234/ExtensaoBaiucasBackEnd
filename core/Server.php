@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Core;
+namespace Core;
 
 use Core\Common\Result;
 use Core\Enum\StatusCodeHTTP;

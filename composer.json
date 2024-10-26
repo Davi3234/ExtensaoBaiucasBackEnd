@@ -16,9 +16,10 @@
         "psr-4": {
             "App\\": "src/",
             "Config\\": "config/",
+            "Common\\": "common/",
             "Core\\": "core/",
-            "Database\\": "database/",
             "Exception\\": "exceptions/",
+            "Provider\\": "Provider/",
             "Public\\": "public/",
             "Util\\": "util/",
             "Tests\\": "tests/"
