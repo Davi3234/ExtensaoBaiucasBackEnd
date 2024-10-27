@@ -22,6 +22,7 @@ class UserService {
         'id' => $user->getId(),
         'name' => $user->getName(),
         'login' => $user->getLogin(),
+        'active' => $user->getActive(),
       ];
     }, $users);
 

@@ -25,6 +25,9 @@ class RequestManager {
   private string $methodControllerRequested;
   private Attributes\RouterMap $routerMapAttribute;
 
+  /**
+   * @param array{controllers: class-string[]} $routersMap
+   */
   function __construct(
     private array $routersMap = [],
     private string $routerHttp = '',

@@ -22,12 +22,15 @@ class User extends Model {
 	private string $login;
 	#[Column]
 	private string $password;
+	#[Column(options: ['default' => true])]
+	private bool $active;
 
 	public function __construct(array $args = []) {
 		$this->id = 0;
 		$this->name = '';
 		$this->login = '';
 		$this->password = '';
+		$this->active = true;
 
 		$this->povoaPropriedades($args);
 	}
@@ -38,11 +41,12 @@ class User extends Model {
 		$this->name = $raw['name'];
 		$this->login = $raw['login'];
 		$this->password = $raw['password'];
+		$this->active = $raw['active'];
 	}
 
 	protected function povoaPropriedades(array $args = []) {
-		foreach ($args as $nomeprop => $prop) {
-			$this->$nomeprop = $prop;
+		foreach ($args as $prop => $value) {
+			$this->$prop = $value;
 		}
 	}
 
@@ -76,5 +80,13 @@ class User extends Model {
 
 	public function setPassword(string $value) {
 		$this->password = $value;
+	}
+
+	public function getActive(): bool {
+		return $this->active;
+	}
+
+	public function setActive(bool $value) {
+		$this->active = $value;
 	}
 }

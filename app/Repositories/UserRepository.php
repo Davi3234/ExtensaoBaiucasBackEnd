@@ -35,7 +35,15 @@ class UserRepository extends Repository implements IUserRepository {
    */
   #[\Override]
   public function findMany(): array {
-    return [];
+    try {
+      $result = $this->entityManager
+        ->createQuery('SELECT u FROM App\Models\User u')
+        ->getResult();
+
+      return $result;
+    } catch (\Exception $e) {
+      throw new DatabaseException($e->getMessage());
+    }
   }
 
   #[\Override]

@@ -3,9 +3,12 @@
 namespace App\Controllers;
 
 use Core\HTTP\Request;
-use App\Services\UserService;
+use Core\Common\Attributes\{Controller, Get, Delete, Guard, Post, Put};
+use App\Middlewares\AuthenticationMiddleware;
 use App\Repositories\UserRepository;
+use App\Services\UserService;
 
+#[Controller('/users')]
 class UserController {
   private readonly UserService $userService;
 
@@ -15,20 +18,27 @@ class UserController {
     );
   }
 
+  #[Get('/')]
+  #[Guard(AuthenticationMiddleware::class)]
   function query() {
     $result = $this->userService->query();
 
     return $result;
   }
 
+  #[Get('/')]
+  #[Guard(AuthenticationMiddleware::class)]
   function getOne(Request $request) {
+    $userId = $request->getAttribute('userId');
+
     $result = $this->userService->getById([
-      'id' => $request->getParam('id'),
+      'id' => $userId,
     ]);
 
     return $result;
   }
 
+  #[Post('/create')]
   function create(Request $request) {
     $result = $this->userService->create([
       'name' => $request->getBody('name'),
@@ -38,18 +48,26 @@ class UserController {
     return $result;
   }
 
+  #[Put('/')]
+  #[Guard(AuthenticationMiddleware::class)]
   function update(Request $request) {
+    $userId = $request->getAttribute('userId');
+
     $result = $this->userService->update([
-      'id' => $request->getParam('id'),
+      'id' => $userId,
       'name' => $request->getBody('name'),
     ]);
 
     return $result;
   }
 
+  #[Delete('/')]
+  #[Guard(AuthenticationMiddleware::class)]
   function delete(Request $request) {
+    $userId = $request->getAttribute('userId');
+
     $result = $this->userService->delete([
-      'id' => $request->getParam('id'),
+      'id' => $userId,
     ]);
 
     return $result;
