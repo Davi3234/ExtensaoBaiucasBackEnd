@@ -12,6 +12,7 @@ use Common\Model;
 #[Entity]
 #[Table(name: 'users')]
 class User extends Model {
+
 	#[Id]
 	#[GeneratedValue]
 	#[Column]

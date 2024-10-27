@@ -22,12 +22,23 @@ class UserRepository extends Repository implements IUserRepository {
 
   #[\Override]
   public function update(User $user): User {
-    return new User();
+    try {
+
+      return $user;
+    } catch (\Exception $e) {
+      throw new DatabaseException($e->getMessage());
+    }
   }
 
   #[\Override]
-  public function deleteById(int $id): User {
-    return new User();
+  public function deleteById(int $id) {
+    try {
+      $user = $this->findById($id);
+
+      $this->entityManager->remove($user);
+    } catch (\Exception $e) {
+      throw new DatabaseException($e->getMessage());
+    }
   }
 
   /**

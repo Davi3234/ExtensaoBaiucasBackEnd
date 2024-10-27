@@ -83,6 +83,7 @@ class UserService {
 
     $user->setName($dto->name);
     $user->setLogin($dto->login);
+    $user->setActive(true);
 
     $this->userRepository->create($user);
 

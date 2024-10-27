@@ -8,7 +8,7 @@ interface IUserRepository {
 
   function create(User $user): User;
   function update(User $user): User;
-  function deleteById(int $id): User;
+  function deleteById(int $id);
 
   /**
    * @return User[]
