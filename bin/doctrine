@@ -1,0 +1,13 @@
+<?php
+
+require __DIR__ . '/../initialize.php';
+
+use Doctrine\ORM\Tools\Console\EntityManagerProvider\SingleManagerProvider;
+use Doctrine\ORM\Tools\Console\ConsoleRunner;
+use Provider\Database\EntityManagerCreator;
+
+$entityManager = EntityManagerCreator::getInstance()->getEntityManager();
+
+ConsoleRunner::run(
+  new SingleManagerProvider($entityManager)
+);
