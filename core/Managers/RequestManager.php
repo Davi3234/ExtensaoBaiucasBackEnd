@@ -2,6 +2,7 @@
 
 namespace Core\Managers;
 
+use Attribute;
 use Core\Exception\HTTP\RouterNotFoundException;
 use Core\HTTP\RouterURL;
 use Core\Common\Attributes;
@@ -152,6 +153,48 @@ class RequestManager {
     }
 
     return $attributesMethod;
+  }
+
+  function listAllEndpoints() {
+    $controller = [];
+
+    foreach ($this->routersMap['controllers'] as $controllerClass) {
+      $controllerReflectionClass = new \ReflectionClass($controllerClass);
+
+      $controllerReflectionAttributes = $controllerReflectionClass->getAttributes(Attributes\Controller::class);
+
+      foreach ($controllerReflectionAttributes as $controllerReflectionAttribute) {
+        /** @var Attributes\Controller */
+        $attributeControllerInstance = $controllerReflectionAttribute->newInstance();
+
+        $prefixEndpoint = $attributeControllerInstance->getPrefix();
+
+        $reflectionMethods = $controllerReflectionClass->getMethods();
+
+        foreach ($reflectionMethods as $reflectionMethod) {
+          $reflectionAttributes = $this->getAttributesHttpRouterFromMethod($reflectionMethod);
+
+          foreach ($reflectionAttributes as $reflectionAttribute) {
+            /** @var Attributes\RouterMap */
+            $routerMap = $reflectionAttribute->newInstance();
+
+            $suffixEndpoint = $routerMap->getEndpoint();
+
+            $endpoint = $prefixEndpoint . $suffixEndpoint;
+
+            if (!$controller[$routerMap->getMethod()])
+              $controller[$routerMap->getMethod()] = [];
+
+            if (!$controller[$routerMap->getMethod()][$endpoint])
+              $controller[$routerMap->getMethod()][$endpoint] = [];
+
+            $controller[$routerMap->getMethod()][$endpoint] = array_merge($controller[$routerMap->getMethod()][$endpoint], ["$controllerClass::{$reflectionMethod->getName()}"]);
+          }
+        }
+      }
+    }
+
+    return $controller;
   }
 
   private function getMiddlewaresFromRouterMap() {
