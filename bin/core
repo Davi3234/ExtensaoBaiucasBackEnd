@@ -5,7 +5,7 @@ require __DIR__ . '/../initialize.php';
 
 use Core\Managers\RequestManager;
 
-class AppCli {
+class CoreCli {
 
   function execute($command) {
     switch ($command) {
@@ -36,6 +36,6 @@ class AppCli {
   }
 }
 
-(new AppCli)->execute($argv[1] ?? '');
+(new CoreCli)->execute($argv[1] ?? '');
 
 echo PHP_EOL;
