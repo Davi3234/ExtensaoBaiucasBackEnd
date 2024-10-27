@@ -19,7 +19,7 @@
       "Common\\": "common/",
       "Core\\": "core/",
       "Exception\\": "exceptions/",
-      "Provider\\": "Providers/",
+      "Provider\\": "providers/",
       "Public\\": "public/",
       "Util\\": "util/",
       "Tests\\": "tests/"
