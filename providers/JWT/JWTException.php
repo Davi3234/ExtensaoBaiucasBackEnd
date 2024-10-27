@@ -1,6 +1,6 @@
 <?php
 
-namespace Exception\Database;
+namespace Provider\JWT;
 
 use Core\Exception\CriticalException;
 

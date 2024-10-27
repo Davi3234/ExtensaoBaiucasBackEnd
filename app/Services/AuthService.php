@@ -3,13 +3,12 @@
 namespace App\Services;
 
 use PHPUnit\Framework\Attributes\CoversClass;
-use Exception\Database\JWTException;
-use Exception\HTTP\BadRequestException;
+use Exception\ValidationException;
+use Provider\JWT\JWTException;
 use Provider\Zod\Z;
 use Provider\JWT\JWT;
 use App\Models\User;
 use App\Repositories\IUserRepository;
-use Exception\HTTP\UnauthorizedException;
 
 #[CoversClass(User::class)]
 class AuthService {
@@ -30,11 +29,12 @@ class AuthService {
     $user = $this->userRepository->findByLogin($dto->login);
 
     if (!$user || $user->getPassword() != md5($dto->password)) {
-      throw new BadRequestException('Login ou senha inválido');
+      throw new ValidationException('Login ou senha inválido');
     }
 
     $payload = [
       'sub' => $user->getId(),
+      'login' => $user->getLogin(),
       'name' => $user->getName(),
     ];
 
@@ -50,17 +50,17 @@ class AuthService {
     $token = $args['token'] ?? null;
 
     if (!$token) {
-      throw new UnauthorizedException('Não Autorizado', ['causes' => 'Token não definido']);
+      throw new ValidationException('Não Autorizado', ['causes' => 'Token não definido']);
     }
 
     if (count(explode(' ', $token)) != 2) {
-      throw new UnauthorizedException('Não Autorizado', ['causes' => 'Token inválido']);
+      throw new ValidationException('Não Autorizado', ['causes' => 'Token inválido']);
     }
 
     [$bearer, $token] = explode(' ', $token);
 
     if ($bearer !== 'Bearer') {
-      throw new UnauthorizedException('Não Autorizado', ['causes' => 'Token inválido']);
+      throw new ValidationException('Não Autorizado', ['causes' => 'Token inválido']);
     }
 
     try {
@@ -68,7 +68,7 @@ class AuthService {
 
       return $payload;
     } catch (JWTException $err) {
-      throw new UnauthorizedException('Não Autorizado', ['causes' => 'Token inválido']);
+      throw new ValidationException('Não Autorizado', ['causes' => 'Token inválido']);
     }
   }
 }

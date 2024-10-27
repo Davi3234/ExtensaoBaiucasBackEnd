@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use Exception\HTTP\BadRequestException;
+use Exception\ValidationException;
 use Provider\Zod\Z;
 use App\Models\User;
 use App\Repositories\IUserRepository;
@@ -63,7 +63,7 @@ class UserService {
     $userWithSameLogin = $this->userRepository->findByLogin($dto->login);
 
     if ($userWithSameLogin) {
-      throw new BadRequestException(
+      throw new ValidationException(
         'Não é possível cadastrar o usuário',
         [
           ['message' => 'Já existe um usuário com o mesmo login informado', 'cause' => 'login']
@@ -97,7 +97,7 @@ class UserService {
     $user = $this->userRepository->findById($dto->id);
 
     if (!$user) {
-      throw new BadRequestException(
+      throw new ValidationException(
         'Não é possível atualizar o usuário',
         [
           ['message' => 'Usuário não encontrado', 'cause' => 'id']
@@ -125,7 +125,7 @@ class UserService {
     $userToDelete = $this->getById($dto->id)['user'];
 
     if ($userToDelete) {
-      throw new BadRequestException(
+      throw new ValidationException(
         'Não é possível excluir o usuário',
         [
           ['message' => 'Usuário não encontrado', 'cause' => 'id']

@@ -103,7 +103,7 @@ class ZodDateSchema extends ZodSchema {
     if ($this->format && is_date_format($this->value, $this->format))
       return true;
 
-    foreach (self::$DATE_FORMAT as $format) {
+    foreach (static::$DATE_FORMAT as $format) {
       if (is_date_format($this->value, $format))
         return true;
     }

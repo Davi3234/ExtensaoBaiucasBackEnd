@@ -2,8 +2,6 @@
 
 namespace Provider\JWT;
 
-use Exception\Database\JWTException;
-
 class JWT {
 
   /**

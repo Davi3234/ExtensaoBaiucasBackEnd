@@ -7,6 +7,8 @@ use Core\HTTP\Response;
 use Core\Common\Middleware;
 use App\Services\AuthService;
 use App\Repositories\UserRepository;
+use Core\Exception\HTTP\UnauthorizedException;
+use Exception\ValidationException;
 
 class AuthenticationMiddleware extends Middleware {
 
@@ -17,12 +19,18 @@ class AuthenticationMiddleware extends Middleware {
 
   #[\Override]
   function perform(Request $request, Response $response): void {
-    $token = $request->getHeader('HTTP_AUTHORIZATION');
+    try {
+      $token = $request->getHeader('HTTP_AUTHORIZATION');
 
-    $payload = $this->authService->authorization([
-      'token' => $token,
-    ]);
+      $payload = $this->authService->authorization([
+        'token' => $token,
+      ]);
 
-    $request->setAttribute('userId', $payload->sub);
+      $request->setAttribute('userId', $payload->sub);
+      $request->setAttribute('userLogin', $payload->login);
+      $request->setAttribute('userName', $payload->name);
+    } catch (ValidationException $err) {
+      throw new UnauthorizedException($err->getMessage(), $err->getCauses());
+    }
   }
 }

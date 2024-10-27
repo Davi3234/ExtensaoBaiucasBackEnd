@@ -40,7 +40,7 @@ class Exception extends \Exception {
         $message = "$origin: $message";
       }
 
-      return "$message";
+      return trim($message);
     }, $this->causes);
 
     return '"' . implode('; ', $causes) . '"';

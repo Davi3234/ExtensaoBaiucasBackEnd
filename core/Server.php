@@ -55,7 +55,7 @@ class Server {
       $this->loadParamsRequest();
       $this->resolveHandlers();
     } catch (\Exception $err) {
-      $this->response->setResponse(self::resolveErrorToResult($err));
+      $this->response->setResponse(static::resolveErrorToResult($err));
     }
 
     $this->sendResponse();
@@ -73,10 +73,7 @@ class Server {
   private function resolveHandlers() {
     try {
       foreach ($this->handlers as $handler) {
-        $controller = new $handler['controller'];
-        $methodName = $handler['method'];
-
-        $response = $controller->$methodName($this->request, $this->response);
+        $response = $this->callHandler($handler['controller'], $handler['method']);
 
         $callbackResult = $this->resolveResponseHandler($response);
 
@@ -84,11 +81,24 @@ class Server {
           break;
       }
     } catch (\Exception $err) {
-      $this->response->setResponse(self::resolveErrorToResult($err));
+      $this->response->setResponse(static::resolveErrorToResult($err));
     }
 
     if ($this->response->getResponse() === null)
       $this->response->setResponse(Result::success(null));
+  }
+
+  /**
+   * @param string $controller Controller name
+   * @param string $methodName Method name
+   * @return mixed Response of the controller
+   */
+  function callHandler(string $controller, string $methodName) {
+    $controller = new $controller;
+
+    $response = $controller->$methodName($this->request, $this->response);
+
+    return $response;
   }
 
   private function resolveResponseHandler($response) {
@@ -122,7 +132,7 @@ class Server {
   private static function resolveErrorToResult(\Exception $err) {
     if ($err instanceof CriticalException)
       return Result::failure(
-        self::resolveCriticalErrorMessage($err->getInfoError()),
+        static::resolveCriticalErrorMessage($err->getInfoError()),
         StatusCodeHTTP::INTERNAL_SERVER_ERROR->value
       );
 
@@ -130,7 +140,7 @@ class Server {
       return $err->toResult();
 
     return Result::failure(
-      self::resolveCriticalErrorMessage(['message' => $err->getMessage()]),
+      static::resolveCriticalErrorMessage(['message' => $err->getMessage()]),
       StatusCodeHTTP::INTERNAL_SERVER_ERROR->value
     );
   }

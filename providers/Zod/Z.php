@@ -70,7 +70,7 @@ class Z {
    * @param array{message: string} $attributes
    */
   static function enumNative($enum, array $attributes = []) {
-    return self::enum(array_map(fn($case) => $case->value, $enum::cases()), $attributes);
+    return static::enum(array_map(fn($case) => $case->value, $enum::cases()), $attributes);
   }
 
   /**

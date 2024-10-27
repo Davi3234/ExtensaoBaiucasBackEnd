@@ -1,9 +1,9 @@
 <?php
 
-namespace Exception\HTTP;
+namespace Core\Exception\HTTP;
 
 use Core\Enum\StatusCodeHTTP;
-use Exception\HTTP\HttpException;
+use Core\Exception\HTTP\HttpException;
 
 class InternalServerErrorException extends HttpException {
 

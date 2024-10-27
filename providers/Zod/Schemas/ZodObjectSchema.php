@@ -35,7 +35,7 @@ class ZodObjectSchema extends ZodSchema {
   function extendsObject(array $fields, array|null $attribute = null) {
     $fields = array_merge($this->fields, $fields);
 
-    $schema = new self($fields, $attribute);
+    $schema = new static($fields, $attribute);
 
     $schema->stackRules = $this->stackRules;
 

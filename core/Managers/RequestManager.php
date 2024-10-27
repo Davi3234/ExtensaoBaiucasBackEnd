@@ -2,7 +2,7 @@
 
 namespace Core\Managers;
 
-use Exception\HTTP\RouterNotFoundException;
+use Core\Exception\HTTP\RouterNotFoundException;
 use Core\HTTP\RouterURL;
 use Core\Common\Attributes;
 
