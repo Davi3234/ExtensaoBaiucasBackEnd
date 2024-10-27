@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use Common\Repository;
 use App\Models\User;
+use Doctrine\ORM\Cache\Exception\FeatureNotImplemented;
 use Provider\Database\DatabaseException;
 
 class UserRepository extends Repository implements IUserRepository {
@@ -23,8 +24,7 @@ class UserRepository extends Repository implements IUserRepository {
   #[\Override]
   public function update(User $user): User {
     try {
-
-      return $user;
+      throw new FeatureNotImplemented('Method "update" from "UserRepository" not implemented');
     } catch (\Exception $e) {
       throw new DatabaseException($e->getMessage());
     }

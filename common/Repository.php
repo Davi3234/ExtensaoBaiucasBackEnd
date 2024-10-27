@@ -3,6 +3,7 @@
 namespace Common;
 
 use Doctrine\ORM\EntityManager;
+use Provider\Database\DatabaseException;
 use Provider\Database\EntityManagerCreator;
 
 abstract class Repository {
