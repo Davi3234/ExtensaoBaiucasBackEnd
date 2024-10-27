@@ -20,14 +20,6 @@ class UserController {
 
   #[Get('/')]
   #[Guard(AuthenticationMiddleware::class)]
-  function query() {
-    $result = $this->userService->query();
-
-    return $result;
-  }
-
-  #[Get('/')]
-  #[Guard(AuthenticationMiddleware::class)]
   function getOne(Request $request) {
     $userId = $request->getAttribute('userId');
 

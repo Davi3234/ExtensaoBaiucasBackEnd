@@ -46,7 +46,14 @@ class UserService {
 
     $user =  $this->userRepository->findById($dto->id);
 
-    return ['user' => $user];
+    return [
+      'user' => [
+        'id' => $user->getId(),
+        'name' => $user->getName(),
+        'login' => $user->getLogin(),
+        'active' => $user->getActive(),
+      ]
+    ];
   }
 
   public function create(array $args) {

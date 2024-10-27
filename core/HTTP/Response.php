@@ -6,9 +6,14 @@ use Core\Common\Result;
 
 class Response {
   private $response = null;
+  private static $debugResponse = [];
 
   function __construct() {
     header('charset=UTF-8');
+  }
+
+  static function debugInfo(string $name, $value) {
+    static::$debugResponse[$name] = $value;
   }
 
   function status(int $status) {
@@ -40,8 +45,11 @@ class Response {
     if ($status)
       $this->status($status);
 
-    if (is_object($response))
+    if (!is_object($response))
       $response = (object)(array)$response;
+
+    if (static::isEnableToSendDebugInfo())
+      $response->debugInfo = static::$debugResponse;
 
     header('Content-Type: application/json');
     $response = json_encode($response);
@@ -51,5 +59,9 @@ class Response {
 
   function send($response): never {
     exit($response);
+  }
+
+  static function isEnableToSendDebugInfo() {
+    return env('ENV', 'PROD') !== 'PROD' && static::$debugResponse;
   }
 }
