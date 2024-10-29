@@ -2,7 +2,6 @@
 
 namespace Core\Managers;
 
-use Attribute;
 use Core\Exception\HTTP\RouterNotFoundException;
 use Core\HTTP\RouterURL;
 use Core\Common\Attributes;
@@ -156,7 +155,7 @@ class RequestManager {
   }
 
   function listAllEndpoints() {
-    $controller = [];
+    $endpoints = [];
 
     foreach ($this->routersMap['controllers'] as $controllerClass) {
       $controllerReflectionClass = new \ReflectionClass($controllerClass);
@@ -182,19 +181,53 @@ class RequestManager {
 
             $endpoint = $prefixEndpoint . $suffixEndpoint;
 
-            if (!$controller[$routerMap->getMethod()])
-              $controller[$routerMap->getMethod()] = [];
+            if (!$endpoints[$routerMap->getMethod()])
+              $endpoints[$routerMap->getMethod()] = [];
 
-            if (!$controller[$routerMap->getMethod()][$endpoint])
-              $controller[$routerMap->getMethod()][$endpoint] = [];
-
-            $controller[$routerMap->getMethod()][$endpoint] = array_merge($controller[$routerMap->getMethod()][$endpoint], ["$controllerClass::{$reflectionMethod->getName()}"]);
+            $endpoints[$routerMap->getMethod()][] = [
+              'endpoint' => $endpoint,
+              'controller' => "$controllerClass::{$reflectionMethod->getName()}",
+            ];
           }
         }
       }
     }
 
-    return $controller;
+    foreach ($endpoints as $method => &$routers) {
+      $routers = static::orderEndpoints($routers);
+    }
+
+    return $endpoints;
+  }
+
+  static function orderEndpoints(array $endpoints) {
+    uksort($endpoints, function ($a, $b) use ($endpoints) {
+      $hasParamA = str_contains($endpoints[$a]['endpoint'], ':');
+      $hasParamB = str_contains($endpoints[$b]['endpoint'], ':');
+
+      if ($hasParamA === $hasParamB)
+        return strcmp($a, $b);
+
+      return $hasParamA ? 1 : -1;
+    });
+
+    return $endpoints;
+  }
+
+  function storageEndpoints() {
+    $endpoints = $this->listAllEndpoints();
+
+    $folderPathDestiny = PATH_STORAGE . '/app';
+
+    if (!is_dir($folderPathDestiny)) {
+      mkdir($folderPathDestiny, 0777, true);
+    }
+
+    $filePathDestiny = '/routers.json';
+
+    $data = ['routers' => $endpoints];
+
+    file_put_contents($filePathDestiny, json_encode($data));
   }
 
   private function getMiddlewaresFromRouterMap() {

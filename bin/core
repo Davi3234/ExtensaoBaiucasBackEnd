@@ -8,31 +8,43 @@ use Core\Managers\RequestManager;
 class CoreCli {
 
   function execute($command) {
-    switch ($command) {
-      case 'routers:all':
-        $this->listAllRouters();
-        break;
+    try {
+      switch ($command) {
+        case 'routers:all':
+          $this->listAllRouters();
+          break;
+        case 'routers:build':
+          $this->routerBuild();
+          break;
+      }
+    } catch (\Exception $err) {
+      echo "Error: {$err->getMessage()}";
     }
   }
 
   function listAllRouters() {
     $routers = require __DIR__ . '/../public/routers.php';
-    $controllers = (new RequestManager($routers))->listAllEndpoints();
+    $endpoints = (new RequestManager($routers))->listAllEndpoints();
 
     $table = [['Method', 'Endpoint', 'Controller::method']];
-    foreach ($controllers as $method => $routers) {
-      foreach ($routers as $endpoint => $controllersTarget) {
-        foreach ($controllersTarget as $controllerTarget) {
-          $table[] = [$method, $endpoint, $controllerTarget];
-        }
+    foreach ($endpoints as $method => $endpointRouters) {
+      foreach ($endpointRouters as $endpoint) {
+        $table[] = [$method, $endpoint['endpoint'], $endpoint['controller']];
       }
     }
 
     $mask = "| %6s | %-30s | %-50s |" . PHP_EOL;
-
     foreach ($table as $line) {
       printf($mask, $line[0], $line[1], $line[2]);
     }
+  }
+
+  function routerBuild() {
+    $routers = require __DIR__ . '/../public/routers.php';
+
+    (new RequestManager($routers))->storageEndpoints();
+
+    echo "File \"routers.json\" created successfully";
   }
 }
 

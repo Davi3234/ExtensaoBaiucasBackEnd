@@ -43,6 +43,24 @@ function str_bool(bool $value) {
   return $value ? 'true' : 'false';
 }
 
+
+/**
+ * @template TKey of array-key
+ * @template TValue
+ * 
+ * @param (callable(TValue $value): bool)|(callable(TValue $value, TKey $key): bool) $callback
+ * @param array<TKey, TValue> $array
+ * @return ?TValue
+ */
+function array_find(callable $callback, array $array): mixed {
+  foreach ($array as $key => $value) {
+    if ($callback($value, $key))
+      return $value;
+  }
+
+  return null;
+}
+
 function uuid() {
   return sprintf(
     '%04x%04x-%04x-%04x-%04x-%04x%04x%04x',

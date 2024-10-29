@@ -20,4 +20,5 @@ error_reporting(E_ALL & ~(E_NOTICE | E_WARNING));
 @header('Access-Control-Allow-Headers: Authorization, Content-Type, x-xsrf-token, x_csrftoken, Cache-Control, X-Requested-With');
 
 // Constants
-define('PATH_ROOT_SOURCE', $_SERVER['DOCUMENT_ROOT']);
+define('PATH_ROOT_SOURCE', $_SERVER['DOCUMENT_ROOT'] ?: __DIR__ . '/..');
+define('PATH_STORAGE', PATH_ROOT_SOURCE . '/storage');
