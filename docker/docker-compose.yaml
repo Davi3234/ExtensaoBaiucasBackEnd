@@ -15,7 +15,7 @@ services:
     baiucas-backend:
         build:
             context: ./ExtensaoBaiucasBackEnd
-            dockerfile: Dockerfile
+            dockerfile: /docker/Dockerfile
         ports:
             - '80:80'
         env_file:
