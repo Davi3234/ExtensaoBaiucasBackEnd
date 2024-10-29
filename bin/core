@@ -1,0 +1,41 @@
+#!/sr/bin/env php
+<?php
+
+require __DIR__ . '/../initialize.php';
+
+use Core\Managers\RequestManager;
+
+class CoreCli {
+
+  function execute($command) {
+    switch ($command) {
+      case 'routers:all':
+        $this->listAllRouters();
+        break;
+    }
+  }
+
+  function listAllRouters() {
+    $routers = require __DIR__ . '/../public/routers.php';
+    $controllers = (new RequestManager($routers))->listAllEndpoints();
+
+    $table = [['Method', 'Endpoint', 'Controller::method']];
+    foreach ($controllers as $method => $routers) {
+      foreach ($routers as $endpoint => $controllersTarget) {
+        foreach ($controllersTarget as $controllerTarget) {
+          $table[] = [$method, $endpoint, $controllerTarget];
+        }
+      }
+    }
+
+    $mask = "| %6s | %-30s | %-50s |" . PHP_EOL;
+
+    foreach ($table as $line) {
+      printf($mask, $line[0], $line[1], $line[2]);
+    }
+  }
+}
+
+(new CoreCli)->execute($argv[1] ?? '');
+
+echo PHP_EOL;

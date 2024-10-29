@@ -16,6 +16,8 @@ error_reporting(E_ALL & ~(E_NOTICE | E_WARNING));
 @ini_set('default_mimetype', 'application/json');
 
 // HEADERS REQUEST
-
 @header('Access-Control-Allow-Origin: *');
 @header('Access-Control-Allow-Headers: Authorization, Content-Type, x-xsrf-token, x_csrftoken, Cache-Control, X-Requested-With');
+
+// Constants
+define('PATH_ROOT_SOURCE', $_SERVER['DOCUMENT_ROOT']);

@@ -18,7 +18,7 @@ jobs:
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.3.12'
+          php-version: "8.3.12"
 
       - name: Install PHP dependencies
         run: composer install
@@ -35,7 +35,7 @@ jobs:
         run: |
           echo "Testando..."
           php vendor/bin/phpunit --colors --log-junit reports/test-report.xml
-          
+
       - name: Verify test results
         id: verify_tests
         run: |

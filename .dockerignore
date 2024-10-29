@@ -7,3 +7,6 @@ db.json
 info.php
 README.md
 Dockerfile
+.env.example
+.prettierignore
+.prettierrc.json

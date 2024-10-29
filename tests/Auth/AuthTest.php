@@ -1,16 +1,14 @@
 <?php
 
-namespace Tests\User;
+namespace Tests\Auth;
 
-use App\Exception\Http\BadRequestException;
-use App\Exception\Http\UnauthorizedException;
-use App\Model\User;
-use App\Provider\JWT;
-use App\Repository\IUserRepository;
+use App\Models\User;
+use App\Repositories\IUserRepository;
+use App\Services\AuthService;
+use Exception\ValidationException;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
-use App\Service\AuthService;
-use Override;
+use Provider\JWT\JWT;
 
 class AuthTest extends TestCase {
 
@@ -23,22 +21,23 @@ class AuthTest extends TestCase {
     $userRepository = TestCase::createMock(IUserRepository::class);
 
     $userRepository->method('findByLogin')
-        ->with($login)
-        ->willReturn(
-            User::__loadModel([
-                'id' => 1,
-                'name' => 'Dan Ruan',
-                'login' => $login,
-                'password' => md5('Abc123!@#')
-            ])
-        );
+      ->with($login)
+      ->willReturn(
+        User::__loadModel([
+          'id' => 1,
+          'name' => 'Dan Ruan',
+          'login' => $login,
+          'password' => md5('Abc123!@#'),
+          'active' => true,
+        ])
+      );
 
     // Action
     $authService = new AuthService($userRepository);
 
     $result = $authService->login([
-        'login' => $login,
-        'password' => $password,
+      'login' => $login,
+      'password' => $password,
     ]);
 
     // Assertion
@@ -62,7 +61,7 @@ class AuthTest extends TestCase {
     $userRepository->method('findByLogin')->with($login)->willReturn(null);
 
     // Assertion
-    $this->expectException(BadRequestException::class);
+    $this->expectException(ValidationException::class);
 
     // Action
     $authService = new AuthService($userRepository);
@@ -88,12 +87,13 @@ class AuthTest extends TestCase {
           'id' => 1,
           'name' => 'Dan Ruan',
           'login' => $login,
-          'password' => md5('Abc123!@#123435gtbs')
+          'password' => md5('Abc123!@#123435gtbs'),
+          'active' => true,
         ])
       );
 
     // Assertion
-    $this->expectException(BadRequestException::class);
+    $this->expectException(ValidationException::class);
 
     // Action
     $authService = new AuthService($userRepository);
@@ -129,7 +129,7 @@ class AuthTest extends TestCase {
     $token  = $this->tokenFactory();
     $authorization = "Bearer  $token";
 
-    $this->expectException(UnauthorizedException::class);
+    $this->expectException(ValidationException::class);
 
     // Action
     $userRepository = TestCase::createMock(IUserRepository::class);
@@ -146,7 +146,7 @@ class AuthTest extends TestCase {
     $token  = $this->tokenFactory();
     $authorization = $token;
 
-    $this->expectException(UnauthorizedException::class);
+    $this->expectException(ValidationException::class);
 
     // Action
     $userRepository = TestCase::createMock(IUserRepository::class);
@@ -162,7 +162,7 @@ class AuthTest extends TestCase {
     // Arrange
     $authorization = "Bearer ojisauhdibasjndaioshduaisdna.asdsfvgtrefewdcsfgbcdfg.dsfghnjty56y4grevfd";
 
-    $this->expectException(UnauthorizedException::class);
+    $this->expectException(ValidationException::class);
 
     // Action
     $userRepository = TestCase::createMock(IUserRepository::class);
@@ -179,7 +179,7 @@ class AuthTest extends TestCase {
     $token  = $this->tokenFactory();
     $authorization = "Beareer $token";
 
-    $this->expectException(UnauthorizedException::class);
+    $this->expectException(ValidationException::class);
 
     // Action
     $userRepository = TestCase::createMock(IUserRepository::class);
@@ -203,7 +203,8 @@ class AuthTest extends TestCase {
           'id' => 1,
           'name' => 'Dan Ruan',
           'login' => $login,
-          'password' => md5('Abc123!@#')
+          'password' => md5('Abc123!@#'),
+          'active' => true,
         ])
       );
 
