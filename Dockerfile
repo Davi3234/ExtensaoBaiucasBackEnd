@@ -4,7 +4,7 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www/html
 
-COPY composer.json composer.lock ./
+COPY composer.json ./
 
 RUN composer install --no-dev --prefer-dist --optimize-autoloader && \
     rm -rf /root/.composer/cache
