@@ -19,7 +19,7 @@ function remove_start_str(string $search, string $subject) {
 }
 
 function remove_end_str(string $search, string $subject) {
-  if (str_ends_with($search, $subject))
+  if (str_ends_with($subject, $search))
     return substr($subject, 0, -strlen($search));
 
   return $subject;
@@ -73,4 +73,12 @@ function uuid() {
     mt_rand(0, 0xffff),
     mt_rand(0, 0xffff)
   );
+}
+
+/**
+ * @param string[] $paths
+ * @return string
+ */
+function path_join(...$paths) {
+  return implode(DIRECTORY_SEPARATOR, $paths);
 }
