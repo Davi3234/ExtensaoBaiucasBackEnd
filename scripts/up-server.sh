@@ -3,7 +3,7 @@ set -x
 
 php vendor/bin/phpunit Tests --colors
 
-if $? -ne 2; then
+if [ $? -ne 0 ]; then
   echo "Algum teste falhou"
   exit 1
 fi
