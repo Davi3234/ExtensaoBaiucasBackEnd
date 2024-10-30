@@ -54,7 +54,7 @@ class UserTest extends TestCase {
     $user = new User([
       'name' => $nome,
       'login' => $login,
-      'active' => false,
+      'active' => true,
     ]);
 
     //Act
