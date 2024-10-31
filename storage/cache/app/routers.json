@@ -1,0 +1,43 @@
+{
+  "routers": {
+    "POST": [
+      {
+        "endpoint": "\/auth\/login",
+        "controller": "App\\Controllers\\AuthController::login",
+        "middlewares": []
+      },
+      {
+        "endpoint": "\/users\/create",
+        "controller": "App\\Controllers\\UserController::create",
+        "middlewares": []
+      }
+    ],
+    "GET": [
+      {
+        "endpoint": "\/users",
+        "controller": "App\\Controllers\\UserController::getOne",
+        "middlewares": [
+          "App\\Middlewares\\AuthenticationMiddleware"
+        ]
+      }
+    ],
+    "PUT": [
+      {
+        "endpoint": "\/users",
+        "controller": "App\\Controllers\\UserController::update",
+        "middlewares": [
+          "App\\Middlewares\\AuthenticationMiddleware"
+        ]
+      }
+    ],
+    "DELETE": [
+      {
+        "endpoint": "\/users",
+        "controller": "App\\Controllers\\UserController::delete",
+        "middlewares": [
+          "App\\Middlewares\\AuthenticationMiddleware"
+        ]
+      }
+    ]
+  }
+}
