@@ -24,7 +24,6 @@ COPY --from=build /var/www/html /var/www/html
 RUN adduser -D backend
 
 COPY scripts/up-server.sh /usr/local/bin/up-server.sh
-
 RUN chmod +x /usr/local/bin/up-server.sh
 
 USER backend

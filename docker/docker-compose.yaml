@@ -24,6 +24,7 @@ services:
       - app-network
     volumes:
       - ./ExtensaoBaiucasBackEnd:/var/www/html
+      - /var/www/html/vendor
 
   baiucas-db:
     image: postgres:latest
