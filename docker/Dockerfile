@@ -6,7 +6,7 @@ WORKDIR /var/www/html
 
 COPY composer.json ./
 
-RUN composer install --no-dev --prefer-dist --optimize-autoloader && \
+RUN composer install --prefer-dist --optimize-autoloader && \
     rm -rf /root/.composer/cache
 
 COPY . .

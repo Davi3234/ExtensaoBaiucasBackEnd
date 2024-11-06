@@ -5,6 +5,8 @@ services:
       dockerfile: Dockerfile
     ports:
       - "4200:4200"
+    depends_on:
+      - baiucas-backend
     volumes:
       - ./ExtensaoBaiucas:/app
       - /app/node_modules
