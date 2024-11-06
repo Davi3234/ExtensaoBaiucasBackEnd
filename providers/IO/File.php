@@ -10,12 +10,11 @@ class File implements IFile {
     $directoryPath = trim($directoryPath);
     $filePath = trim($filePath);
 
-    if (!str_starts_with($filePath, '/[\/\\\\]/')) {
-      $filePath = DIRECTORY_SEPARATOR . $filePath;
-    }
+    $directoryPath = str_remove_preg('/[\/\\\\]+$/', $directoryPath);
+    $filePath = str_remove_preg('/^[\/\\\\]+/', $filePath);
 
-    $this->directoryPath = $directoryPath;
-    $this->filePath = $filePath;
+    $this->directoryPath = path_normalize($directoryPath);
+    $this->filePath = path_normalize($filePath);
   }
 
   function write(string $data) {

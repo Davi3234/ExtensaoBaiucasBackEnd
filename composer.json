@@ -1,5 +1,6 @@
 {
   "scripts": {
+    "start": "php -S localhost:8080 public/index.php",
     "tests": "php vendor/bin/phpunit Tests --colors"
   },
   "require": {

@@ -8,7 +8,7 @@ function remove_string(string $search, string $subject) {
   return str_replace($search, '', $subject);
 }
 
-function remove_start_str(string $search, string $subject) {
+function str_remove_start(string $search, string $subject) {
   if (!$search)
     return $subject;
 
@@ -18,11 +18,15 @@ function remove_start_str(string $search, string $subject) {
   return $subject;
 }
 
-function remove_end_str(string $search, string $subject) {
+function str_remove_end(string $search, string $subject) {
   if (str_ends_with($subject, $search))
     return substr($subject, 0, -strlen($search));
 
   return $subject;
+}
+
+function str_remove_preg(array|string $search, string $subject) {
+  return preg_replace($search, '', $subject);
 }
 
 function is_decimal($val) {
@@ -81,4 +85,8 @@ function uuid() {
  */
 function path_join(...$paths) {
   return implode(DIRECTORY_SEPARATOR, $paths);
+}
+
+function path_normalize(string $path): string {
+  return preg_replace('/[\\/]/', DIRECTORY_SEPARATOR, $path);
 }
