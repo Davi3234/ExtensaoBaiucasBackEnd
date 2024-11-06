@@ -19,7 +19,7 @@ function remove_start_str(string $search, string $subject) {
 }
 
 function remove_end_str(string $search, string $subject) {
-  if (str_ends_with($search, $subject))
+  if (str_ends_with($subject, $search))
     return substr($subject, 0, -strlen($search));
 
   return $subject;
@@ -43,6 +43,24 @@ function str_bool(bool $value) {
   return $value ? 'true' : 'false';
 }
 
+
+/**
+ * @template TKey of array-key
+ * @template TValue
+ * 
+ * @param (callable(TValue $value): bool)|(callable(TValue $value, TKey $key): bool) $callback
+ * @param array<TKey, TValue> $array
+ * @return ?TValue
+ */
+function array_find(callable $callback, array $array): mixed {
+  foreach ($array as $key => $value) {
+    if ($callback($value, $key))
+      return $value;
+  }
+
+  return null;
+}
+
 function uuid() {
   return sprintf(
     '%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
@@ -55,4 +73,12 @@ function uuid() {
     mt_rand(0, 0xffff),
     mt_rand(0, 0xffff)
   );
+}
+
+/**
+ * @param string[] $paths
+ * @return string
+ */
+function path_join(...$paths) {
+  return implode(DIRECTORY_SEPARATOR, $paths);
 }

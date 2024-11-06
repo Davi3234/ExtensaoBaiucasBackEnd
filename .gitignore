@@ -478,7 +478,6 @@ composer.lock
 ##### Environments
 .env
 
-
 # Logs
 logs
 *.log
