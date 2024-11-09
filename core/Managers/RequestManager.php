@@ -2,10 +2,11 @@
 
 namespace Core\Managers;
 
-use Core\Exception\HTTP\RouterNotFoundException;
-use Core\HTTP\RouterURL;
+use Provider\IO\File;
 use Core\Common\Attributes;
 use Core\Common\Attributes\Guard;
+use Core\Exception\HTTP\RouterNotFoundException;
+use Core\HTTP\RouterURL;
 
 class RequestManager {
 
@@ -22,12 +23,10 @@ class RequestManager {
     Attributes\Options::class,
   ];
 
-  /** @var class-string */
-  private string $controllerClassRequested;
-  private Attributes\Controller $controllerAttribute;
-
-  private string $methodControllerRequested;
-  private Attributes\RouterMap $routerMapAttribute;
+  /**
+   * @var array{endpoint: string, controller: string, middlewares: string[]}
+   */
+  private ?array $endpointRequested = null;
 
   /**
    * @param array{controllers: class-string[]} $routersMap
@@ -40,128 +39,87 @@ class RequestManager {
   }
 
   function loadRequest() {
-    $this->loadControllerRequestTarget();
-    $this->loadMethodRequestTargetFromController();
+    $this->loadEndpointFromCacheFile();
     return $this->loadHandlers();
   }
 
-  private function loadControllerRequestTarget() {
-    foreach ($this->routersMap['controllers'] as $controllerClass) {
-      $controllerReflectionClass = new \ReflectionClass($controllerClass);
+  function loadEndpointFromCacheFile() {
+    $endpoint = $this->getEndpointRequestedFromCacheFile();
 
-      $controllerReflectionAttributes = $controllerReflectionClass->getAttributes(Attributes\Controller::class);
+    if (!$endpoint)
+      throw new RouterNotFoundException("Router \"$this->methodHttp\" \"$this->routerHttp\" not fount");
 
-      $controllerAttribute = $this->getAttributeControllerRequestTarget($controllerReflectionAttributes);
-
-      if (!$controllerAttribute) {
-        continue;
-      }
-
-      $this->controllerClassRequested = $controllerClass;
-      $this->controllerAttribute = $controllerAttribute;
-
-      return;
-    }
-
-    throw new RouterNotFoundException("Router \"$this->methodHttp\" \"$this->routerHttp\" not found");
+    $this->endpointRequested = $endpoint;
   }
 
-  private function loadMethodRequestTargetFromController() {
-    $reflectionClass = $this->getReflectionClassRequested();
+  function getEndpointRequestedFromCacheFile() {
+    $endpoints = $this->getEndpointsFromCacheFile();
 
-    $reflectionMethods = $reflectionClass->getMethods();
+    $endpointsMethod = $endpoints[$this->methodHttp] ?? [];
 
-    $attributeMethodRequested = $this->findMethodAndAttributeMethodRequested($reflectionMethods);
-
-    if (!$attributeMethodRequested) {
-      throw new RouterNotFoundException("Router \"$this->methodHttp\" \"$this->routerHttp\" not found");
-    }
-
-    $this->methodControllerRequested = $attributeMethodRequested['method']->getName();
-    $this->routerMapAttribute = $attributeMethodRequested['attribute']->newInstance();
+    return array_find(function ($router) {
+      return RouterURL::isMathRouter($this->routerHttp, $router['endpoint']);
+    }, $endpointsMethod);
   }
 
-  private function loadHandlers() {
-    $middlewares = $this->getMiddlewaresFromRouterMap();
+  function getEndpointsFromCacheFile() {
+    $pathFile = $this->getFullPathFileCacheRouters();
 
+    $endpoints = [];
+    if (!file_exists($pathFile))
+      $endpoints = $this->storageEndpoints($this->routersMap);
+    else
+      $endpoints = require $pathFile;
+
+    return $endpoints['routers'] ?? [];
+  }
+
+  function loadHandlers() {
     $handlers = array_map(function ($middleware) {
+      [$controller, $method] = explode('::', $middleware);
+
       return [
-        'controller' => $middleware->newInstance()->getMiddleware(),
-        'method' => 'perform',
+        'controller' => $controller,
+        'method' => $method
       ];
-    }, $middlewares);
+    }, $this->endpointRequested['middlewares']);
+
+    [$controller, $method] = explode('::', $this->endpointRequested['controller']);
 
     $handlers[] = [
-      'controller' => $this->controllerClassRequested,
-      'method' => $this->methodControllerRequested,
+      'controller' => $controller,
+      'method' => $method
     ];
 
     return $handlers;
   }
 
   /**
-   * @param \ReflectionMethod<Attributes\RouterMap>[] $reflectionMethods
+   * @param array{controllers: class-string[]} $routersMap
    */
-  private function findMethodAndAttributeMethodRequested(array $reflectionMethods) {
-    foreach ($reflectionMethods as $reflectionMethod) {
-      $reflectionAttributes = $this->getAttributesHttpRouterFromMethod($reflectionMethod);
+  static function storageEndpoints($routers = []) {
+    $endpoints = self::listAllEndpoints($routers);
+    $routers = ['routers' => $endpoints];
+    $dataRouters = var_export($routers, true);
 
-      foreach ($reflectionAttributes as $reflectionAttribute) {
-        if ($this->isAttributeMethodRequested($reflectionAttribute)) {
-          return [
-            'method' => $reflectionMethod,
-            'attribute' => $reflectionAttribute,
-          ];
-        }
-      }
-    }
+    $dataFile = <<<EOL
+    <?php
+    //File cache auto created
+    return $dataRouters;
+    EOL;
 
-    return null;
+    (new File(self::PATH_STORAGE_ROUTERS_DIR, self::PATH_STORAGE_ROUTERS_FILE))->write($dataFile);
+
+    return $routers;
   }
 
   /**
-   * @param \ReflectionAttribute<Attributes\RouterMap> $attributeMethod
+   * @param array{controllers: class-string[]} $routersMap
    */
-  private function isAttributeMethodRequested(\ReflectionAttribute $attributeMethod) {
-    /** @var Attributes\RouterMap */
-    $attributeMethodInstance = $attributeMethod->newInstance();
-
-    $endpoint = trim($this->controllerAttribute->getPrefix() . $attributeMethodInstance->getEndpoint()) ?: '/';
-
-    return $attributeMethodInstance->getMethod() === $this->methodHttp && RouterURL::isMathRouter($this->routerHttp, $endpoint);
-  }
-
-  /**
-   * @param \ReflectionAttribute<Attributes\Controller>[] $atributesController
-   */
-  private function getAttributeControllerRequestTarget(array $controllerReflectionAttributes): ?Attributes\Controller {
-    foreach ($controllerReflectionAttributes as $controllerReflectionAttribute) {
-      /** @var Attributes\Controller */
-      $attributeControllerInstance = $controllerReflectionAttribute->newInstance();
-
-      if (RouterURL::isMathPrefixRouter($this->routerHttp, $attributeControllerInstance->getPrefix())) {
-        return $attributeControllerInstance;
-      }
-    }
-
-    return null;
-  }
-
-  private static function getAttributesHttpRouterFromMethod(\ReflectionMethod $reflectionMethod) {
-    $attributesMethod = [];
-
-    foreach (static::$HTTP_METHODS_ATTRIBUTES as $httpMethod) {
-      /** @var \ReflectionAttribute<Attributes\RouterMap>[] */
-      $attributesMethod = array_merge($attributesMethod, $reflectionMethod->getAttributes($httpMethod));
-    }
-
-    return $attributesMethod;
-  }
-
-  function listAllEndpoints() {
+  static function listAllEndpoints($routers = []) {
     $endpoints = [];
 
-    foreach ($this->routersMap['controllers'] as $controllerClass) {
+    foreach ($routers['controllers'] as $controllerClass) {
       $controllerReflectionClass = new \ReflectionClass($controllerClass);
 
       $controllerReflectionAttributes = $controllerReflectionClass->getAttributes(Attributes\Controller::class);
@@ -175,7 +133,7 @@ class RequestManager {
         $reflectionMethods = $controllerReflectionClass->getMethods();
 
         foreach ($reflectionMethods as $reflectionMethod) {
-          $reflectionAttributes = $this->getAttributesHttpRouterFromMethod($reflectionMethod);
+          $reflectionAttributes = self::getAttributesHttpRouterFromMethod($reflectionMethod);
 
           foreach ($reflectionAttributes as $reflectionAttribute) {
             /** @var Attributes\RouterMap */
@@ -213,6 +171,17 @@ class RequestManager {
     return $endpoints;
   }
 
+  private static function getAttributesHttpRouterFromMethod(\ReflectionMethod $reflectionMethod) {
+    $attributesMethod = [];
+
+    foreach (static::$HTTP_METHODS_ATTRIBUTES as $httpMethod) {
+      /** @var \ReflectionAttribute<Attributes\RouterMap>[] */
+      $attributesMethod = array_merge($attributesMethod, $reflectionMethod->getAttributes($httpMethod));
+    }
+
+    return $attributesMethod;
+  }
+
   static function orderEndpoints(array $endpoints) {
     uksort($endpoints, function ($a, $b) use ($endpoints) {
       $hasParamA = str_contains($endpoints[$a]['endpoint'], ':');
@@ -227,43 +196,11 @@ class RequestManager {
     return $endpoints;
   }
 
-  function storageEndpoints() {
-    $endpoints = $this->listAllEndpoints();
-
-    $folderPathDestiny = self::PATH_STORAGE_ROUTERS_DIR;
-
-    if (!is_dir($folderPathDestiny)) {
-      mkdir($folderPathDestiny, 0777, true);
-    }
-
-    $filePathDestiny = path_normalize($folderPathDestiny . self::PATH_STORAGE_ROUTERS_FILE);
-
-    $dataRouters = var_export(['routers' => $endpoints], true);
-
-    $dataFile = <<<EOL
-    <?php
-    //File cache auto created
-    return $dataRouters;
-    EOL;
-
-    echo "File created: \"$filePathDestiny\"" . PHP_EOL;
-
-    file_put_contents($filePathDestiny, $dataFile);
-  }
-
-  private function getMiddlewaresFromRouterMap() {
-    return $this->getReflectionClassRequested()->getMethod($this->methodControllerRequested)->getAttributes(Attributes\Guard::class);
-  }
-
-  function getReflectionClassRequested() {
-    return new \ReflectionClass($this->controllerClassRequested);
-  }
-
-  function isRequestedControllerFound() {
-    return !!$this->controllerClassRequested;
-  }
-
   function getEndpointRequested() {
-    return trim($this->controllerAttribute->getPrefix() . $this->routerMapAttribute->getEndpoint());
+    return $this->endpointRequested;
+  }
+
+  private function getFullPathFileCacheRouters() {
+    return path_normalize(self::PATH_STORAGE_ROUTERS_DIR . self::PATH_STORAGE_ROUTERS_FILE);
   }
 }

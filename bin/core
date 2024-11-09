@@ -24,7 +24,7 @@ class CoreCli {
 
   function listAllRouters() {
     $routers = require PATH_ROOT_SOURCE . '/public/routers.php';
-    $endpoints = (new RequestManager($routers))->listAllEndpoints();
+    $endpoints = RequestManager::listAllEndpoints(['controllers' => $routers]);
 
     $table = [['Method', 'Endpoint', 'Controller::method']];
     foreach ($endpoints as $method => $endpointRouters) {
@@ -42,9 +42,9 @@ class CoreCli {
   function routerBuild() {
     $routers = require PATH_ROOT_SOURCE . '/public/routers.php';
 
-    (new RequestManager($routers))->storageEndpoints();
+    RequestManager::storageEndpoints($routers);
 
-    echo "Successfully built routes";
+    echo "Successfully built routers";
   }
 }
 

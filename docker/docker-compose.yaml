@@ -18,7 +18,7 @@ services:
       context: ./ExtensaoBaiucasBackEnd
       dockerfile: /docker/Dockerfile
     ports:
-      - '80:80'
+      - "80:80"
     env_file:
       - ./ExtensaoBaiucasBackEnd/.env
     depends_on:
@@ -28,6 +28,7 @@ services:
     volumes:
       - ./ExtensaoBaiucasBackEnd:/var/www/html
       - /var/www/html/vendor
+      - /var/www/html/storage
 
   baiucas-db:
     image: postgres:latest
@@ -36,7 +37,7 @@ services:
       POSTGRES_PASSWORD: admin
       POSTGRES_DB: extensao-baiucas
     ports:
-      - '5433:5432'
+      - "5433:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
     networks:

@@ -3,6 +3,7 @@
 vscode/
 docs/
 composer.phar
+storage/
 db.json
 info.php
 README.md
