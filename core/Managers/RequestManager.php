@@ -5,8 +5,12 @@ namespace Core\Managers;
 use Core\Exception\HTTP\RouterNotFoundException;
 use Core\HTTP\RouterURL;
 use Core\Common\Attributes;
+use Core\Common\Attributes\Guard;
 
 class RequestManager {
+
+  private const PATH_STORAGE_ROUTERS_DIR = PATH_STORAGE . '/cache/app';
+  private const PATH_STORAGE_ROUTERS_FILE = '/routers.php';
 
   private static $HTTP_METHODS_ATTRIBUTES = [
     Attributes\Get::class,
@@ -181,19 +185,28 @@ class RequestManager {
 
             $endpoint = $prefixEndpoint . $suffixEndpoint;
 
+            $attributeGuards = $reflectionMethod->getAttributes(Guard::class);
+
+            $middlewares = array_map(function ($attribute) {
+              /** @var Guard */
+              $guard = $attribute->newInstance();
+              return "{$guard->getMiddleware()}::perform";
+            }, $attributeGuards);
+
             if (!$endpoints[$routerMap->getMethod()])
               $endpoints[$routerMap->getMethod()] = [];
 
             $endpoints[$routerMap->getMethod()][] = [
               'endpoint' => $endpoint,
               'controller' => "$controllerClass::{$reflectionMethod->getName()}",
+              'middlewares' => $middlewares,
             ];
           }
         }
       }
     }
 
-    foreach ($endpoints as $method => &$routers) {
+    foreach ($endpoints as &$routers) {
       $routers = static::orderEndpoints($routers);
     }
 
@@ -217,17 +230,25 @@ class RequestManager {
   function storageEndpoints() {
     $endpoints = $this->listAllEndpoints();
 
-    $folderPathDestiny = PATH_STORAGE . '/app';
+    $folderPathDestiny = self::PATH_STORAGE_ROUTERS_DIR;
 
     if (!is_dir($folderPathDestiny)) {
       mkdir($folderPathDestiny, 0777, true);
     }
 
-    $filePathDestiny = '/routers.json';
+    $filePathDestiny = path_normalize($folderPathDestiny . self::PATH_STORAGE_ROUTERS_FILE);
 
-    $data = ['routers' => $endpoints];
+    $dataRouters = var_export(['routers' => $endpoints], true);
 
-    file_put_contents($filePathDestiny, json_encode($data));
+    $dataFile = <<<EOL
+    <?php
+    //File cache auto created
+    return $dataRouters;
+    EOL;
+
+    echo "File created: \"$filePathDestiny\"" . PHP_EOL;
+
+    file_put_contents($filePathDestiny, $dataFile);
   }
 
   private function getMiddlewaresFromRouterMap() {

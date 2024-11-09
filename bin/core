@@ -23,7 +23,7 @@ class CoreCli {
   }
 
   function listAllRouters() {
-    $routers = require __DIR__ . '/../public/routers.php';
+    $routers = require PATH_ROOT_SOURCE . '/public/routers.php';
     $endpoints = (new RequestManager($routers))->listAllEndpoints();
 
     $table = [['Method', 'Endpoint', 'Controller::method']];
@@ -40,11 +40,11 @@ class CoreCli {
   }
 
   function routerBuild() {
-    $routers = require __DIR__ . '/../public/routers.php';
+    $routers = require PATH_ROOT_SOURCE . '/public/routers.php';
 
     (new RequestManager($routers))->storageEndpoints();
 
-    echo "File \"routers.json\" created successfully";
+    echo "Successfully built routes";
   }
 }
 
