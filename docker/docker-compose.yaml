@@ -2,15 +2,16 @@ services:
   baiucas-frontend:
     build:
       context: ./ExtensaoBaiucas
-      dockerfile: Dockerfile
+      target: build
     ports:
       - "4200:4200"
     depends_on:
       - baiucas-backend
     volumes:
-      - ./ExtensaoBaiucas:/app
+      - ./ExtensaoBaiucas:/app:cached
       - /app/node_modules
-    command: ["npm", "start", "--", "--host", "0.0.0.0"]
+    environment:
+      - CHOKIDAR_USEPOLLING=true
 
   baiucas-backend:
     build:
