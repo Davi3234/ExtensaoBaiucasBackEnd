@@ -14,6 +14,8 @@ services:
       - app-network
     environment:
       - CHOKIDAR_USEPOLLING=true
+      - API_BASE_URL=http://baiucas-backend
+
 
   baiucas-backend:
     build:

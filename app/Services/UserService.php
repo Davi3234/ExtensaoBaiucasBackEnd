@@ -17,6 +17,9 @@ class UserService {
   public function query() {
     $users = $this->userRepository->findMany();
 
+    if(count($users) == 0)
+      throw new ValidationException('Nenhum Usuário encontrado');
+
     $raw = array_map(function ($user) {
       return [
         'id' => $user->getId(),
@@ -67,6 +70,8 @@ class UserService {
       'login' => Z::string(['required' => 'Login é obrigatório'])
         ->trim()
         ->regex('/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/', 'Login invalid'),
+      'password' => Z::string(['required' => 'Senha é obrigatório'])
+        ->trim(),
     ])->coerce();
 
     $dto = $createSchema->parseNoSafe($args);
@@ -86,6 +91,7 @@ class UserService {
 
     $user->setName($dto->name);
     $user->setLogin($dto->login);
+    $user->setPassword($dto->password);
     $user->setActive(true);
 
     $this->userRepository->create($user);
