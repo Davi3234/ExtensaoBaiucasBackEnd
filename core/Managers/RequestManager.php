@@ -24,7 +24,7 @@ class RequestManager {
   ];
 
   /**
-   * @var array{endpoint: string, controller: string, middlewares: string[]}
+   * @var array{endpoint: string, statusCode: int, controller: string, middlewares: string[]}
    */
   private ?array $endpointRequested = null;
 
@@ -157,6 +157,7 @@ class RequestManager {
             $endpoints[$routerMap->getMethod()][] = [
               'endpoint' => $endpoint,
               'controller' => "$controllerClass::{$reflectionMethod->getName()}",
+              'statusCode' => $routerMap->getStatusCode(),
               'middlewares' => $middlewares,
             ];
           }

@@ -56,8 +56,9 @@ class Server {
         $this->handlers = $this->requestManager->loadRequest();
         $this->loadParamsRequest();
         $this->resolveHandlers();
-      } else
+      } else {
         $this->response->setResponse(Result::success(true));
+      }
     } catch (\Exception $err) {
       $this->response->setResponse(static::resolveErrorToResult($err));
     }
@@ -112,7 +113,7 @@ class Server {
       return ['isEndRequest' => $isEndRequest];
 
     if (!$response instanceof Result)
-      $response = Result::success($response);
+      $response = Result::success($response, $this->requestManager->getEndpointRequested()['statusCode']);
 
     if (!$response->isSuccess())
       $isEndRequest = true;

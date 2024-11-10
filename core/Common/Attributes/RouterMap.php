@@ -11,7 +11,8 @@ class RouterMap {
 
   function __construct(
     private readonly string $method,
-    string $endpoint = ''
+    string $endpoint = '',
+    private int $statusCode = 200
   ) {
     $endpoint = trim($endpoint);
 
@@ -28,5 +29,9 @@ class RouterMap {
 
   function getEndpoint() {
     return $this->endpoint;
+  }
+
+  function getStatusCode() {
+    return $this->statusCode;
   }
 }
