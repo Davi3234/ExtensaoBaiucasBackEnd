@@ -43,7 +43,10 @@ class PedidoService {
 
   public function getById(array $args) {
     $getSchema = Z::object([
-      'id_pedido' => Z::number(['required' => 'Id do pedido é obrigatório', 'invalidType' => 'Id do Pedido inválido'])
+      'id_pedido' => Z::number([
+        'required' => 'Id do pedido é obrigatório',
+        'invalidType' => 'Id do Pedido inválido'
+      ])
         ->coerce()
         ->int()
         ->gt(0, 'Id do Pedido inválido')
@@ -54,7 +57,12 @@ class PedidoService {
     $pedido =  $this->pedidoRepository->findById($dto->id_pedido);
 
     if (!$pedido)
-      throw new ValidationException('Pedido não encontrado');
+      throw new ValidationException('Não foi possível encontrar o Pedido', [
+        [
+          'message' => 'Pedido não encontrado',
+          'origin' => 'id_pedido'
+        ]
+      ]);
 
     return [
       'pedido' => [
@@ -70,47 +78,42 @@ class PedidoService {
         'taxa_entrega'      => $pedido->getTaxaEntrega(),
       ]
     ];
-    }
+  }
 
-    public function create(array $args) {
-        $createSchema = Z::object([
-          'id_pedido' => Z::string(['required' => 'Id do Pedido é obrigatório!'])
-            ->trim(),
-          'id_cliente' => Z::string(['required' => 'Id do cliente é obrigatório!'])
-            ->trim()
-        ])->coerce();
-    
-        $dto = $createSchema->parseNoSafe($args);
-    
-        $pedidoToCreate = $this->pedidoRepository->create($dto->create);
-    
-        if ($pedidoToCreate) {
-          throw new ValidationException(
-            'Não é possível inserir o pedido',
-          );
-        }
+  public function create(array $args) {
+    $createSchema = Z::object([
+      'id_pedido' => Z::string(['required' => 'Id do Pedido é obrigatório!'])
+        ->trim(),
+      'id_cliente' => Z::string(['required' => 'Id do cliente é obrigatório!'])
+        ->trim()
+    ])->coerce();
 
-        $pedido = new Pedido();
+    $dto = $createSchema->parseNoSafe($args);
 
-        $pedido->setIdPedido($dto->id_pedido);
-        $pedido->setDataPedido($dto->data_pedido);
-        $pedido->setIdCliente($dto->id_cliente);
-        $pedido->setValorTotal($dto->valor_total);
-        $pedido->setStatus($dto->status);
-        $pedido->setFormaPagamento($dto->data_pedido);
-        $pedido->setObservacoes($dto->observacoes);
-        $pedido->setTipo($dto->tipo);
-        $pedido->setEnderecoEntrega($dto->endereco_entrega);
-        $pedido->setTaxaEntrega($dto->taxa_entrega);
+    $pedido = new Pedido();
 
-        $this->pedidoRepository->create($pedido);
+    $pedido->setIdPedido($dto->id_pedido);
+    $pedido->setDataPedido($dto->data_pedido);
+    $pedido->setIdCliente($dto->id_cliente);
+    $pedido->setValorTotal($dto->valor_total);
+    $pedido->setStatus($dto->status);
+    $pedido->setFormaPagamento($dto->data_pedido);
+    $pedido->setObservacoes($dto->observacoes);
+    $pedido->setTipo($dto->tipo);
+    $pedido->setEnderecoEntrega($dto->endereco_entrega);
+    $pedido->setTaxaEntrega($dto->taxa_entrega);
 
-        return ['message' => 'Pedido inserido com sucesso!'];
-    }
+    $this->pedidoRepository->create($pedido);
 
-    public function update(array $args) {
+    return ['message' => 'Pedido inserido com sucesso!'];
+  }
+
+  public function update(array $args) {
     $updateSchema = Z::object([
-      'id_pedido' => Z::number(['required' => 'Id do Pedido é obrigatório', 'invalidType' => 'Id do Pedido inválido'])
+      'id_pedido' => Z::number([
+        'required' => 'Id do Pedido é obrigatório',
+        'invalidType' => 'Id do Pedido inválido'
+      ])
         ->coerce()
         ->int()
         ->gt(0, 'Id do Pedido inválido')
@@ -121,12 +124,12 @@ class PedidoService {
     $pedidoToUpdate = $this->pedidoRepository->findById($dto->id_pedido);
 
     if (!$pedidoToUpdate) {
-      throw new ValidationException(
-        'Não é possível atualizar o pedido',
+      throw new ValidationException('Não foi possível atualizar o Pedido', [
         [
-          ['message' => 'Pedido não encontrado', 'cause' => 'id_pedido']
+          'message' => 'Pedido não encontrado',
+          'origin' => 'id_pedido'
         ]
-      );
+      ]);
     }
 
     //Atualizar tudo menos o id do pedido
@@ -143,11 +146,14 @@ class PedidoService {
     $this->pedidoRepository->update($pedidoToUpdate);
 
     return ['message' => 'Pedido atualizado com sucesso'];
-    }
+  }
 
-    public function delete(array $args) {
+  public function delete(array $args) {
     $deleteSchema = Z::object([
-      'id_pedido' => Z::number(['required' => 'Id do Pedido é obrigatório', 'invalidType' => 'Id do Pedido inválido'])
+      'id_pedido' => Z::number([
+        'required' => 'Id do Pedido é obrigatório',
+        'invalidType' => 'Id do Pedido inválido'
+      ])
         ->coerce()
         ->int()
         ->gt(0, 'Id do Pedido inválido')
@@ -158,12 +164,12 @@ class PedidoService {
     $pedidoToDelete = $this->getById($dto->id_pedido)['pedido'];
 
     if ($pedidoToDelete) {
-      throw new ValidationException(
-        'Não é possível excluir o pedido',
+      throw new ValidationException('Não é possível excluir o pedido', [
         [
-          ['message' => 'Pedido não encontrado', 'cause' => 'id_pedido']
+          'message' => 'Pedido não encontrado',
+          'origin' => 'id_pedido'
         ]
-      );
+      ]);
     }
 
     $this->pedidoRepository->deleteById($dto->id_pedido);

@@ -17,9 +17,6 @@ class ProdutoService {
   public function query() {
     $produtos = $this->produtoRepository->findMany();
 
-    if(count($produtos) == 0)
-      throw new ValidationException('Nenhum Produto encontrado');
-
     $raw = array_map(function ($produto) {
       return [
         'id_produto' => $produto->getIdProduto(),
@@ -42,7 +39,10 @@ class ProdutoService {
    */
   public function getById(array $args) {
     $getSchema = Z::object([
-      'id_produto' => Z::number(['required' => 'Id do Produto é obrigatório', 'invalidType' => 'Id do Produto inválido'])
+      'id_produto' => Z::number([
+        'required' => 'Id do Produto é obrigatório',
+        'invalidType' => 'Id do Produto inválido'
+      ])
         ->coerce()
         ->int()
         ->gt(0, 'Id do Produto inválido')
@@ -53,7 +53,12 @@ class ProdutoService {
     $produto =  $this->produtoRepository->findById($dto->id);
 
     if (!$produto)
-      throw new ValidationException('Usuário não encontrado');
+      throw new ValidationException('Não foi possível encontrar o usuário', [
+        [
+          'message' => 'Usuário não encontrado',
+          'origin' => 'id_produto'
+        ]
+      ]);
 
     return [
       'produto' => [
@@ -86,7 +91,7 @@ class ProdutoService {
     $produto->setIdCategoria($dto->id_categoria);
     $produto->setDataInclusao($dto->data_inclusao);
     $produto->setAtivo($dto->ativo);
-    
+
     $this->produtoRepository->create($produto);
 
     return ['message' => 'Produto cadastrado com sucesso'];
@@ -94,7 +99,10 @@ class ProdutoService {
 
   public function update(array $args) {
     $updateSchema = Z::object([
-      'id' => Z::number(['required' => 'Id do Produto é obrigatório', 'invalidType' => 'Id do Produto inválido'])
+      'id' => Z::number([
+        'required' => 'Id do Produto é obrigatório',
+        'invalidType' => 'Id do Produto inválido'
+      ])
         ->coerce()
         ->int()
         ->gt(0, 'Id do Produto inválido')
@@ -105,12 +113,12 @@ class ProdutoService {
     $produto = $this->produtoRepository->findById($dto->id_produto);
 
     if (!$produto) {
-      throw new ValidationException(
-        'Não é possível atualizar o Produto',
+      throw new ValidationException('Não foi possível atualizar o Produto', [
         [
-          ['message' => 'Produto não encontrado', 'cause' => 'id_produto']
+          'message' => 'Produto não encontrado',
+          'origin' => 'id_produto'
         ]
-      );
+      ]);
     }
 
     //Altera tudo menos o Id do Produto
@@ -128,7 +136,10 @@ class ProdutoService {
 
   public function delete(array $args) {
     $deleteSchema = Z::object([
-      'id' => Z::number(['required' => 'Id do Produto é obrigatório', 'invalidType' => 'Id do Produto inválido'])
+      'id' => Z::number([
+        'required' => 'Id do Produto é obrigatório',
+        'invalidType' => 'Id do Produto inválido'
+      ])
         ->coerce()
         ->int()
         ->gt(0, 'Id do Produto inválido')
@@ -139,12 +150,12 @@ class ProdutoService {
     $produtoToDelete = $this->getById($dto->id_produto)['produto'];
 
     if ($produtoToDelete) {
-      throw new ValidationException(
-        'Não é possível excluir o Produto',
+      throw new ValidationException('Não foi possível excluir o Produto', [
         [
-          ['message' => 'Produto não encontrado', 'cause' => 'id_produto']
+          'message' => 'Produto não encontrado',
+          'origin' => 'id_produto'
         ]
-      );
+      ]);
     }
 
     $this->produtoRepository->deleteById($dto->id_produto);

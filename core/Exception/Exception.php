@@ -6,14 +6,24 @@ use Core\Common\Result;
 
 class Exception extends \Exception {
 
+  /** @var array{message: string, origin: string[]}[] */
+  protected array $causes;
+
+
   /**
    * @param string $message
-   * @param array{message: string, origin: ?string}[] $causes
+   * @param array{message: string, origin: ?(string|string[])}[] $causes
    */
   function __construct(
     protected $message = "",
-    protected array $causes = []
+    array $causes = []
   ) {
+    $this->causes = array_map(function ($cause) {
+      return [
+        'message' => $cause['message'],
+        'origin' => is_array($cause['origin']) ? $cause['origin'] : [$cause['origin']],
+      ];
+    }, $causes);
   }
 
   function toResult() {

@@ -29,7 +29,12 @@ class AuthService {
     $user = $this->userRepository->findByLogin($dto->login);
 
     if (!$user || $user->getPassword() != md5($dto->password)) {
-      throw new ValidationException('Login ou senha inválido');
+      throw new ValidationException('Não foi possível autenticar o usuário', [
+        [
+          'message' => 'Login ou senha inválido',
+          'origin' => ['login', 'password']
+        ]
+      ]);
     }
 
     $payload = [
@@ -50,17 +55,32 @@ class AuthService {
     $token = $args['token'] ?? null;
 
     if (!$token) {
-      throw new ValidationException('Não Autorizado', ['causes' => 'Token não definido']);
+      throw new ValidationException('Validação da autorização do usuário', [
+        [
+          'message' => 'Token não definido',
+          'origin' => 'authorization'
+        ]
+      ]);
     }
 
     if (count(explode(' ', $token)) != 2) {
-      throw new ValidationException('Não Autorizado', ['causes' => 'Token inválido']);
+      throw new ValidationException('Validação da autorização do usuário', [
+        [
+          'message' => 'Token inválido',
+          'origin' => 'authorization'
+        ]
+      ]);
     }
 
     [$bearer, $token] = explode(' ', $token);
 
     if ($bearer !== 'Bearer') {
-      throw new ValidationException('Não Autorizado', ['causes' => 'Token inválido']);
+      throw new ValidationException('Validação da autorização do usuário', [
+        [
+          'message' => 'Token inválido',
+          'origin' => 'bearer-token'
+        ]
+      ]);
     }
 
     try {
@@ -68,7 +88,12 @@ class AuthService {
 
       return $payload;
     } catch (JWTException $err) {
-      throw new ValidationException('Não Autorizado', ['causes' => 'Token inválido']);
+      throw new ValidationException('Validação da autorização do usuário', [
+        [
+          'message' => 'Token inválido',
+          'origin' => 'token'
+        ]
+      ]);
     }
   }
 }
