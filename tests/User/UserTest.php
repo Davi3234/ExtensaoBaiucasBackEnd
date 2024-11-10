@@ -50,10 +50,12 @@ class UserTest extends TestCase {
     //Arrange
     $nome = 'Davi';
     $login = 'davi.fadriano@gmail.com';
+    $password = 'davi123';
 
     $user = new User([
       'name' => $nome,
       'login' => $login,
+      'password' => $password,
       'active' => true,
     ]);
 
@@ -71,7 +73,8 @@ class UserTest extends TestCase {
     //Inserting User
     $response = $userService->create([
       'name' => $nome,
-      'login' => $login
+      'login' => $login,
+      'password' => $password
     ]);
 
     //Assert

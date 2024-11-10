@@ -18,7 +18,7 @@ class UserController {
     );
   }
 
-  #[Get('/')]
+  #[Get('/:id')]
   #[Guard(AuthenticationMiddleware::class)]
   function getOne(Request $request) {
     $userId = $request->getAttribute('userId');
@@ -30,11 +30,21 @@ class UserController {
     return $result;
   }
 
+  #[Get('')]
+  #[Guard(AuthenticationMiddleware::class)]
+  function getMany(Request $request) {
+
+    $result = $this->userService->query();
+
+    return $result;
+  }
+
   #[Post('/create')]
   function create(Request $request) {
     $result = $this->userService->create([
       'name' => $request->getBody('name'),
       'login' => $request->getBody('login'),
+      'password' => $request->getBody('password')
     ]);
 
     return $result;

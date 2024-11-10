@@ -23,3 +23,15 @@ Options -Indexes
     Header set X-XSS-Protection "1; mode=block"
     Header set X-Content-Type-Options "nosniff"
 </IfModule>
+
+<IfModule mod_headers.c>
+    Header set Access-Control-Allow-Origin "http://localhost:4200"
+    Header set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
+    Header set Access-Control-Allow-Headers "Authorization, Content-Type, x-xsrf-token, x_csrftoken, Cache-Control, X-Requested-With"
+    Header set Access-Control-Allow-Credentials "true"
+</IfModule>
+
+<IfModule mod_rewrite.c>
+    RewriteCond %{REQUEST_METHOD} OPTIONS
+    RewriteRule ^(.*)$ - [R=200,L]
+</IfModule>
