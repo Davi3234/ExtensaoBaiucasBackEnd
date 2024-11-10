@@ -8,8 +8,10 @@ services:
     depends_on:
       - baiucas-backend
     volumes:
-      - ./ExtensaoBaiucas:/app:cached
+      - ./ExtensaoBaiucas:/app
       - /app/node_modules
+    networks:
+      - app-network
     environment:
       - CHOKIDAR_USEPOLLING=true
 

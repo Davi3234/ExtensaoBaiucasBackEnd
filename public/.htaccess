@@ -1,10 +1,14 @@
 RewriteEngine On
 
+# Transfere o cabeçalho Authorization para o PHP
+RewriteCond %{HTTP:Authorization} ^(.*)
+RewriteRule .* - [e=HTTP_AUTHORIZATION:%1]
+
+# Configurações de reescrita existentes
 ErrorDocument 403 /index.php
 ErrorDocument 404 /index.php
 
 RewriteCond %{REQUEST_URI} !^/index\.php$
-
 RewriteRule ^.*$ - [F,L]
 
 RewriteCond %{REQUEST_FILENAME} !-f
