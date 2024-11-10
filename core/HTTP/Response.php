@@ -21,7 +21,7 @@ class Response {
     return $this;
   }
 
-  function setResponse($response) {
+  function setResponse(array|object $response) {
     $this->response = $response;
   }
 

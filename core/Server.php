@@ -3,6 +3,7 @@
 namespace Core;
 
 use Core\Common\Result;
+use Core\Enum\MethodHTTP;
 use Core\Enum\StatusCodeHTTP;
 use Core\Exception\CriticalException;
 use Core\Exception\Exception;
@@ -51,9 +52,12 @@ class Server {
 
   function dispatch() {
     try {
-      $this->handlers = $this->requestManager->loadRequest();
-      $this->loadParamsRequest();
-      $this->resolveHandlers();
+      if ($this->methodHttp != MethodHTTP::OPTIONS->value) {
+        $this->handlers = $this->requestManager->loadRequest();
+        $this->loadParamsRequest();
+        $this->resolveHandlers();
+      } else
+        $this->response->setResponse(Result::success(true));
     } catch (\Exception $err) {
       $this->response->setResponse(static::resolveErrorToResult($err));
     }
