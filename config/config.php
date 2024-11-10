@@ -18,6 +18,7 @@ error_reporting(E_ALL & ~(E_NOTICE | E_WARNING));
 // HEADERS REQUEST
 @header('Access-Control-Allow-Origin: *');
 @header('Access-Control-Allow-Headers: Authorization, Content-Type, x-xsrf-token, x_csrftoken, Cache-Control, X-Requested-With');
+@header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
 
 // Constants
 define('PATH_ROOT_SOURCE', __DIR__ . '/..');
