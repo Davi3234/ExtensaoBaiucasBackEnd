@@ -40,15 +40,6 @@ class UserController {
     return $result;
   }
 
-  #[Get('')]
-  #[Guard(AuthenticationMiddleware::class)]
-  function getMany(Request $request) {
-
-    $result = $this->userService->query();
-
-    return $result;
-  }
-
   #[Post('/create', StatusCodeHTTP::CREATED->value)]
   function create(Request $request) {
     $result = $this->userService->create([
