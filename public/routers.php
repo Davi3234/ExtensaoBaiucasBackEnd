@@ -7,5 +7,6 @@ return [
   'controllers' => [
     AuthController::class,
     UserController::class,
+    PedidoController::class
   ]
 ];
