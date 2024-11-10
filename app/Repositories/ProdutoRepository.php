@@ -3,53 +3,52 @@
 namespace App\Repositories;
 
 use Common\Repository;
-use App\Models\Pedido;
+use App\Models\Produto;
 use Doctrine\ORM\Cache\Exception\FeatureNotImplemented;
 use Provider\Database\DatabaseException;
 
-class PedidoRepository extends Repository implements IPedidoRepository {
+class ProdutoRepository extends Repository implements IProdutoRepository {
 
   #[\Override]
-  public function create(Pedido $pedido): Pedido {
+  public function create(Produto $produto): Produto {
     try {
-      $this->entityManager->persist($pedido);
+      $this->entityManager->persist($produto);
       $this->entityManager->flush();
 
-      return $pedido;
+      return $produto;
     } catch (\Exception $e) {
       throw new DatabaseException($e->getMessage());
     }
   }
 
   #[\Override]
-  public function update(Pedido $pedido): Pedido {
+  public function update(Produto $produto): Produto {
     try {
-      throw new FeatureNotImplemented('Method "update" from "PedidoRepository" not implemented');
+      throw new FeatureNotImplemented('Method "update" from "ProdutoRepository" not implemented');
     } catch (\Exception $e) {
       throw new DatabaseException($e->getMessage());
     }
   }
 
   #[\Override]
-  public function deleteById(int $id_pedido) {
+  public function deleteById(int $id_produto) {
     try {
-      $pedido = $this->findById($id_pedido);
+      $produto = $this->findById($id_produto);
 
-      $this->entityManager->remove($pedido);
+      $this->entityManager->remove($produto);
     } catch (\Exception $e) {
       throw new DatabaseException($e->getMessage());
     }
   }
 
   /**
-   * @return Pedido[]
+   * @return Produto[]
    */
-
   #[\Override]
   public function findMany(): array {
     try {
       $result = $this->entityManager
-        ->createQuery('SELECT p FROM App\Models\Pedido p')
+        ->createQuery('SELECT p FROM App\Models\Produto p')
         ->getResult();
 
       return $result;
@@ -59,11 +58,11 @@ class PedidoRepository extends Repository implements IPedidoRepository {
   }
 
   #[\Override]
-  public function findById(int $id_pedido): ? Pedido {
+  public function findById(int $id_produto): ? Produto {
     try {
-      $pedido = $this->entityManager->find(Pedido::class, $id_pedido);
+      $produto = $this->entityManager->find(Produto::class, $id_produto);
 
-      return $pedido;
+      return $produto;
     } catch (\Exception $e) {
       throw new DatabaseException($e->getMessage());
     }

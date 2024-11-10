@@ -17,9 +17,6 @@ class UserService {
   public function query() {
     $users = $this->userRepository->findMany();
 
-    if(count($users) == 0)
-      throw new ValidationException('Nenhum Usuário encontrado');
-
     $raw = array_map(function ($user) {
       return [
         'id' => $user->getId(),
@@ -32,14 +29,12 @@ class UserService {
     return $raw;
   }
 
-  /**
-   * Array de usuário
-   * @param array $args
-   * @return array
-   */
   public function getById(array $args) {
     $getSchema = Z::object([
-      'id' => Z::number(['required' => 'Id do Usuário é obrigatório', 'invalidType' => 'Id do Usuário inválido'])
+      'id' => Z::number([
+        'required' => 'Id do Usuário é obrigatório',
+        'invalidType' => 'Id do Usuário inválido'
+      ])
         ->coerce()
         ->int()
         ->gt(0, 'Id do Usuário inválido')
@@ -50,7 +45,12 @@ class UserService {
     $user =  $this->userRepository->findById($dto->id);
 
     if (!$user)
-      throw new ValidationException('Usuário não encontrado');
+      throw new ValidationException('Não foi possível encontrar o Usuário', [
+        [
+          'message' => 'Usuário não encontrado',
+          'origin' => 'id'
+        ]
+      ]);
 
     return [
       'user' => [
@@ -64,7 +64,9 @@ class UserService {
 
   public function create(array $args) {
     $createSchema = Z::object([
-      'name' => Z::string(['required' => 'Nome é obrigatório'])
+      'name' => Z::string([
+        'required' => 'Nome é obrigatório'
+      ])
         ->trim()
         ->min(3, 'Nome precisa ter no mínimo 3 caracteres'),
       'login' => Z::string(['required' => 'Login é obrigatório'])
@@ -79,12 +81,12 @@ class UserService {
     $userWithSameLogin = $this->userRepository->findByLogin($dto->login);
 
     if ($userWithSameLogin) {
-      throw new ValidationException(
-        'Não é possível cadastrar o usuário',
+      throw new ValidationException('Não foi possível cadastrar o Usuário', [
         [
-          ['message' => 'Já existe um usuário com o mesmo login informado', 'cause' => 'login']
+          'message' => 'Já existe um Usuário com o mesmo login informado',
+          'origin' => 'login'
         ]
-      );
+      ]);
     }
 
     $user = new User();
@@ -101,7 +103,10 @@ class UserService {
 
   public function update(array $args) {
     $updateSchema = Z::object([
-      'id' => Z::number(['required' => 'Id do Usuário é obrigatório', 'invalidType' => 'Id do Usuário inválido'])
+      'id' => Z::number([
+        'required' => 'Id do Usuário é obrigatório',
+        'invalidType' => 'Id do Usuário inválido'
+      ])
         ->coerce()
         ->int()
         ->gt(0, 'Id do Usuário inválido'),
@@ -115,12 +120,12 @@ class UserService {
     $user = $this->userRepository->findById($dto->id);
 
     if (!$user) {
-      throw new ValidationException(
-        'Não é possível atualizar o usuário',
+      throw new ValidationException('Não foi possível atualizar o Usuário', [
         [
-          ['message' => 'Usuário não encontrado', 'cause' => 'id']
+          'message' => 'Usuário não encontrado',
+          'origin' => 'id'
         ]
-      );
+      ]);
     }
 
     $user->setName($dto->name);
@@ -132,7 +137,10 @@ class UserService {
 
   public function delete(array $args) {
     $deleteSchema = Z::object([
-      'id' => Z::number(['required' => 'Id do Usuário é obrigatório', 'invalidType' => 'Id do Usuário inválido'])
+      'id' => Z::number([
+        'required' => 'Id do Usuário é obrigatório',
+        'invalidType' => 'Id do Usuário inválido'
+      ])
         ->coerce()
         ->int()
         ->gt(0, 'Id do Usuário inválido')
@@ -143,12 +151,12 @@ class UserService {
     $userToDelete = $this->getById($dto->id)['user'];
 
     if ($userToDelete) {
-      throw new ValidationException(
-        'Não é possível excluir o usuário',
+      throw new ValidationException('Não foi possível excluir o Usuário', [
         [
-          ['message' => 'Usuário não encontrado', 'cause' => 'id']
+          'message' => 'Usuário não encontrado',
+          'origin' => 'id'
         ]
-      );
+      ]);
     }
 
     $this->userRepository->deleteById($dto->id);

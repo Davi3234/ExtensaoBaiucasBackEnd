@@ -15,7 +15,10 @@ class Result implements IResult {
    */
   private ?array $error = null;
 
-  private function __construct(bool $ok, int $status, $value = null, $error = null) {
+  private function __construct(bool $ok, ?int $status, $value = null, $error = null) {
+    if (!$status)
+      $status = $ok ? 200 : 400;
+
     if ($ok) {
       if ($status >= 400)
         throw new CriticalException(
@@ -38,7 +41,7 @@ class Result implements IResult {
     $this->error = $error;
   }
 
-  static function success(array|object|int|float|bool|string|null $value, int $status = 200): Result {
+  static function success(array|object|int|float|bool|string|null $value, ?int $status = 200): Result {
     return new Result(true, $status, $value);
   }
 
@@ -46,14 +49,14 @@ class Result implements IResult {
    * @param array{message: string, causes: array{message: string, origin: ?string}}[] $causes
    * @param int $status
    */
-  static function failure(array $error, int $status = 400): Result {
+  static function failure(array $error, ?int $status = 400): Result {
     $message = $error['message'] ?? '';
     $causes = $error['causes'] ?? [];
 
     return new Result(false, $status, null, ['message' => $message, 'causes' => $causes]);
   }
 
-  static function inherit(bool $ok = true, int $status = 200, array|object|int|float|bool|string|null $value = null, $error = null) {
+  static function inherit(bool $ok = true, ?int $status = 200, array|object|int|float|bool|string|null $value = null, $error = null) {
     return new Result($ok, $status, $value, $error);
   }
 
