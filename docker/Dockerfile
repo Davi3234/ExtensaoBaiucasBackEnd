@@ -27,6 +27,9 @@ COPY ./docker/httpd.conf /etc/apache2/sites-available/000-default.conf
 WORKDIR /var/www/html/
 COPY --from=build /var/www/html /var/www/html
 
+COPY ./scripts/up-server.sh /usr/local/bin/up-server.sh
+RUN chmod +x /usr/local/bin/up-server.sh
+
 EXPOSE 80
 
-CMD ["apache2-foreground"]
+CMD ["/bin/sh", "-c", "/usr/local/bin/up-server.sh && apache2-foreground"]
