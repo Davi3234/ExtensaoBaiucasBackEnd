@@ -13,23 +13,25 @@ use Common\Model;
 #[Table(name: 'itens_pedidos')]
 class PedidoItem extends Model {
 
+	#[Id]
+	#[GeneratedValue]
 	#[Column]
 	public int $id_pedido;
-	
-    #[Column]
-	public int $id_item;
-	
-    #[Column]
-    public float $valor_item;
 
-    #[Column]
-    public string $observacoes_item;
-	
+	#[Column]
+	public int $id_item;
+
+	#[Column]
+	public float $valor_item;
+
+	#[Column]
+	public string $observacoes_item;
+
 	public function __construct(array $args = []) {
 		$this->id_pedido  = 0;
 		$this->id_item = 0;
 		$this->valor_item = 0;
-        $this->observacoes_item = '';
+		$this->observacoes_item = '';
 
 		$this->povoaPropriedades($args);
 	}
@@ -48,7 +50,7 @@ class PedidoItem extends Model {
 		}
 	}
 
-    //Id do Pedido
+	//Id do Pedido
 	public function getIdPedido(): int {
 		return $this->id_pedido;
 	}
@@ -57,26 +59,26 @@ class PedidoItem extends Model {
 		$this->id_pedido = $value;
 	}
 
-    //Id do Item
+	//Id do Item
 	public function getIdItem(): int {
 		return $this->id_item;
 	}
 
-    public function setIdItem(int $value) {
+	public function setIdItem(int $value) {
 		$this->id_item = $value;
 	}
 
-    //Valor do Item
+	//Valor do Item
 	public function getValorItem(): float {
 		return $this->valor_item;
 	}
 
-    public function setValorItem(float $value) {
+	public function setValorItem(float $value) {
 		$this->valor_item = $value;
 	}
 
-    //Observacoes do Item, por exemplo = sem cebola, bem passado
-    public function getObservacoesItem(): string {
+	//Observacoes do Item, por exemplo = sem cebola, bem passado
+	public function getObservacoesItem(): string {
 		return $this->observacoes_item;
 	}
 
