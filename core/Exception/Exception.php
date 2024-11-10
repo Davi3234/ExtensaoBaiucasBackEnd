@@ -21,7 +21,7 @@ class Exception extends \Exception {
     $this->causes = array_map(function ($cause) {
       return [
         'message' => $cause['message'],
-        'origin' => is_array($cause['origin']) ? $cause['origin'] : [$cause['origin']],
+        'origin' => is_array($cause['origin']) ? $cause['origin'] : ($cause['origin'] ? [$cause['origin']] : []),
       ];
     }, $causes);
   }
