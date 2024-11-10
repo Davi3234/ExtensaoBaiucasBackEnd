@@ -19,71 +19,74 @@ class Pedido extends Model {
 	public int $id_pedido;
 	
     #[Column]
-	public date $data_pedido;
+	public string $data_pedido;
 	
     #[Column]
 	public int $id_cliente; //ver como pegar o id do cliente diretamente se é por aqui ou em outro lugar
 	
     #[Column]
-    public doubleval $valor_total;
+    public float $valor_total;
 	
     #[Column]
-    enum status: string {
+	public string $status;
+    /*enum status: string {
         case EM PREPARO = 'PREP';
         case CONCLUÍDO  = 'CONC';
         case EM ENTREGA = 'ENTR';
         case CANCELADO  = 'CANC';
-    } $status;
+    } $status;*/
 	
     #[Column]
-	enum forma_pagamento: string {
+	public string $forma_pagamento;
+	/*enum forma_pagamento: string {
         case CARTÃO   = 'CAR';
         case DINHEIRO = 'DIN';
         case PIX      = 'PIX';
-    } $forma_pagamento;
+    } $forma_pagamento;*/
 
     #[Column]
     public string $observacoes;
 
     #[Column]
-	enum tipo: string {
+	/*enum tipo: string {
         case NO LOCAL = 'LOC';
         case DELIVERY = 'DEL';
-    } $tipo;
+    } $tipo;*/
+	public string $tipo;
 
     #[Column]
     public string $endereco_entrega;
 
     #[Column]
-    public doubleval $taxa_entrega;
+    public float $taxa_entrega;
 
 	public function __construct(array $args = []) {
-		$this->id_pedido        = 0;
-		$this->data_pedido      = null;
-		$this->id_cliente       = 0;
-		$this->valor_total      = 0;
-		$this->status           = '';
-        $this->forma_pagamento  = '';
-        $this->observacoes      = '';
-        $this->tipo             = '';
+		$this->id_pedido = 0;
+		$this->data_pedido = null;
+		$this->id_cliente = 0;
+		$this->valor_total  = 0;
+		$this->status = '';
+        $this->forma_pagamento = '';
+        $this->observacoes = '';
+        $this->tipo = '';
         $this->endereco_entrega = '';
-        $this->taxa_entrega     = 0;
+        $this->taxa_entrega = 0;
 
 		$this->povoaPropriedades($args);
 	}
 
 	#[\Override]
 	function __load(array $raw) {
-		$this->id_pedido         = $raw['id_pedido'];
-		$this->data_pedido       = $raw['data_pedido'];
-		$this->id_cliente        = $raw['id_cliente'];
-		$this->valor_total       = $raw['valor_total'];
-        $this->status            = $raw['status'];
-		$this->forma_pagamento   = $raw['forma_pagamento'];
-        $this->observacoes       = $raw['observacoes'];
-        $this->tipo              = $raw['tipo'];
-        $this->endereco_entrega  = $raw['endereco_entrega'];
-        $this->taxa_entrega      = $raw['taxa_entrega'];
+		$this->id_pedido = $raw['id_pedido'];
+		$this->data_pedido = $raw['data_pedido'];
+		$this->id_cliente = $raw['id_cliente'];
+		$this->valor_total = $raw['valor_total'];
+        $this->status = $raw['status'];
+		$this->forma_pagamento = $raw['forma_pagamento'];
+        $this->observacoes = $raw['observacoes'];
+        $this->tipo = $raw['tipo'];
+        $this->endereco_entrega = $raw['endereco_entrega'];
+        $this->taxa_entrega = $raw['taxa_entrega'];
 	}
 
 	protected function povoaPropriedades(array $args = []) {
@@ -102,11 +105,11 @@ class Pedido extends Model {
 	}
 
     //Data do Pedido
-	public function getDataPedido(): date {
+	public function getDataPedido(): string {
 		return $this->data_pedido;
 	}
 
-    public function setDataPedido(date $value) {
+    public function setDataPedido(string $value) {
 		$this->data_pedido = $value;
 	}
 
@@ -120,29 +123,29 @@ class Pedido extends Model {
 	}
 
     //Valor Total Pedido
-    public function getValorTotal(): doubleval {
+    public function getValorTotal(): float {
 		return $this->valor_total;
 	}
 
-	public function setValorTotal(doubleval $value) {
+	public function setValorTotal(float $value) {
 		$this->valor_total = $value;
 	}
 
     //Status = Enum
-    public function getStatus(): status {
+    public function getStatus(): string {
 		return $this->status;
 	}
 
-	public function setStatus(status $value) {
+	public function setStatus(string $value) {
 		$this->status = $value;
 	}
 
     //Forma de Pagamento = Enum
-    public function getFormaPagamento(): forma_pagamento {
+    public function getFormaPagamento(): string {
 		return $this->forma_pagamento;
 	}
 
-	public function setFormaPagamento(forma_pagamento $value) {
+	public function setFormaPagamento(string $value) {
 		$this->forma_pagamento = $value;
 	}
 
@@ -156,11 +159,11 @@ class Pedido extends Model {
 	}
 
     //Tipo = Enum
-    public function getTipo(): tipo {
+    public function getTipo(): string {
 		return $this->tipo;
 	}
 
-	public function setTipo(tipo $value) {
+	public function setTipo(string $value) {
 		$this->tipo = $value;
 	}
 
@@ -174,11 +177,11 @@ class Pedido extends Model {
 	}
 
     //Taxa de Entrega
-    public function getTaxaEntrega(): doubleval {
+    public function getTaxaEntrega(): float {
 		return $this->taxa_entrega;
 	}
 
-	public function setTaxaEntrega(doubleval $value) {
+	public function setTaxaEntrega(float $value) {
 		$this->taxa_entrega = $value;
 	}
 }

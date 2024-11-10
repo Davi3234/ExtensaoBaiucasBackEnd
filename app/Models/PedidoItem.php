@@ -20,15 +20,15 @@ class PedidoItem extends Model {
 	public int $id_item;
 	
     #[Column]
-    public doubleval $valor_item;
+    public float $valor_item;
 
     #[Column]
     public string $observacoes_item;
 	
 	public function __construct(array $args = []) {
-		$this->id_pedido        = 0;
-		$this->id_item          = 0;
-		$this->valor_item       = 0;
+		$this->id_pedido  = 0;
+		$this->id_item = 0;
+		$this->valor_item = 0;
         $this->observacoes_item = '';
 
 		$this->povoaPropriedades($args);
@@ -36,9 +36,9 @@ class PedidoItem extends Model {
 
 	#[\Override]
 	function __load(array $raw) {
-		$this->id_pedido        = $raw['id_pedido'];
-		$this->id_item          = $raw['id_item'];
-		$this->valor_item       = $raw['valor_item'];
+		$this->id_pedido = $raw['id_pedido'];
+		$this->id_item  = $raw['id_item'];
+		$this->valor_item = $raw['valor_item'];
 		$this->observacoes_item = $raw['observacoes_item'];
 	}
 
@@ -67,11 +67,11 @@ class PedidoItem extends Model {
 	}
 
     //Valor do Item
-	public function getValorItem(): doubleval {
+	public function getValorItem(): float {
 		return $this->valor_item;
 	}
 
-    public function setValorIem(doubleval $value) {
+    public function setValorItem(float $value) {
 		$this->valor_item = $value;
 	}
 

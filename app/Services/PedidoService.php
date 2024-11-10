@@ -75,7 +75,7 @@ class PedidoService {
     public function create(array $args) {
         $createSchema = Z::object([
           'id_pedido' => Z::string(['required' => 'Id do Pedido é obrigatório!'])
-            ->trim()
+            ->trim(),
           'id_cliente' => Z::string(['required' => 'Id do cliente é obrigatório!'])
             ->trim()
         ])->coerce();
@@ -103,7 +103,7 @@ class PedidoService {
         $pedido->setEnderecoEntrega($dto->endereco_entrega);
         $pedido->setTaxaEntrega($dto->taxa_entrega);
 
-        $this->produtoRepository->create($pedido);
+        $this->pedidoRepository->create($pedido);
 
         return ['message' => 'Pedido inserido com sucesso!'];
     }
@@ -113,8 +113,7 @@ class PedidoService {
       'id_pedido' => Z::number(['required' => 'Id do Pedido é obrigatório', 'invalidType' => 'Id do Pedido inválido'])
         ->coerce()
         ->int()
-        ->gt(0, 'Id do Pedido inválido'),
-        ->trim()
+        ->gt(0, 'Id do Pedido inválido')
     ])->coerce();
 
     $dto = $updateSchema->parseNoSafe($args);
@@ -131,17 +130,17 @@ class PedidoService {
     }
 
     //Atualizar tudo menos o id do pedido
-    $pedido->setDataPedido($dto->data_pedido);
-    $pedido->setIdCliente($dto->id_cliente);
-    $pedido->setValorTotal($dto->valor_total);
-    $pedido->setStatus($dto->status);
-    $pedido->setFormaPagamento($dto->data_pedido);
-    $pedido->setObservacoes($dto->observacoes);
-    $pedido->setTipo($dto->tipo);
-    $pedido->setEnderecoEntrega($dto->endereco_entrega);
-    $pedido->setTaxaEntrega($dto->taxa_entrega);
+    $pedidoToUpdate->setDataPedido($dto->data_pedido);
+    $pedidoToUpdate->setIdCliente($dto->id_cliente);
+    $pedidoToUpdate->setValorTotal($dto->valor_total);
+    $pedidoToUpdate->setStatus($dto->status);
+    $pedidoToUpdate->setFormaPagamento($dto->data_pedido);
+    $pedidoToUpdate->setObservacoes($dto->observacoes);
+    $pedidoToUpdate->setTipo($dto->tipo);
+    $pedidoToUpdate->setEnderecoEntrega($dto->endereco_entrega);
+    $pedidoToUpdate->setTaxaEntrega($dto->taxa_entrega);
 
-    $this->pedidoRepository->update($pedido);
+    $this->pedidoRepository->update($pedidoToUpdate);
 
     return ['message' => 'Pedido atualizado com sucesso'];
     }
@@ -167,7 +166,7 @@ class PedidoService {
       );
     }
 
-    $this->ProdutoRepository->deleteById($dto->id_pedido);
+    $this->pedidoRepository->deleteById($dto->id_pedido);
 
     return ['message' => 'Pedido excluído com sucesso'];
   }

@@ -5,6 +5,7 @@ namespace App\Services;
 use Exception\ValidationException;
 use Provider\Zod\Z;
 use App\Models\Pedido;
+use App\Models\PedidoItem;
 use App\Repositories\IPedidoItemRepository;
 
 class PedidoItemService {
@@ -37,7 +38,7 @@ class PedidoItemService {
 
   public function getById(array $args) {
     $getSchema = Z::object([
-      'id_pedido' => Z::number(['required' => 'Id do Pedido é obrigatório', 'invalidType' => 'Id do Pedido inválido'])
+      'id_pedido' => Z::number(['required' => 'Id do Pedido é obrigatório', 'invalidType' => 'Id do Pedido inválido']),
       'id_item' => Z::number(['required' => 'Id do Item é obrigatório', 'invalidType' => 'Id do Item inválido'])
         ->coerce()
         ->int()
@@ -63,21 +64,13 @@ class PedidoItemService {
     public function create(array $args) {
         $createSchema = Z::object([
           'id_pedido' => Z::string(['required' => 'Id do Pedido é obrigatório!'])
-            ->trim()
+            ->trim(),
           'id_item' => Z::string(['required' => 'Id do Item é obrigatório!'])
             ->trim()
         ])->coerce();
     
         $dto = $createSchema->parseNoSafe($args);
-    
-        $ItemToCreate = $this->pedidoItemRepository->create($dto->create);
-    
-        if ($ItemToCreate) {
-          throw new ValidationException(
-            'Não é possível inserir o item ao pedido',
-          );
-        }
-
+  
         $item = new PedidoItem();
 
         $item->setIdPedido($dto->id_pedido);
@@ -85,7 +78,7 @@ class PedidoItemService {
         $item->setValorItem($dto->valor_item);
         $item->setObservacoesItem($dto->observacoes_item);
 
-        $this->produtoItemRepository->create($item);
+        $this->pedidoItemRepository->create($item);
 
         return ['message' => 'Item inserido com sucesso ao Pedido!'];
     }
@@ -93,10 +86,11 @@ class PedidoItemService {
     public function update(array $args) {
     $updateSchema = Z::object([
       'id_pedido' => Z::number(['required' => 'Id do Pedido é obrigatório', 'invalidType' => 'Id do Pedido inválido'])
+      ->coerce()
+      ->int(),
       'id_item' => Z::number(['required' => 'Id do Pedido é obrigatório', 'invalidType' => 'Id do Item inválido'])
-        ->coerce()
-        ->int()
-        ->trim()
+      ->coerce()
+      ->int(),
     ])->coerce();
 
     $dto = $updateSchema->parseNoSafe($args);
@@ -110,18 +104,18 @@ class PedidoItemService {
     }
 
     //atualizar tudo menos o id do pedido
-    $item->setIdItem($dto->id_item);
-    $item->setValorItem($dto->valor_item);
-    $item->setObservacoesItem($dto->observacoes_item);
+    $itemToUpdate->setIdItem($dto->id_item);
+    $itemToUpdate->setValorItem($dto->valor_item);
+    $itemToUpdate->setObservacoesItem($dto->observacoes_item);
 
-    $this->pedidoItemRepository->update($item);
+    $this->pedidoItemRepository->update($itemToUpdate);
 
     return ['message' => 'Item atualizado com sucesso'];
     }
 
     public function delete(array $args) {
     $deleteSchema = Z::object([
-      'id_pedido' => Z::number(['required' => 'Id do Pedido é obrigatório', 'invalidType' => 'Id do Pedido inválido'])
+      'id_pedido' => Z::number(['required' => 'Id do Pedido é obrigatório', 'invalidType' => 'Id do Pedido inválido']),
       'id_item' => Z::number(['required' => 'Id do Item é obrigatório', 'invalidType' => 'Id do Item inválido'])
         ->coerce()
         ->int()
@@ -140,7 +134,7 @@ class PedidoItemService {
       );
     }
 
-    $this->ProdutoItemRepository->deleteById($dto->id_item);
+    $this->pedidoItemRepository->deleteById($dto->id_item);
 
     return ['message' => 'Item excluído com sucesso'];
   }
