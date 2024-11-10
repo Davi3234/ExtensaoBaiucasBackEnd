@@ -113,7 +113,7 @@ class Server {
       return ['isEndRequest' => $isEndRequest];
 
     if (!$response instanceof Result)
-      $response = Result::success($response, $this->requestManager->getEndpointRequested()['statusCode']);
+      $response = Result::success($response, $this->requestManager->getEndpointRequested()['statusCode'] ?? 200);
 
     if (!$response->isSuccess())
       $isEndRequest = true;

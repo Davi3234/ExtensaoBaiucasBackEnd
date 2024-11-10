@@ -2,8 +2,9 @@
 
 namespace App\Controllers;
 
-use Core\HTTP\Request;
 use Core\Common\Attributes\{Controller, Get, Delete, Guard, Post, Put};
+use Core\Enum\StatusCodeHTTP;
+use Core\HTTP\Request;
 use App\Middlewares\AuthenticationMiddleware;
 use App\Repositories\UserRepository;
 use App\Services\UserService;
@@ -33,13 +34,12 @@ class UserController {
   #[Get('')]
   #[Guard(AuthenticationMiddleware::class)]
   function getMany(Request $request) {
-
     $result = $this->userService->query();
 
     return $result;
   }
 
-  #[Post('/create')]
+  #[Post('/create', StatusCodeHTTP::CREATED->value)]
   function create(Request $request) {
     $result = $this->userService->create([
       'name' => $request->getBody('name'),
