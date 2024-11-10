@@ -91,7 +91,7 @@ class UserService {
 
     $user->setName($dto->name);
     $user->setLogin($dto->login);
-    $user->setPassword($dto->password);
+    $user->setPassword(md5($dto->password));
     $user->setActive(true);
 
     $this->userRepository->create($user);
