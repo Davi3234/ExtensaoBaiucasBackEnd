@@ -46,6 +46,9 @@ class UserService {
 
     $user =  $this->userRepository->findById($dto->id);
 
+    if (!$user)
+      throw new ValidationException('Usuário não encontrado');
+
     return [
       'user' => [
         'id' => $user->getId(),
