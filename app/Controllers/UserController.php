@@ -34,7 +34,6 @@ class UserController {
   #[Get('')]
   #[Guard(AuthenticationMiddleware::class)]
   function getMany(Request $request) {
-
     $result = $this->userService->query();
 
     return $result;
