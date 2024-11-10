@@ -74,7 +74,7 @@ class Request {
   }
 
   static function getMethodHttpRequested() {
-    return $_SERVER['REQUEST_METHOD'] ?? null;
+    return $_SERVER['REDIRECT_REQUEST_METHOD'] ?? $_SERVER['REQUEST_METHOD'] ?? null;
   }
 
   static function getBodyRequest() {
