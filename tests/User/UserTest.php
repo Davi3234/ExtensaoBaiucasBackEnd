@@ -54,13 +54,6 @@ class UserTest extends TestCase {
     $user = new User(
       name: $nome,
       login: $login,
-      password: $password,
-      active: true
-    );
-
-    $userReturn = new User(
-      name: $nome,
-      login: $login,
       password: md5($password),
       active: true
     );
@@ -72,7 +65,7 @@ class UserTest extends TestCase {
 
     $userRepository->method('create')
       ->with($user)
-      ->willReturn($userReturn);
+      ->willReturn($user);
 
     $userService = new UserService($userRepository);
 
