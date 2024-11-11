@@ -26,14 +26,14 @@ class User extends Model {
 	#[Column(options: ['default' => true])]
 	private bool $active;
 
-	public function __construct(array $args = []) {
-		$this->id = 0;
-		$this->name = '';
-		$this->login = '';
-		$this->password = '';
-		$this->active = true;
+	public function __construct($id = 0, $name = "", $login = "", $password = "", $active = true) {
+		$this->id = $id;
+		$this->name = $name;
+		$this->login = $login;
+		$this->password = $password;
+		$this->active = $active;
 
-		$this->povoaPropriedades($args);
+		// $this->povoaPropriedades($args);
 	}
 
 	#[\Override]

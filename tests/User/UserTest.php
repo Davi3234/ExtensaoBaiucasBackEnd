@@ -21,12 +21,11 @@ class UserTest extends TestCase {
       ->method('findById')
       ->with($id)
       ->willReturn(
-        new User([
-          'id' => $id,
-          'name' => 'Davi',
-          'login' => 'davi323',
-          'active' => true,
-        ])
+        new User(
+          id: $id,
+          name: 'Davi',
+          login: 'davi323',
+          active: true)
       );
 
     //Act
@@ -52,19 +51,19 @@ class UserTest extends TestCase {
     $login = 'davi.fadriano@gmail.com';
     $password = 'davi123';
 
-    $user = new User([
-      'name' => $nome,
-      'login' => $login,
-      'password' => $password,
-      'active' => true,
-    ]);
+    $user = new User(
+      name: $nome,
+      login: $login,
+      password: $password,
+      active: true
+    );
 
-    $userReturn = new User([
-      'name' => $nome,
-      'login' => $login,
-      'password' => md5($password),
-      'active' => true,
-    ]);
+    $userReturn = new User(
+      name: $nome,
+      login: $login,
+      password: md5($password),
+      active: true
+    );
 
     //Act
 
