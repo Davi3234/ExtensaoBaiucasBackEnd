@@ -59,6 +59,13 @@ class UserTest extends TestCase {
       'active' => true,
     ]);
 
+    $userReturn = new User([
+      'name' => $nome,
+      'login' => $login,
+      'password' => md5($password),
+      'active' => true,
+    ]);
+
     //Act
 
     //Configuração do Mock
@@ -66,7 +73,7 @@ class UserTest extends TestCase {
 
     $userRepository->method('create')
       ->with($user)
-      ->willReturn($user);
+      ->willReturn($userReturn);
 
     $userService = new UserService($userRepository);
 
