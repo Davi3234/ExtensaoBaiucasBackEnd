@@ -2,6 +2,7 @@
 
 namespace Tests\User;
 
+use App\Enum\TipoUsuario;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\Attributes\Test;
 use App\Models\User;
@@ -21,12 +22,13 @@ class UserTest extends TestCase {
       ->method('findById')
       ->with($id)
       ->willReturn(
-        new User([
-          'id' => $id,
-          'name' => 'Davi',
-          'login' => 'davi323',
-          'active' => true,
-        ])
+        new User(
+          id: 1,
+          name: 'Davi',
+          login: 'davi323',
+          active: true,
+          tipo: TipoUsuario::CLIENTE
+        )
       );
 
     //Act
@@ -36,10 +38,13 @@ class UserTest extends TestCase {
 
     //Assert
     $userComparacao = [
-      'id' => 1,
-      'name' => 'Davi',
-      'login' => 'davi323',
-      'active' => true,
+      'user' => [
+        'id' => 1,
+        'name' => 'Davi',
+        'login' => 'davi323',
+        'active' => true,
+        'tipo' => TipoUsuario::CLIENTE
+      ]
     ];
 
     $this->assertEquals($userComparacao, $user['user']);
@@ -52,12 +57,12 @@ class UserTest extends TestCase {
     $login = 'davi.fadriano@gmail.com';
     $password = 'davi123';
 
-    $user = new User([
-      'name' => $nome,
-      'login' => $login,
-      'password' => $password,
-      'active' => true,
-    ]);
+    $user = new User(
+      name: $nome,
+      login: $login,
+      password: $password,
+      active: true,
+    );
 
     //Act
 
@@ -67,6 +72,9 @@ class UserTest extends TestCase {
     $userRepository->method('create')
       ->with($user)
       ->willReturn($user);
+
+    $userRepository->method('findByLogin')
+      ->willReturn(null);
 
     $userService = new UserService($userRepository);
 

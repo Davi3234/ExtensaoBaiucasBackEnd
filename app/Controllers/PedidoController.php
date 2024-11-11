@@ -2,6 +2,8 @@
 
 namespace App\Controllers;
 
+use App\Repositories\UserRepository;
+use App\Services\UserService;
 use Core\HTTP\Request;
 use Core\Common\Attributes\{Controller, Get, Delete, Guard, Post, Put};
 use App\Middlewares\AuthenticationMiddleware;
@@ -11,14 +13,14 @@ use App\Services\PedidoService;
 #[Controller('/pedido')]
 class PedidoController {
   private readonly PedidoService $pedidoService;
+  private readonly UserService $userService;
 
   function __construct() {
-    $this->pedidoService = new pedidoService(
-      new pedidoRepository()
-    );
+    $this->userService = new UserService( new UserRepository());
+    $this->pedidoService = new PedidoService( new PedidoRepository(), $this->userService);
   }
 
-  #[Get('/')]
+  #[Get('/:id')]
   #[Guard(AuthenticationMiddleware::class)]
   function getOne(Request $request) {
     $pedido_id = $request->getAttribute('id_pedido');
@@ -40,7 +42,7 @@ class PedidoController {
     return $result;
   }
 
-  #[Put('/')]
+  #[Put('/:id')]
   #[Guard(AuthenticationMiddleware::class)]
   function update(Request $request) {
     $id_pedido = $request->getAttribute('id_pedido');
@@ -52,7 +54,7 @@ class PedidoController {
     return $result;
   }
 
-  #[Delete('/')]
+  #[Delete('/:id')]
   #[Guard(AuthenticationMiddleware::class)]
   function delete(Request $request) {
     $id_pedido = $request->getAttribute('id_pedido');

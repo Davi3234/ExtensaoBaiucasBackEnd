@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Cliente;
 use Exception\ValidationException;
 use Provider\Zod\Z;
 use App\Models\Pedido;
@@ -10,7 +11,8 @@ use App\Repositories\IPedidoRepository;
 class PedidoService {
 
   public function __construct(
-    private readonly IPedidoRepository $pedidoRepository
+    private readonly IPedidoRepository $pedidoRepository,
+    private readonly UserService $userService
   ) {
   }
 
@@ -19,16 +21,18 @@ class PedidoService {
 
     $raw = array_map(function ($pedido) {
       return [
-        'id_pedido'         => $pedido->getIdPedido(),
-        'data_pedido'       => $pedido->getDataPedido(),
-        'id_cliente'        => $pedido->getIdCliente(),
-        'valor_total'       => $pedido->getValorTotal(),
-        'status'            => $pedido->getStatus(),
-        'forma_pagamento'   => $pedido->getFormaPagamento(),
-        'observacoes'       => $pedido->getObservacoes(),
-        'tipo'              => $pedido->getTipo(),
-        'endereco_entrega'  => $pedido->getEnderecoEntrega(),
-        'taxa_entrega'      => $pedido->getTaxaEntrega(),
+        'id_pedido' => $pedido->getIdPedido(),
+        'data_pedido' => $pedido->getDataPedido(),
+        'cliente' => [
+          'nome' => $pedido->getCliente()->getName(),
+        ],
+        'valor_total' => $pedido->getValorTotal(),
+        'status' => $pedido->getStatus(),
+        'forma_pagamento' => $pedido->getFormaPagamento(),
+        'observacoes' => $pedido->getObservacoes(),
+        'tipo' => $pedido->getTipo(),
+        'endereco_entrega' => $pedido->getEnderecoEntrega(),
+        'taxa_entrega' => $pedido->getTaxaEntrega(),
       ];
     }, $pedidos);
 
@@ -66,16 +70,16 @@ class PedidoService {
 
     return [
       'pedido' => [
-        'id_pedido'         => $pedido->getIdPedido(),
-        'data_pedido'       => $pedido->getDataPedido(),
-        'id_cliente'        => $pedido->getIdCliente(),
-        'valor_total'       => $pedido->getValorTotal(),
-        'status'            => $pedido->getStatus(),
-        'forma_pagamento'   => $pedido->getFormaPagamento(),
-        'observacoes'       => $pedido->getObservacoes(),
-        'tipo'              => $pedido->getTipo(),
-        'endereco_entrega'  => $pedido->getEnderecoEntrega(),
-        'taxa_entrega'      => $pedido->getTaxaEntrega(),
+        'id_pedido' => $pedido->getIdPedido(),
+        'data_pedido' => $pedido->getDataPedido(),
+        'id_cliente' => $pedido->getCliente(),
+        'valor_total' => $pedido->getValorTotal(),
+        'status' => $pedido->getStatus(),
+        'forma_pagamento' => $pedido->getFormaPagamento(),
+        'observacoes' => $pedido->getObservacoes(),
+        'tipo' => $pedido->getTipo(),
+        'endereco_entrega' => $pedido->getEnderecoEntrega(),
+        'taxa_entrega' => $pedido->getTaxaEntrega(),
       ]
     ];
   }
@@ -90,24 +94,42 @@ class PedidoService {
 
     $dto = $createSchema->parseNoSafe($args);
 
-    $pedido = new Pedido();
+    $clienteArgs = $this->userService->getById($dto->id_cliente);
 
-    $pedido->setIdPedido($dto->id_pedido);
-    $pedido->setDataPedido($dto->data_pedido);
-    $pedido->setIdCliente($dto->id_cliente);
-    $pedido->setValorTotal($dto->valor_total);
-    $pedido->setStatus($dto->status);
-    $pedido->setFormaPagamento($dto->data_pedido);
-    $pedido->setObservacoes($dto->observacoes);
-    $pedido->setTipo($dto->tipo);
-    $pedido->setEnderecoEntrega($dto->endereco_entrega);
-    $pedido->setTaxaEntrega($dto->taxa_entrega);
+    if(!$clienteArgs){
+      throw new ValidationException('Não foi possível atualizar o Pedido', [
+        [
+          'message' => 'Cliente não encontrado',
+          'origin' => 'cliente'
+        ]
+      ]);
+    }
+
+    $cliente = new Cliente(
+      id: $clienteArgs['user']['id'],
+      name: $clienteArgs['user']['name'],
+      login: $clienteArgs['user']['login'],
+      active: $clienteArgs['user']['active']
+    );
+
+    $pedido = new Pedido(
+      id_pedido: $dto->id_pedido,
+      data_pedido: $dto->data_pedido,
+      cliente: $cliente,
+      valor_total: $dto->valor_total,
+      status: $dto->status,
+      observacoes: $dto->observacoes,
+      forma_pagamento: $dto->forma_pagamento,
+      tipo: $dto->tipo,
+      endereco_entrega: $dto->endereco_entrega,
+      taxa_entrega: $dto->taxa_entrega
+    );
 
     $this->pedidoRepository->create($pedido);
 
     return ['message' => 'Pedido inserido com sucesso!'];
   }
-
+  
   public function update(array $args) {
     $updateSchema = Z::object([
       'id_pedido' => Z::number([
@@ -132,9 +154,26 @@ class PedidoService {
       ]);
     }
 
-    //Atualizar tudo menos o id do pedido
+    $clienteArgs = $this->userService->getById($dto->id_cliente);
+
+    if(!$clienteArgs){
+      throw new ValidationException('Não foi possível atualizar o Pedido', [
+        [
+          'message' => 'Cliente não encontrado',
+          'origin' => 'cliente'
+        ]
+      ]);
+    }
+
+    $cliente = new Cliente(
+      id: $clienteArgs['user']['id'],
+      name: $clienteArgs['user']['name'],
+      login: $clienteArgs['user']['login'],
+      active: $clienteArgs['user']['active'],
+    );
+
     $pedidoToUpdate->setDataPedido($dto->data_pedido);
-    $pedidoToUpdate->setIdCliente($dto->id_cliente);
+    $pedidoToUpdate->setCliente($cliente);
     $pedidoToUpdate->setValorTotal($dto->valor_total);
     $pedidoToUpdate->setStatus($dto->status);
     $pedidoToUpdate->setFormaPagamento($dto->data_pedido);

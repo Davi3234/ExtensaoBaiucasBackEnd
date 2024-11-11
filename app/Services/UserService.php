@@ -6,6 +6,7 @@ use Exception\ValidationException;
 use Provider\Zod\Z;
 use App\Models\User;
 use App\Repositories\IUserRepository;
+use Provider\Database\DatabaseException;
 
 class UserService {
 
@@ -29,6 +30,12 @@ class UserService {
     return $raw;
   }
 
+  /**
+   * Retorna um usuário buscando pelo seu ID
+   * @param array $args
+   * @throws \Exception\ValidationException
+   * @return array{user: array{ active: bool, id: int, login: string, name: string, tipo: string[]}}
+   */
   public function getById(array $args) {
     $getSchema = Z::object([
       'id' => Z::number([
@@ -44,13 +51,14 @@ class UserService {
 
     $user =  $this->userRepository->findById($dto->id);
 
-    if (!$user)
+    if (!$user){
       throw new ValidationException('Não foi possível encontrar o Usuário', [
         [
           'message' => 'Usuário não encontrado',
           'origin' => 'id'
         ]
       ]);
+    }
 
     return [
       'user' => [
@@ -58,6 +66,7 @@ class UserService {
         'name' => $user->getName(),
         'login' => $user->getLogin(),
         'active' => $user->getActive(),
+        'tipo' => $user->getTipo(),
       ]
     ];
   }
@@ -71,9 +80,13 @@ class UserService {
         ->min(3, 'Nome precisa ter no mínimo 3 caracteres'),
       'login' => Z::string(['required' => 'Login é obrigatório'])
         ->trim()
-        ->regex('/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/', 'Login invalid'),
+        ->regex('/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/', 'Login inválido'),
       'password' => Z::string(['required' => 'Senha é obrigatório'])
         ->trim(),
+      'confirm_password' => Z::string(['required' => 'Confirmação de senha é obrigatório'])
+        ->trim(),
+      'tipo' => Z::string(['required' => 'Tipo é obrigatório'])
+        ->trim()
     ])->coerce();
 
     $dto = $createSchema->parseNoSafe($args);
@@ -84,7 +97,16 @@ class UserService {
       throw new ValidationException('Não foi possível cadastrar o Usuário', [
         [
           'message' => 'Já existe um Usuário com o mesmo login informado',
-          'origin' => 'login'
+          'origin' => 'user'
+        ]
+      ]);
+    }
+
+    if($dto->password != $dto->confirm_password){
+      throw new ValidationException('Não foi possível cadastrar o Usuário', [
+        [
+          'message' => 'A senha deve ser igual a confirmação de senha',
+          'origin' => 'password'
         ]
       ]);
     }
@@ -95,6 +117,7 @@ class UserService {
     $user->setLogin($dto->login);
     $user->setPassword(md5($dto->password));
     $user->setActive(true);
+    $user->setTipo($dto->tipo);
 
     $this->userRepository->create($user);
 
@@ -112,7 +135,10 @@ class UserService {
         ->gt(0, 'Id do Usuário inválido'),
       'name' => Z::string(['required' => 'Nome é obrigatório'])
         ->trim()
-        ->min(3, 'Nome precisa ter no mínimo 3 caracteres'),
+        ->min(3, 'Nome precisa ter no mínimo 3 caractéres'),
+      'login' => Z::string(['required' => 'Login é obrigatório'])
+        ->trim()
+        ->regex('/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/', 'Login inválido'),
     ])->coerce();
 
     $dto = $updateSchema->parseNoSafe($args);
@@ -148,9 +174,9 @@ class UserService {
 
     $dto = $deleteSchema->parseNoSafe($args);
 
-    $userToDelete = $this->getById($dto->id)['user'];
+    $userToDelete = $this->getById(['id' => $dto->id])['user'];
 
-    if ($userToDelete) {
+    if (!$userToDelete) {
       throw new ValidationException('Não foi possível excluir o Usuário', [
         [
           'message' => 'Usuário não encontrado',
@@ -159,7 +185,11 @@ class UserService {
       ]);
     }
 
-    $this->userRepository->deleteById($dto->id);
+    try {
+      $this->userRepository->deleteById($dto->id);
+    } catch (DatabaseException $th) {
+      throw new DatabaseException($th->getMessage());
+    }
 
     return ['message' => 'Usuário excluído com sucesso'];
   }

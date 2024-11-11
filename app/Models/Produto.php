@@ -48,17 +48,6 @@ class Produto extends Model {
 		$this->povoaPropriedades($args);
 	}
 
-	#[\Override]
-	function __load(array $raw) {
-		$this->id_produto = $raw['id_produto'];
-		$this->nome = $raw['nome'];
-		$this->descricao = $raw['descricao'];
-		$this->valor = $raw['valor'];
-		$this->id_categoria = $raw['id_categoria'];
-        $this->ativo = $raw['ativo'];
-        $this->data_inclusao = $raw['data_inclusao'];
-	}
-
 	protected function povoaPropriedades(array $args = []) {
 		foreach ($args as $prop => $value) {
 			$this->$prop = $value;

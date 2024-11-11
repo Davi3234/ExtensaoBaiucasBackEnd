@@ -36,6 +36,8 @@ class UserRepository extends Repository implements IUserRepository {
       $user = $this->findById($id);
 
       $this->entityManager->remove($user);
+      $this->entityManager->flush();
+      
     } catch (\Exception $e) {
       throw new DatabaseException($e->getMessage());
     }

@@ -36,14 +36,6 @@ class PedidoItem extends Model {
 		$this->povoaPropriedades($args);
 	}
 
-	#[\Override]
-	function __load(array $raw) {
-		$this->id_pedido = $raw['id_pedido'];
-		$this->id_item  = $raw['id_item'];
-		$this->valor_item = $raw['valor_item'];
-		$this->observacoes_item = $raw['observacoes_item'];
-	}
-
 	protected function povoaPropriedades(array $args = []) {
 		foreach ($args as $prop => $value) {
 			$this->$prop = $value;

@@ -8,6 +8,7 @@ use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Common\Model;
+use App\Enum\TipoUsuario;
 
 #[Entity]
 #[Table(name: 'users')]
@@ -25,30 +26,16 @@ class User extends Model {
 	private string $password;
 	#[Column(options: ['default' => true])]
 	private bool $active;
+	#[Column(type: 'string', enumType: TipoUsuario::class)]
+	private string $tipo;
 
-	public function __construct(array $args = []) {
-		$this->id = 0;
-		$this->name = '';
-		$this->login = '';
-		$this->password = '';
-		$this->active = true;
-
-		$this->povoaPropriedades($args);
-	}
-
-	#[\Override]
-	function __load(array $raw) {
-		$this->id = $raw['id'];
-		$this->name = $raw['name'];
-		$this->login = $raw['login'];
-		$this->password = $raw['password'];
-		$this->active = $raw['active'];
-	}
-
-	protected function povoaPropriedades(array $args = []) {
-		foreach ($args as $prop => $value) {
-			$this->$prop = $value;
-		}
+	public function __construct($id = 0, $name = '', $login = '', $password = '', $active = true, $tipo = "") {
+		$this->id = $id;
+		$this->name = $name;
+		$this->login = $login;
+		$this->password = $password;
+		$this->active = $active;
+		$this->tipo = $tipo;
 	}
 
 	public function getId(): int {
@@ -71,6 +58,10 @@ class User extends Model {
 		return $this->login;
 	}
 
+	public function getTipo(): string {
+		return $this->tipo;
+	}
+
 	public function setLogin(string $value) {
 		$this->login = $value;
 	}
@@ -89,5 +80,9 @@ class User extends Model {
 
 	public function setActive(bool $value) {
 		$this->active = $value;
+	}
+
+	public function setTipo(string $value) {
+		$this->tipo = $value;
 	}
 }

@@ -22,7 +22,7 @@ class UserController {
   #[Get('/:id')]
   #[Guard(AuthenticationMiddleware::class)]
   function getOne(Request $request) {
-    $userId = $request->getAttribute('userId');
+    $userId = str_replace("/users/", "", $request->getParam('url'));
 
     $result = $this->userService->getById([
       'id' => $userId,
@@ -44,29 +44,32 @@ class UserController {
     $result = $this->userService->create([
       'name' => $request->getBody('name'),
       'login' => $request->getBody('login'),
-      'password' => $request->getBody('password')
+      'password' => $request->getBody('password'),
+      'tipo' => $request->getBody('tipo')
     ]);
 
     return $result;
   }
 
-  #[Put('/')]
+  #[Put('/:id')]
   #[Guard(AuthenticationMiddleware::class)]
   function update(Request $request) {
-    $userId = $request->getAttribute('userId');
+    $userId = str_replace("/users/", "", $request->getParam('url'));
 
     $result = $this->userService->update([
       'id' => $userId,
       'name' => $request->getBody('name'),
+      'login' => $request->getBody('login'),
+      'tipo' => $request->getBody('tipo')
     ]);
 
     return $result;
   }
 
-  #[Delete('/')]
+  #[Delete('/:id')]
   #[Guard(AuthenticationMiddleware::class)]
   function delete(Request $request) {
-    $userId = $request->getAttribute('userId');
+    $userId = str_replace("/users/", "", $request->getParam('url'));
 
     $result = $this->userService->delete([
       'id' => $userId,
