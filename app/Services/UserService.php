@@ -35,7 +35,7 @@ class UserService {
    * Retorna um usuário buscando pelo seu ID
    * @param array $args
    * @throws \Exception\ValidationException
-   * @return array{user: array{ active: bool, id: int, login: string, name: string, tipo: string[]}}
+   * @return array{user: array{ active: bool, id: int, login: string, name: string, tipo: string}}
    */
   public function getById(array $args) {
     $getSchema = Z::object([
