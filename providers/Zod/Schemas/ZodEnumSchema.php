@@ -15,7 +15,7 @@ class ZodEnumSchema extends ZodMixedSchema {
   function __construct(array $valuesEnable = [], array $attributes = null) {
     parent::__construct($attributes);
 
-    $this->$valuesEnable = $valuesEnable;
+    $this->valuesEnable = $valuesEnable;
     $this->addTransformRule('parseResolveValuesEnable');
   }
 

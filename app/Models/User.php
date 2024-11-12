@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Common\Model;
-use App\Enum\TipoUsuario;
+use App\Enums\TipoUsuario;
 
 #[Entity]
 #[Table(name: 'users')]
@@ -27,9 +27,9 @@ class User extends Model {
 	#[Column(options: ['default' => true])]
 	private bool $active;
 	#[Column(type: 'string', enumType: TipoUsuario::class)]
-	private string $tipo;
+	private TipoUsuario $tipo;
 
-	public function __construct($id = 0, $name = '', $login = '', $password = '', $active = true, $tipo = "") {
+	public function __construct($id = 0, $name = '', $login = '', $password = '', $active = true, $tipo = TipoUsuario::CLIENTE) {
 		$this->id = $id;
 		$this->name = $name;
 		$this->login = $login;
@@ -58,7 +58,7 @@ class User extends Model {
 		return $this->login;
 	}
 
-	public function getTipo(): string {
+	public function getTipo(): TipoUsuario {
 		return $this->tipo;
 	}
 
@@ -82,7 +82,7 @@ class User extends Model {
 		$this->active = $value;
 	}
 
-	public function setTipo(string $value) {
+	public function setTipo(TipoUsuario $value) {
 		$this->tipo = $value;
 	}
 }

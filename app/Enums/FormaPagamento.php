@@ -1,5 +1,6 @@
 <?php
-namespace App\Enum;
+
+namespace App\Enums;
 
 enum FormaPagamento: string {
   case CARTAO = 'C';
