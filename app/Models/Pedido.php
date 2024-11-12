@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use Doctrine\DBAL\Types\EnumType;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\Column;
@@ -27,9 +26,9 @@ class Pedido extends Model {
 	#[Column]
 	public string $data_pedido;
 
-	#[ManyToOne(targetEntity: Cliente::class)]
+	#[ManyToOne(targetEntity: User::class)]
 	#[JoinColumn(name: 'id_cliente', referencedColumnName: 'id')]
-	public Cliente $cliente;
+	public User $cliente;
 
 	#[Column]
 	public float $valor_total;
@@ -82,11 +81,11 @@ class Pedido extends Model {
 		$this->data_pedido = $value;
 	}
 
-	public function getCliente(): Cliente {
+	public function getCliente(): User {
 		return $this->cliente;
 	}
 
-	public function setCliente(Cliente $value) {
+	public function setCliente(User $value) {
 		$this->cliente = $value;
 	}
 

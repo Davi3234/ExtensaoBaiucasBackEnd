@@ -9,15 +9,9 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Common\Model;
 use App\Enums\TipoUsuario;
-use Doctrine\ORM\Mapping\DiscriminatorColumn;
-use Doctrine\ORM\Mapping\DiscriminatorMap;
-use Doctrine\ORM\Mapping\InheritanceType;
 
 #[Entity]
 #[Table(name: 'users')]
-#[InheritanceType("SINGLE_TABLE")]
-#[DiscriminatorColumn(name: "tipo", type: 'string')]
-#[DiscriminatorMap(['A' => Administrador::class, 'C' => Cliente::class])]
 class User extends Model {
 
 	#[Id]
