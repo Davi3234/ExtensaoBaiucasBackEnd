@@ -29,7 +29,7 @@ class Pedido extends Model
 	public string $data_pedido;
 
 	#[ManyToOne(targetEntity: Cliente::class)]
-  #[JoinColumn(name: 'id_cliente', referencedColumnName: 'id')]
+    #[JoinColumn(name: 'id_cliente', referencedColumnName: 'id')]
 	public Cliente $cliente;
 
 	#[Column]
