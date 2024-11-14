@@ -2,10 +2,11 @@
 
 namespace App\Services;
 
-use App\Models\Cliente;
+use App\Enums\TipoUsuario;
 use Exception\ValidationException;
 use Provider\Zod\Z;
 use App\Models\Pedido;
+use App\Models\User;
 use App\Repositories\IPedidoRepository;
 
 class PedidoService {
@@ -96,7 +97,7 @@ class PedidoService {
 
     $clienteArgs = $this->userService->getById($dto->id_cliente);
 
-    if(!$clienteArgs){
+    if (!$clienteArgs) {
       throw new ValidationException('Não foi possível atualizar o Pedido', [
         [
           'message' => 'Cliente não encontrado',
@@ -105,11 +106,12 @@ class PedidoService {
       ]);
     }
 
-    $cliente = new Cliente(
+    $cliente = new User(
       id: $clienteArgs['user']['id'],
       name: $clienteArgs['user']['name'],
       login: $clienteArgs['user']['login'],
-      active: $clienteArgs['user']['active']
+      active: $clienteArgs['user']['active'],
+      tipo: TipoUsuario::tryFrom($clienteArgs['user']['tipo']),
     );
 
     $pedido = new Pedido(
@@ -129,7 +131,7 @@ class PedidoService {
 
     return ['message' => 'Pedido inserido com sucesso!'];
   }
-  
+
   public function update(array $args) {
     $updateSchema = Z::object([
       'id_pedido' => Z::number([
@@ -156,7 +158,7 @@ class PedidoService {
 
     $clienteArgs = $this->userService->getById($dto->id_cliente);
 
-    if(!$clienteArgs){
+    if (!$clienteArgs) {
       throw new ValidationException('Não foi possível atualizar o Pedido', [
         [
           'message' => 'Cliente não encontrado',
@@ -165,11 +167,12 @@ class PedidoService {
       ]);
     }
 
-    $cliente = new Cliente(
+    $cliente = new User(
       id: $clienteArgs['user']['id'],
       name: $clienteArgs['user']['name'],
       login: $clienteArgs['user']['login'],
       active: $clienteArgs['user']['active'],
+      tipo: $clienteArgs['user']['tipo'],
     );
 
     $pedidoToUpdate->setDataPedido($dto->data_pedido);

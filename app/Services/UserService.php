@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\TipoUsuario;
 use Exception\ValidationException;
 use Provider\Zod\Z;
 use App\Models\User;
@@ -34,7 +35,7 @@ class UserService {
    * Retorna um usuário buscando pelo seu ID
    * @param array $args
    * @throws \Exception\ValidationException
-   * @return array{user: array{ active: bool, id: int, login: string, name: string, tipo: string[]}}
+   * @return array{user: array{ active: bool, id: int, login: string, name: string, tipo: string}}
    */
   public function getById(array $args) {
     $getSchema = Z::object([
@@ -51,7 +52,7 @@ class UserService {
 
     $user =  $this->userRepository->findById($dto->id);
 
-    if (!$user){
+    if (!$user) {
       throw new ValidationException('Não foi possível encontrar o Usuário', [
         [
           'message' => 'Usuário não encontrado',
@@ -85,8 +86,7 @@ class UserService {
         ->trim(),
       'confirm_password' => Z::string(['required' => 'Confirmação de senha é obrigatório'])
         ->trim(),
-      'tipo' => Z::string(['required' => 'Tipo é obrigatório'])
-        ->trim()
+      'tipo' => Z::enumNative(TipoUsuario::class, ['required' => 'Tipo é obrigatório'])
     ])->coerce();
 
     $dto = $createSchema->parseNoSafe($args);
@@ -102,7 +102,7 @@ class UserService {
       ]);
     }
 
-    if($dto->password != $dto->confirm_password){
+    if ($dto->password != $dto->confirm_password) {
       throw new ValidationException('Não foi possível cadastrar o Usuário', [
         [
           'message' => 'A senha deve ser igual a confirmação de senha',
@@ -117,7 +117,7 @@ class UserService {
     $user->setLogin($dto->login);
     $user->setPassword(md5($dto->password));
     $user->setActive(true);
-    $user->setTipo($dto->tipo);
+    $user->setTipo(TipoUsuario::tryFrom($dto->tipo));
 
     $this->userRepository->create($user);
 

@@ -23,13 +23,13 @@ class AuthTest extends TestCase {
     $userRepository->method('findByLogin')
       ->with($login)
       ->willReturn(
-        User::__loadModel([
-          'id' => 1,
-          'name' => 'Dan Ruan',
-          'login' => $login,
-          'password' => md5('Abc123!@#'),
-          'active' => true,
-        ])
+        new User(
+          id: 1,
+          name: 'Dan Ruan',
+          login: $login,
+          password: md5($password),
+          active: true
+        )
       );
 
     // Action
@@ -83,13 +83,13 @@ class AuthTest extends TestCase {
     $userRepository->method('findByLogin')
       ->with($login)
       ->willReturn(
-        User::__loadModel([
-          'id' => 1,
-          'name' => 'Dan Ruan',
-          'login' => $login,
-          'password' => md5('Abc123!@#123435gtbs'),
-          'active' => true,
-        ])
+        new User(
+          id: 1,
+          name: 'Dan Ruan',
+          login: $login,
+          password: md5('Abc123!@#123435gtbs'),
+          active: true
+        )
       );
 
     // Assertion
@@ -199,13 +199,13 @@ class AuthTest extends TestCase {
     $userRepository->method('findByLogin')
       ->with($login)
       ->willReturn(
-        User::__loadModel([
-          'id' => 1,
-          'name' => 'Dan Ruan',
-          'login' => $login,
-          'password' => md5('Abc123!@#'),
-          'active' => true,
-        ])
+        new User(
+          id: 1,
+          name: 'Dan Ruan',
+          login: $login,
+          password: md5('Abc123!@#'),
+          active: true
+        )
       );
 
     $authService = new AuthService($userRepository);

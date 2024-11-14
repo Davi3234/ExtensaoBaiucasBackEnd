@@ -2,7 +2,7 @@
 
 namespace Tests\User;
 
-use App\Enum\TipoUsuario;
+use App\Enums\TipoUsuario;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\Attributes\Test;
 use App\Models\User;
@@ -47,7 +47,7 @@ class UserTest extends TestCase {
       ]
     ];
 
-    $this->assertEquals($userComparacao, $user['user']);
+    $this->assertEquals($userComparacao, $user);
   }
 
   #[Test]
@@ -55,12 +55,14 @@ class UserTest extends TestCase {
     //Arrange
     $nome = 'Davi';
     $login = 'davi.fadriano@gmail.com';
-    $password = 'davi123';
+    $password = 'Davi!@#123';
+    $confirm_password = 'Davi!@#123';
+    $tipo = TipoUsuario::CLIENTE->value;
 
     $user = new User(
       name: $nome,
       login: $login,
-      password: $password,
+      password: md5($password),
       active: true,
     );
 
@@ -82,7 +84,9 @@ class UserTest extends TestCase {
     $response = $userService->create([
       'name' => $nome,
       'login' => $login,
-      'password' => $password
+      'password' => $password,
+      'confirm_password' => $confirm_password,
+      'tipo' => $tipo,
     ]);
 
     //Assert
