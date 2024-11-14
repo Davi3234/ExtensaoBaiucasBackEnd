@@ -8,16 +8,12 @@ use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Common\Model;
-use Doctrine\ORM\Mapping\JoinColumn;
-use Doctrine\ORM\Mapping\OneToMany;
 
 #[Entity]
 #[Table(name: 'categorias')]
 class Categoria extends Model
 {
 
-    #[OneToMany(targetEntity: Produto::class)]
-    #[JoinColumn(name: 'id_categoria', referencedColumnName: 'id')]
 
 	#[Id]
 	#[GeneratedValue]

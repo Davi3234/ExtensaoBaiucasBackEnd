@@ -23,7 +23,8 @@ class ProdutoService {
         'nome' => $produto->getNome(),
         'descricao' => $produto->getDescricao(),
         'valor' => $produto->getValor(),
-        'id_categoria' => $produto->getIdCategoria(),
+        'id_categoria' => $produto->getCategoria()->getIdCategoria(),
+        'descricao_categoria' => $produto->getCategoria()->getDescricaoCategoria(),
         'ativo' => $produto->getAtivo(),
         'data_inclusao' => $produto->getDataInclusao(),
       ];
@@ -66,7 +67,8 @@ class ProdutoService {
         'nome' => $produto->getNome(),
         'descricao' => $produto->getDescricao(),
         'valor' => $produto->getValor(),
-        'id_categoria' => $produto->getIdCategoria(),
+        'id_categoria' => $produto->getCategoria()->getIdCategoria(),
+        'descricao_categoria' => $produto->getCategoria()->getDescricaoCategoria(),
         'ativo' => $produto->getAtivo(),
         'data_inclusao' => $produto->getDataInclusao(),
       ]

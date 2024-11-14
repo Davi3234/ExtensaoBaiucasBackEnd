@@ -8,10 +8,15 @@ use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Common\Model;
-
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\ManyToOne;
 #[Entity]
 #[Table(name: 'produtos')]
 class Produto extends Model {
+
+	
+	#[ManyToOne(targetEntity: Categoria::class)]
+	#[JoinColumn(name: 'id_categoria', referencedColumnName: 'id_categoria')]
 
 	#[Id]
 	#[GeneratedValue]
@@ -28,7 +33,7 @@ class Produto extends Model {
 	public float $valor;
 
 	#[Column]
-	public int $id_categoria;
+	public Categoria $categoria;
 
 	#[Column(options: ['default' => true])]
 	public bool $ativo;
@@ -36,22 +41,15 @@ class Produto extends Model {
     #[Column]
 	public string $data_inclusao;
 
-	public function __construct(array $args = []) {
+	public function __construct($id_produto = 0, $nome = null, $descricao = 0, $valor  = 0, $categoria = 0, $ativo = true, $data_inclusao = '') {
 		$this->id_produto = 0;
 		$this->nome = '';
 		$this->descricao = '';
 		$this->valor = 0;
-		$this->id_categoria = 0;
+		$this->categoria = $categoria;
         $this->ativo = true;
         $this->data_inclusao = 0;
 
-		$this->povoaPropriedades($args);
-	}
-
-	protected function povoaPropriedades(array $args = []) {
-		foreach ($args as $prop => $value) {
-			$this->$prop = $value;
-		}
 	}
 
 	public function getIdProduto(): int {
@@ -86,12 +84,12 @@ class Produto extends Model {
 		$this->valor = $value;
 	}
 
-	public function getIdCategoria(): int {
-		return $this->id_categoria;
+	public function getCategoria(): Categoria {
+		return $this->categoria;
 	}
 
-    public function setIdCategoria(int $value) {
-		$this->id_categoria = $value;
+    public function setIdCategoria(Categoria $value) {
+		$this->categoria = $value;
 	}
 
     public function getDataInclusao(): string {
