@@ -8,6 +8,8 @@ use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Common\Model;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\ManyToOne;
 
 #[Entity]
 #[Table(name: 'itens_pedidos')]
@@ -16,10 +18,15 @@ class PedidoItem extends Model {
 	#[Id]
 	#[GeneratedValue]
 	#[Column]
-	public int $id_pedido;
+	public int $id_pedido_item;
 
-	#[Column]
-	public int $id_item;
+	#[ManyToOne(targetEntity: Pedido::class)]
+	#[JoinColumn(name: 'pedido', referencedColumnName: 'id_pedido')]
+	public Pedido $pedido;
+
+	#[ManyToOne(targetEntity: Produto::class)]
+	#[JoinColumn(name: 'produto', referencedColumnName: 'id_produto')]
+	public Produto $produto;
 
 	#[Column]
 	public float $valor_item;
@@ -28,39 +35,37 @@ class PedidoItem extends Model {
 	public string $observacoes_item;
 
 	public function __construct(array $args = []) {
-		$this->id_pedido  = 0;
-		$this->id_item = 0;
+		$this->id_pedido_item  = 0;
+		$this->produto = 0;
+		$this->pedido  = null;
 		$this->valor_item = 0;
 		$this->observacoes_item = '';
-
-		$this->povoaPropriedades($args);
 	}
 
-	protected function povoaPropriedades(array $args = []) {
-		foreach ($args as $prop => $value) {
-			$this->$prop = $value;
-		}
+	public function getIdPedidoItem(): int {
+		return $this->id_pedido_item;
 	}
 
-	//Id do Pedido
-	public function getIdPedido(): int {
-		return $this->id_pedido;
+	public function setIdPedidoItem(int $value) {
+		$this->id_pedido_item = $value;
 	}
 
-	public function setIdPedido(int $value) {
-		$this->id_pedido = $value;
+	public function getPedido(): Pedido {
+		return $this->pedido;
 	}
 
-	//Id do Item
-	public function getIdItem(): int {
-		return $this->id_item;
+	public function setPedido(Pedido $value) {
+		$this->pedido = $value;
 	}
 
-	public function setIdItem(int $value) {
-		$this->id_item = $value;
+	public function getProduto(): Produto {
+		return $this->produto;
 	}
 
-	//Valor do Item
+	public function setProduto(Produto $value) {
+		$this->produto = $value;
+	}
+
 	public function getValorItem(): float {
 		return $this->valor_item;
 	}
@@ -69,7 +74,6 @@ class PedidoItem extends Model {
 		$this->valor_item = $value;
 	}
 
-	//Observacoes do Item, por exemplo = sem cebola, bem passado
 	public function getObservacoesItem(): string {
 		return $this->observacoes_item;
 	}
