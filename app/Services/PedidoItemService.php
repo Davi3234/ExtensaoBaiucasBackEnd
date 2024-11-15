@@ -76,7 +76,6 @@ class PedidoItemService
   public function create(array $args)
   {
     $createSchema = Z::object([
-      'id_pedido' => Z::string(['required' => 'Id do Pedido é obrigatório!']),
       'id_item' => Z::string(['required' => 'Id do Item é obrigatório!']),
       'valor_item' => Z::string(['required' => 'Valor do ítem é obrigatório!']),
       'observacoes_item' => Z::string(['required' => 'Observação do Item é obrigatória!'])
