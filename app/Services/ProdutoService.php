@@ -84,8 +84,10 @@ class ProdutoService
     $createSchema = Z::object([
       'nome' => Z::string(['required' => 'Nome é obrigatório']),
       'valor' => Z::string(['required' => 'Valor é obrigatório']),
+      'descricao' => Z::string(['required' => 'Descrição é obrigatória']),
       'id_categoria' => Z::string(['required' => 'Categoria é obrigatória']),
       'data_inclusao' => Z::string(['required' => 'Data de inclusão é obrigatória']),
+      'ativo' => Z::string(['required' => 'Ativo é obrigatório']),
     ])->coerce();
 
     $dto = $createSchema->parseNoSafe($args);
@@ -123,27 +125,12 @@ class ProdutoService
   public function update(array $args)
   {
     $updateSchema = Z::object([
-      'id_produto' => Z::number([
-        'required' => 'Id do Produto é obrigatório',
-        'invalidType' => 'Id do Produto inválido'
-      ])
-        ->coerce()
-        ->int()
-        ->gt(0, 'Id do Produto inválido'),
-      'id_categoria' => Z::number([
-        'required' => 'Id da Categoria é obrigatório',
-        'invalidType' => 'Id da Categoria inválido',
-      ])
-        ->coerce()
-        ->int()
-        ->gt(0, 'Id da Categoria inválido'),
-      'id_cliente' => Z::number([
-        'required' => 'Id do Cliente é obrigatório',
-        'invalidType' => 'Id do Cliente inválido',
-      ])
-        ->coerce()
-        ->int()
-        ->gt(0, 'Id do Cliente inválido'),
+      'nome' => Z::string(['required' => 'Nome é obrigatório']),
+      'valor' => Z::string(['required' => 'Valor é obrigatório']),
+      'descricao' => Z::string(['required' => 'Descrição é obrigatória']),
+      'id_categoria' => Z::string(['required' => 'Categoria é obrigatória']),
+      'data_inclusao' => Z::string(['required' => 'Data de inclusão é obrigatória']),
+      'ativo' => Z::string(['required' => 'Ativo é obrigatório'])
     ])->coerce();
 
     $dto = $updateSchema->parseNoSafe($args);

@@ -7,14 +7,15 @@ use Exception\ValidationException;
 use Provider\Zod\Z;
 use App\Repositories\ICategoriaRepository;
 
-class CategoriaService {
+class CategoriaService
+{
 
   public function __construct(
     private readonly ICategoriaRepository $categoriaRepository
-  ) {
-  }
+  ) {}
 
-  public function query() {
+  public function query()
+  {
     $categorias = $this->categoriaRepository->findMany();
 
     $raw = array_map(function ($categoria) {
@@ -33,7 +34,8 @@ class CategoriaService {
    * @return array
    */
 
-  public function getById(array $args) {
+  public function getById(array $args)
+  {
     $getSchema = Z::object([
       'id_categoria' => Z::number([
         'required' => 'Id da Categoria é obrigatório',
@@ -64,16 +66,18 @@ class CategoriaService {
     ];
   }
 
-  public function create(array $args) {
+  public function create(array $args)
+  {
     $createSchema = Z::object([
-      'id_categoria' => Z::string(['required' => 'Id da Categoria é obrigatório!'])
+      'id_categoria' => Z::string(['required' => 'Id da Categoria é obrigatório!']),
+      'descricao_categoria' => Z::string(['required' => 'Descrição da categoria é obrigatória!'])
     ])->coerce();
 
     $dto = $createSchema->parseNoSafe($args);
 
     $categoriaArgs = $this->getById($dto->id_categoria);
 
-    if(!$categoriaArgs){
+    if (!$categoriaArgs) {
       throw new ValidationException('Não foi possível atualizar a Categoria', [
         [
           'message' => 'Categoria não encontrada',
@@ -91,16 +95,12 @@ class CategoriaService {
 
     return ['message' => 'Categoria inserida com sucesso!'];
   }
-  
-  public function update(array $args) {
+
+  public function update(array $args)
+  {
     $updateSchema = Z::object([
-      'id_categoria' => Z::number([
-        'required' => 'Id da Categoria é obrigatório',
-        'invalidType' => 'Id da Categoria inválido'
-      ])
-        ->coerce()
-        ->int()
-        ->gt(0, 'Id da Categoria inválido')
+      'id_categoria' => Z::string(['required' => 'Id da Categoria é obrigatório!']),
+      'descricao_categoria' => Z::string(['required' => 'Descrição da categoria é obrigatória!'])
     ])->coerce();
 
     $dto = $updateSchema->parseNoSafe($args);
@@ -123,7 +123,8 @@ class CategoriaService {
     return ['message' => 'Categoria atualizada com sucesso'];
   }
 
-  public function delete(array $args) {
+  public function delete(array $args)
+  {
     $deleteSchema = Z::object([
       'id_categoria' => Z::number([
         'required' => 'Id da Categoria é obrigatório',

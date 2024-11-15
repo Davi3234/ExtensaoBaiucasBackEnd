@@ -7,14 +7,15 @@ use Provider\Zod\Z;
 use App\Models\PedidoItem;
 use App\Repositories\IPedidoItemRepository;
 
-class PedidoItemService {
+class PedidoItemService
+{
 
   public function __construct(
     private readonly IPedidoItemRepository $pedidoItemRepository
-  ) {
-  }
+  ) {}
 
-  public function query() {
+  public function query()
+  {
     $itens = $this->pedidoItemRepository->findMany();
 
     $raw = array_map(function ($item) {
@@ -35,7 +36,8 @@ class PedidoItemService {
    * @return array
    */
 
-  public function getById(array $args) {
+  public function getById(array $args)
+  {
     $getSchema = Z::object([
       'id_pedido' => Z::number([
         'required' => 'Id do Pedido é obrigatório',
@@ -71,12 +73,13 @@ class PedidoItemService {
     ];
   }
 
-  public function create(array $args) {
+  public function create(array $args)
+  {
     $createSchema = Z::object([
-      'id_pedido' => Z::string(['required' => 'Id do Pedido é obrigatório!'])
-        ->trim(),
-      'id_item' => Z::string(['required' => 'Id do Item é obrigatório!'])
-        ->trim()
+      'id_pedido' => Z::string(['required' => 'Id do Pedido é obrigatório!']),
+      'id_item' => Z::string(['required' => 'Id do Item é obrigatório!']),
+      'valor_item' => Z::string(['required' => 'Valor do ítem é obrigatório!']),
+      'observacoes_item' => Z::string(['required' => 'Observação do Item é obrigatória!'])
     ])->coerce();
 
     $dto = $createSchema->parseNoSafe($args);
@@ -93,20 +96,13 @@ class PedidoItemService {
     return ['message' => 'Item inserido com sucesso ao Pedido!'];
   }
 
-  public function update(array $args) {
+  public function update(array $args)
+  {
     $updateSchema = Z::object([
-      'id_pedido' => Z::number([
-        'required' => 'Id do Pedido é obrigatório',
-        'invalidType' => 'Id do Pedido inválido'
-      ])
-        ->coerce()
-        ->int(),
-      'id_item' => Z::number([
-        'required' => 'Id do Pedido é obrigatório',
-        'invalidType' => 'Id do Item inválido'
-      ])
-        ->coerce()
-        ->int(),
+      'id_pedido' => Z::string(['required' => 'Id do Pedido é obrigatório!']),
+      'id_item' => Z::string(['required' => 'Id do Item é obrigatório!']),
+      'valor_item' => Z::string(['required' => 'Valor do ítem é obrigatório!']),
+      'observacoes_item' => Z::string(['required' => 'Observação do Item é obrigatória!'])
     ])->coerce();
 
     $dto = $updateSchema->parseNoSafe($args);
@@ -132,7 +128,8 @@ class PedidoItemService {
     return ['message' => 'Item atualizado com sucesso'];
   }
 
-  public function delete(array $args) {
+  public function delete(array $args)
+  {
     $deleteSchema = Z::object([
       'id_pedido' => Z::number([
         'required' => 'Id do Pedido é obrigatório',

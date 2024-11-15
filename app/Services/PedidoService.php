@@ -90,10 +90,16 @@ class PedidoService
   public function create(array $args)
   {
     $createSchema = Z::object([
-      'id_pedido' => Z::string(['required' => 'Id do Pedido é obrigatório!'])
-        ->trim(),
-      'id_cliente' => Z::string(['required' => 'Id do cliente é obrigatório!'])
-        ->trim()
+      'id_pedido' => Z::string(['required' => 'Id do Pedido é obrigatório!']),
+      'id_cliente' => Z::string(['required' => 'Id do cliente é obrigatório!']),
+      'data_pedido' => Z::string(['required' => 'Data do pedido é obrigatória!']),
+      'valor_total' => Z::string(['required' => 'Valor total é obrigatório!']),
+      'status' => Z::string(['required' => 'Status é obrigatório!']),
+      'observacoes' => Z::string(['required' => 'Observações é obrigatório!']),
+      'forma_pagamento' => Z::string(['required' => 'Forma de Pagamento é obrigatória!']),
+      'tipo' => Z::string(['required' => 'Tipo do pedido é obrigatório!']),
+      'endereco_entrega' => Z::string(['required' => 'Endereço de entrega é obrigatório!']),
+      'taxa_entrega' => Z::string(['required' => 'Taxa de entrega é obrigatória!']),
     ])->coerce();
 
     $dto = $createSchema->parseNoSafe($args);
@@ -138,13 +144,16 @@ class PedidoService
   public function update(array $args)
   {
     $updateSchema = Z::object([
-      'id_pedido' => Z::number([
-        'required' => 'Id do Pedido é obrigatório',
-        'invalidType' => 'Id do Pedido inválido'
-      ])
-        ->coerce()
-        ->int()
-        ->gt(0, 'Id do Pedido inválido')
+      'id_pedido' => Z::string(['required' => 'Id do Pedido é obrigatório!']),
+      'id_cliente' => Z::string(['required' => 'Id do cliente é obrigatório!']),
+      'data_pedido' => Z::string(['required' => 'Data do pedido é obrigatória!']),
+      'valor_total' => Z::string(['required' => 'Valor total é obrigatório!']),
+      'status' => Z::string(['required' => 'Status é obrigatório!']),
+      'observacoes' => Z::string(['required' => 'Observações é obrigatório!']),
+      'forma_pagamento' => Z::string(['required' => 'Forma de Pagamento é obrigatória!']),
+      'tipo' => Z::string(['required' => 'Tipo do pedido é obrigatório!']),
+      'endereco_entrega' => Z::string(['required' => 'Endereço de entrega é obrigatório!']),
+      'taxa_entrega' => Z::string(['required' => 'Taxa de entrega é obrigatória!']),
     ])->coerce();
 
     $dto = $updateSchema->parseNoSafe($args);
