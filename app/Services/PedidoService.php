@@ -160,7 +160,11 @@ class PedidoService
 
     $pedidoCriado = $this->pedidoRepository->create($pedido);
 
-    $itensCriados = $this->pedidoItemRepository->create($dto->itens);
+    foreach ($dto->itens as $item) {
+      $item->id_pedido = $pedidoCriado->getIdPedido();
+
+      $this->pedidoItemService->create($item);
+    }
 
     return ['message' => 'Pedido inserido com sucesso!'];
   }
@@ -178,6 +182,13 @@ class PedidoService
       'tipo' => Z::string(['required' => 'Tipo do pedido é obrigatório!']),
       'endereco_entrega' => Z::string(['required' => 'Endereço de entrega é obrigatório!']),
       'taxa_entrega' => Z::string(['required' => 'Taxa de entrega é obrigatória!']),
+      'itens' => Z::arrayZod(
+        Z::object([
+          'id_item' => Z::string(['required' => 'Id do Item é obrigatório!']),
+          'valor_item' => Z::string(['required' => 'Valor do ítem é obrigatório!']),
+          'observacoes_item' => Z::string(['required' => 'Observação do Item é obrigatória!'])
+        ])->coerce()
+      )
     ])->coerce();
 
     $dto = $updateSchema->parseNoSafe($args);
@@ -223,6 +234,12 @@ class PedidoService
     $pedidoToUpdate->setTaxaEntrega($dto->taxa_entrega);
 
     $this->pedidoRepository->update($pedidoToUpdate);
+
+    foreach ($dto->itens as $item) {
+      $item->id_pedido = $pedidoToUpdate->getIdPedido();
+
+      $this->pedidoItemService->update($item);
+    }
 
     return ['message' => 'Pedido atualizado com sucesso'];
   }
