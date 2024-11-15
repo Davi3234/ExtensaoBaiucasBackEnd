@@ -125,6 +125,7 @@ class ProdutoService
   public function update(array $args)
   {
     $updateSchema = Z::object([
+      'id_produto' => Z::string(['required' => 'Id do produto é obrigatório']),
       'nome' => Z::string(['required' => 'Nome é obrigatório']),
       'valor' => Z::string(['required' => 'Valor é obrigatório']),
       'descricao' => Z::string(['required' => 'Descrição é obrigatória']),
@@ -178,7 +179,7 @@ class ProdutoService
   public function delete(array $args)
   {
     $deleteSchema = Z::object([
-      'id' => Z::number([
+      'id_produto' => Z::number([
         'required' => 'Id do Produto é obrigatório',
         'invalidType' => 'Id do Produto inválido'
       ])
