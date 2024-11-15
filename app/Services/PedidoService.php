@@ -10,26 +10,25 @@ use App\Models\User;
 use App\Repositories\IPedidoRepository;
 use App\Repositories\IPedidoItemRepository;
 use App\Services\PedidoItemService;
-use App\Models\PedidoItem;
 
-class PedidoService
-{
+class PedidoService {
 
   public function __construct(
     private readonly IPedidoRepository $pedidoRepository,
     private readonly UserService $userService,
     private readonly IPedidoItemRepository $pedidoItemRepository,
     private readonly PedidoItemService $pedidoItemService
-  ) {}
+  ) {
+  }
 
-  public function query()
-  {
+  public function query() {
     $pedidos = $this->pedidoRepository->findMany();
 
     $raw = array_map(function ($pedido) {
       return [
         'id_pedido' => $pedido->getIdPedido(),
         'data_pedido' => $pedido->getDataPedido(),
+        'id_cliente' => $pedido->getCliente(),
         'cliente' => [
           'nome' => $pedido->getCliente()->getName(),
         ],
@@ -52,8 +51,7 @@ class PedidoService
    * @return array
    */
 
-  public function getById(array $args)
-  {
+  public function getById(array $args) {
     $getSchema = Z::object([
       'id_pedido' => Z::number([
         'required' => 'Id do pedido é obrigatório',
@@ -81,6 +79,9 @@ class PedidoService
         'id_pedido' => $pedido->getIdPedido(),
         'data_pedido' => $pedido->getDataPedido(),
         'id_cliente' => $pedido->getCliente(),
+        'cliente' => [
+          'nome' => $pedido->getCliente()->getName(),
+        ],
         'valor_total' => $pedido->getValorTotal(),
         'status' => $pedido->getStatus(),
         'forma_pagamento' => $pedido->getFormaPagamento(),
@@ -92,8 +93,7 @@ class PedidoService
     ];
   }
 
-  public function create(array $args)
-  {
+  public function create(array $args) {
     $createSchema = Z::object([
       'id_cliente' => Z::string(['required' => 'Id do cliente é obrigatório!']),
       'data_pedido' => Z::string(['required' => 'Data do pedido é obrigatória!']),
@@ -107,23 +107,12 @@ class PedidoService
       //Colocando itens
       'itens' => Z::arrayZod(
         Z::object([
-          'id_item' => Z::string(['required' => 'Id do Item é obrigatório!']),
+          'id_produto' => Z::string(['required' => 'Id do Produto é obrigatório!']),
           'valor_item' => Z::string(['required' => 'Valor do ítem é obrigatório!']),
           'observacoes_item' => Z::string(['required' => 'Observação do Item é obrigatória!'])
         ])->coerce()
       )
     ])->coerce();
-
-    // {
-    //   "itens": [
-    //     {
-    //       "id_pedido": "",
-    //       "id_item": "",
-    //       "valor_item": "",
-    //       "observacoes_item": "",
-    //     },
-    //   ]
-    // }
 
     $dto = $createSchema->parseNoSafe($args);
 
@@ -169,8 +158,7 @@ class PedidoService
     return ['message' => 'Pedido inserido com sucesso!'];
   }
 
-  public function update(array $args)
-  {
+  public function update(array $args) {
     $updateSchema = Z::object([
       'id_pedido' => Z::string(['required' => 'Id do Pedido é obrigatório!']),
       'id_cliente' => Z::string(['required' => 'Id do cliente é obrigatório!']),
@@ -185,7 +173,7 @@ class PedidoService
       'itens' => Z::arrayZod(
         Z::object([
           'id_pedido' => Z::string(['required' => 'Id do Pedido é obrigatório!']),
-          'id_item' => Z::string(['required' => 'Id do Item é obrigatório!']),
+          'id_produto' => Z::string(['required' => 'Id do Produto é obrigatório!']),
           'valor_item' => Z::string(['required' => 'Valor do ítem é obrigatório!']),
           'observacoes_item' => Z::string(['required' => 'Observação do Item é obrigatória!'])
         ])->coerce()
@@ -245,8 +233,7 @@ class PedidoService
     return ['message' => 'Pedido atualizado com sucesso'];
   }
 
-  public function delete(array $args)
-  {
+  public function delete(array $args) {
     $deleteSchema = Z::object([
       'id_pedido' => Z::number([
         'required' => 'Id do Pedido é obrigatório',
