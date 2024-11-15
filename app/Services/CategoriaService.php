@@ -50,7 +50,7 @@ class CategoriaService
 
     $categoria =  $this->categoriaRepository->findById($dto->id_categoria);
 
-    if (!$categoria)
+    /* if (!$categoria)
       throw new ValidationException('Não foi possível encontrar a Categoria', [
         [
           'message' => 'Categoria não encontrada',
@@ -63,28 +63,17 @@ class CategoriaService
         'id_categoria' => $categoria->getIdCategoria(),
         'descricao_categoria' => $categoria->getDescricaoCategoria()
       ]
-    ];
+    ]; */
   }
 
   public function create(array $args)
   {
     $createSchema = Z::object([
-      'id_categoria' => Z::string(['required' => 'Id da Categoria é obrigatório!']),
+      'id_categoria' => Z::number(['required' => 'Id da Categoria é obrigatório!']),
       'descricao_categoria' => Z::string(['required' => 'Descrição da categoria é obrigatória!'])
     ])->coerce();
 
     $dto = $createSchema->parseNoSafe($args);
-
-    $categoriaArgs = $this->getById($dto->id_categoria);
-
-    if (!$categoriaArgs) {
-      throw new ValidationException('Não foi possível atualizar a Categoria', [
-        [
-          'message' => 'Categoria não encontrada',
-          'origin' => 'categoria'
-        ]
-      ]);
-    }
 
     $categoria = new Categoria(
       id_categoria: $dto->id_categoria,
@@ -99,7 +88,7 @@ class CategoriaService
   public function update(array $args)
   {
     $updateSchema = Z::object([
-      'id_categoria' => Z::string(['required' => 'Id da Categoria é obrigatório!']),
+      'id_categoria' => Z::number(['required' => 'Id da Categoria é obrigatório!']),
       'descricao_categoria' => Z::string(['required' => 'Descrição da categoria é obrigatória!'])
     ])->coerce();
 
@@ -137,7 +126,7 @@ class CategoriaService
 
     $dto = $deleteSchema->parseNoSafe($args);
 
-    $categoriaToDelete = $this->getById($dto->id_categoria)['categoria'];
+    $categoriaToDelete = $this->getById(['id_categoria' => $dto->id_categoria]);
 
     if ($categoriaToDelete) {
       throw new ValidationException('Não é possível excluir a categoria', [

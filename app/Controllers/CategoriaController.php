@@ -9,10 +9,12 @@ use App\Repositories\CategoriaRepository;
 use App\Services\CategoriaService;
 
 #[Controller('/categoria')]
-class CategoriaController {
+class CategoriaController
+{
   private readonly CategoriaService $categoriaService;
 
-  function __construct() {
+  function __construct()
+  {
     $this->categoriaService = new CategoriaService(
       new CategoriaRepository()
     );
@@ -20,7 +22,8 @@ class CategoriaController {
 
   #[Get('/:id')]
   #[Guard(AuthenticationMiddleware::class)]
-  function getOne(Request $request) {
+  function getOne(Request $request)
+  {
     $categoria_id = $request->getAttribute('id_categoria');
 
     $result = $this->categoriaService->getById([
@@ -31,30 +34,36 @@ class CategoriaController {
   }
 
   #[Post('/create')]
-  function create(Request $request) {
+  function create(Request $request)
+  {
     $result = $this->categoriaService->create([
-      'id_categoria' => $request->getBody('id_categoria')
+      'id_categoria' => $request->getBody('id_categoria'),
+      'descricao_categoria' => $request->getBody('descricao_categoria')
     ]);
 
     return $result;
   }
 
-  #[Put('/:id')]
+  #[Put('/update')]
   #[Guard(AuthenticationMiddleware::class)]
-  function update(Request $request) {
-    $id_categoria = $request->getAttribute('id_categoria');
+  function update(Request $request)
+  {
+    $id_categoria = $request->getBody('id_categoria');
+    $descricao_categoria = $request->getBody('descricao_categoria');
 
     $result = $this->categoriaService->update([
       'id_categoria' => $id_categoria,
+      'descricao_categoria' => $descricao_categoria
     ]);
 
     return $result;
   }
 
-  #[Delete('/:id')]
+  #[Delete('/delete')]
   #[Guard(AuthenticationMiddleware::class)]
-  function delete(Request $request) {
-    $id_categoria = $request->getAttribute('id_categoria');
+  function delete(Request $request)
+  {
+    $id_categoria = $request->getBody('id_categoria');
 
     $result = $this->categoriaService->delete([
       'id_categoria' => $id_categoria,
