@@ -11,8 +11,14 @@ class JWT {
    * @return string Token JWT
    */
   static function encode(array $payload, array $options) {
+    var_dump($options['key']);
     if (!$options['key'])
-      throw new JWTException('"Key" option encode JWT not defined', ['message' => '"Key" not defined', 'origin' => 'key']);
+      throw new JWTException('"Key" option encode JWT not defined', [
+        [
+          'message' => '"Key" not defined',
+          'origin' => 'key'
+        ]
+      ]);
 
     if ($options['exp'])
       $payload['exp'] = time() + $options['exp'];
@@ -37,7 +43,12 @@ class JWT {
    */
   static function decode(string $token, array $options) {
     if (!$options['key'])
-      throw new JWTException('"Key" option decode JWT not defined', ['message' => '"Key" not defined', 'origin' => 'key']);
+      throw new JWTException('"Key" option decode JWT not defined', [
+        [
+          'message' => '"Key" not defined',
+          'origin' => 'key'
+        ]
+      ]);
 
     if (!$options['alg'])
       $options['alg'] = 'HS256';
