@@ -14,10 +14,6 @@ use Doctrine\ORM\Mapping\ManyToOne;
 #[Table(name: 'produtos')]
 class Produto extends Model {
 
-	
-	#[ManyToOne(targetEntity: Categoria::class)]
-	#[JoinColumn(name: 'id_categoria', referencedColumnName: 'id_categoria')]
-
 	#[Id]
 	#[GeneratedValue]
 	#[Column]
@@ -32,7 +28,8 @@ class Produto extends Model {
 	#[Column]
 	public float $valor;
 
-	#[Column]
+	#[ManyToOne(targetEntity: Categoria::class)]
+	#[JoinColumn(name: 'id_categoria', referencedColumnName: 'id_categoria')]
 	public Categoria $categoria;
 
 	#[Column(options: ['default' => true])]
@@ -41,7 +38,7 @@ class Produto extends Model {
     #[Column]
 	public string $data_inclusao;
 
-	public function __construct($id_produto = 0, $nome = null, $descricao = 0, $valor  = 0, $categoria = 0, $ativo = true, $data_inclusao = '') {
+	public function __construct($id_produto = 0, $nome = null, $descricao = 0, $valor  = 0, $categoria = null, $ativo = true, $data_inclusao = '') {
 		$this->id_produto = 0;
 		$this->nome = '';
 		$this->descricao = '';
@@ -49,7 +46,6 @@ class Produto extends Model {
 		$this->categoria = $categoria;
         $this->ativo = true;
         $this->data_inclusao = 0;
-
 	}
 
 	public function getIdProduto(): int {
@@ -88,7 +84,7 @@ class Produto extends Model {
 		return $this->categoria;
 	}
 
-    public function setIdCategoria(Categoria $value) {
+    public function setCategoria(Categoria $value) {
 		$this->categoria = $value;
 	}
 

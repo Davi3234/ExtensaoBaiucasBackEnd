@@ -5,16 +5,19 @@ namespace App\Services;
 use Exception\ValidationException;
 use Provider\Zod\Z;
 use App\Models\Produto;
+use App\Models\Categoria;
 use App\Repositories\IProdutoRepository;
 
-class ProdutoService {
+class ProdutoService
+{
 
   public function __construct(
-    private readonly IProdutoRepository $produtoRepository
-  ) {
-  }
+    private readonly IProdutoRepository $produtoRepository,
+    private readonly CategoriaService $categoriaService
+  ) {}
 
-  public function query() {
+  public function query()
+  {
     $produtos = $this->produtoRepository->findMany();
 
     $raw = array_map(function ($produto) {
@@ -38,7 +41,8 @@ class ProdutoService {
    * @param array $args
    * @return array
    */
-  public function getById(array $args) {
+  public function getById(array $args)
+  {
     $getSchema = Z::object([
       'id_produto' => Z::number([
         'required' => 'Id do Produto é obrigatório',
@@ -75,7 +79,8 @@ class ProdutoService {
     ];
   }
 
-  public function create(array $args) {
+  public function create(array $args)
+  {
     $createSchema = Z::object([
       'nome' => Z::string(['required' => 'Nome é obrigatório']),
       'valor' => Z::string(['required' => 'Valor é obrigatório']),
@@ -85,12 +90,28 @@ class ProdutoService {
 
     $dto = $createSchema->parseNoSafe($args);
 
+    $categoriaArgs = $this->categoriaService->getById($dto->id_categoria);
+
+    if (!$categoriaArgs) {
+      throw new ValidationException('Não foi possível inserir o Produto', [
+        [
+          'message' => 'Categoria não encontrada',
+          'origin' => 'categoria'
+        ]
+      ]);
+    }
+
+    $categoria = new Categoria(
+      id_categoria: $categoriaArgs['categoria']['id_categoria'],
+      descricao_categoria: $categoriaArgs['categoria']['descricao_categoria'],
+    );
+
     $produto = new Produto();
 
     $produto->setNome($dto->nome);
     $produto->setDescricao($dto->descricao);
     $produto->setValor($dto->valor);
-    $produto->setIdCategoria($dto->id_categoria);
+    $produto->setCategoria($dto->$categoria);
     $produto->setDataInclusao($dto->data_inclusao);
     $produto->setAtivo($dto->ativo);
 
@@ -99,15 +120,30 @@ class ProdutoService {
     return ['message' => 'Produto cadastrado com sucesso'];
   }
 
-  public function update(array $args) {
+  public function update(array $args)
+  {
     $updateSchema = Z::object([
-      'id' => Z::number([
+      'id_produto' => Z::number([
         'required' => 'Id do Produto é obrigatório',
         'invalidType' => 'Id do Produto inválido'
       ])
         ->coerce()
         ->int()
-        ->gt(0, 'Id do Produto inválido')
+        ->gt(0, 'Id do Produto inválido'),
+      'id_categoria' => Z::number([
+        'required' => 'Id da Categoria é obrigatório',
+        'invalidType' => 'Id da Categoria inválido',
+      ])
+        ->coerce()
+        ->int()
+        ->gt(0, 'Id da Categoria inválido'),
+      'id_cliente' => Z::number([
+        'required' => 'Id do Cliente é obrigatório',
+        'invalidType' => 'Id do Cliente inválido',
+      ])
+        ->coerce()
+        ->int()
+        ->gt(0, 'Id do Cliente inválido'),
     ])->coerce();
 
     $dto = $updateSchema->parseNoSafe($args);
@@ -123,11 +159,27 @@ class ProdutoService {
       ]);
     }
 
+    $categoriaArgs = $this->categoriaService->getById($dto->id_categoria);
+
+    if (!$categoriaArgs) {
+      throw new ValidationException('Não foi possível atualizar o Produto', [
+        [
+          'message' => 'Categoria não encontrada',
+          'origin' => 'categoria'
+        ]
+      ]);
+    }
+
+    $categoria = new Categoria(
+      id_categoria: $categoriaArgs['categoria']['id_categoria'],
+      descricao_categoria: $categoriaArgs['categoria']['descricao_categoria'],
+    );
+
     //Altera tudo menos o Id do Produto
     $produto->setNome($dto->nome);
     $produto->setDescricao($dto->descricao);
     $produto->setValor($dto->valor);
-    $produto->setIdCategoria($dto->id_categoria);
+    $produto->setCategoria($dto->$categoria);
     $produto->setDataInclusao($dto->data_inclusao);
     $produto->setAtivo($dto->ativo);
 
@@ -136,7 +188,8 @@ class ProdutoService {
     return ['message' => 'Produto atualizado com sucesso'];
   }
 
-  public function delete(array $args) {
+  public function delete(array $args)
+  {
     $deleteSchema = Z::object([
       'id' => Z::number([
         'required' => 'Id do Produto é obrigatório',

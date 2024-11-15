@@ -9,15 +9,16 @@ use App\Models\Pedido;
 use App\Models\User;
 use App\Repositories\IPedidoRepository;
 
-class PedidoService {
+class PedidoService
+{
 
   public function __construct(
     private readonly IPedidoRepository $pedidoRepository,
     private readonly UserService $userService
-  ) {
-  }
+  ) {}
 
-  public function query() {
+  public function query()
+  {
     $pedidos = $this->pedidoRepository->findMany();
 
     $raw = array_map(function ($pedido) {
@@ -46,7 +47,8 @@ class PedidoService {
    * @return array
    */
 
-  public function getById(array $args) {
+  public function getById(array $args)
+  {
     $getSchema = Z::object([
       'id_pedido' => Z::number([
         'required' => 'Id do pedido é obrigatório',
@@ -85,7 +87,8 @@ class PedidoService {
     ];
   }
 
-  public function create(array $args) {
+  public function create(array $args)
+  {
     $createSchema = Z::object([
       'id_pedido' => Z::string(['required' => 'Id do Pedido é obrigatório!'])
         ->trim(),
@@ -132,7 +135,8 @@ class PedidoService {
     return ['message' => 'Pedido inserido com sucesso!'];
   }
 
-  public function update(array $args) {
+  public function update(array $args)
+  {
     $updateSchema = Z::object([
       'id_pedido' => Z::number([
         'required' => 'Id do Pedido é obrigatório',
@@ -190,7 +194,8 @@ class PedidoService {
     return ['message' => 'Pedido atualizado com sucesso'];
   }
 
-  public function delete(array $args) {
+  public function delete(array $args)
+  {
     $deleteSchema = Z::object([
       'id_pedido' => Z::number([
         'required' => 'Id do Pedido é obrigatório',
