@@ -11,14 +11,15 @@ use App\Models\User;
 use App\Repositories\IUserRepository;
 
 #[CoversClass(User::class)]
-class AuthService {
+class AuthService
+{
 
   function __construct(
     private readonly IUserRepository $userRepository
-  ) {
-  }
+  ) {}
 
-  function login(array $args) {
+  function login(array $args)
+  {
     $loginSchema = Z::object([
       'login' => Z::string(),
       'password' => Z::string(),
@@ -51,7 +52,8 @@ class AuthService {
     return ['token' => $token];
   }
 
-  function authorization(array $args) {
+  function authorization(array $args)
+  {
     $token = $args['token'] ?? null;
 
     if (!$token) {

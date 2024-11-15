@@ -8,16 +8,22 @@ use Provider\Zod\Z;
 use App\Models\Pedido;
 use App\Models\User;
 use App\Repositories\IPedidoRepository;
+use App\Repositories\IPedidoItemRepository;
+use App\Services\PedidoItemService;
+use App\Models\PedidoItem;
 
-class PedidoService {
+class PedidoService
+{
 
   public function __construct(
     private readonly IPedidoRepository $pedidoRepository,
-    private readonly UserService $userService
-  ) {
-  }
+    private readonly UserService $userService,
+    private readonly IPedidoItemRepository $pedidoItemRepository,
+    private readonly PedidoItemService $pedidoItemService
+  ) {}
 
-  public function query() {
+  public function query()
+  {
     $pedidos = $this->pedidoRepository->findMany();
 
     $raw = array_map(function ($pedido) {
@@ -46,7 +52,8 @@ class PedidoService {
    * @return array
    */
 
-  public function getById(array $args) {
+  public function getById(array $args)
+  {
     $getSchema = Z::object([
       'id_pedido' => Z::number([
         'required' => 'Id do pedido é obrigatório',
@@ -85,7 +92,8 @@ class PedidoService {
     ];
   }
 
-  public function create(array $args) {
+  public function create(array $args)
+  {
     $createSchema = Z::object([
       'id_cliente' => Z::string(['required' => 'Id do cliente é obrigatório!']),
       'data_pedido' => Z::string(['required' => 'Data do pedido é obrigatória!']),
@@ -99,7 +107,6 @@ class PedidoService {
       //Colocando itens
       'itens' => Z::arrayZod(
         Z::object([
-          'id_pedido' => Z::string(['required' => 'Id do Pedido é obrigatório!']),
           'id_item' => Z::string(['required' => 'Id do Item é obrigatório!']),
           'valor_item' => Z::string(['required' => 'Valor do ítem é obrigatório!']),
           'observacoes_item' => Z::string(['required' => 'Observação do Item é obrigatória!'])
@@ -123,7 +130,7 @@ class PedidoService {
     $clienteArgs = $this->userService->getById($dto->id_cliente);
 
     if (!$clienteArgs) {
-      throw new ValidationException('Não foi possível atualizar o Pedido', [
+      throw new ValidationException('Não foi possível inserir o Pedido', [
         [
           'message' => 'Cliente não encontrado',
           'origin' => 'cliente'
@@ -153,12 +160,13 @@ class PedidoService {
 
     $pedidoCriado = $this->pedidoRepository->create($pedido);
 
-    // $dto->itens
+    $itensCriados = $this->pedidoItemRepository->create($dto->itens);
 
     return ['message' => 'Pedido inserido com sucesso!'];
   }
 
-  public function update(array $args) {
+  public function update(array $args)
+  {
     $updateSchema = Z::object([
       'id_pedido' => Z::string(['required' => 'Id do Pedido é obrigatório!']),
       'id_cliente' => Z::string(['required' => 'Id do cliente é obrigatório!']),
@@ -219,7 +227,8 @@ class PedidoService {
     return ['message' => 'Pedido atualizado com sucesso'];
   }
 
-  public function delete(array $args) {
+  public function delete(array $args)
+  {
     $deleteSchema = Z::object([
       'id_pedido' => Z::number([
         'required' => 'Id do Pedido é obrigatório',
