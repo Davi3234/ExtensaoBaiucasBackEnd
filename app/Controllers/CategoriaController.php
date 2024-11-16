@@ -34,28 +34,31 @@ class CategoriaController {
   #[Guard(AuthenticationMiddleware::class)]
   function create(Request $request) {
     $result = $this->categoriaService->create([
-      'id_categoria' => $request->getBody('id_categoria')
+      'id_categoria' => $request->getBody('id_categoria'),
+      'descricao_categoria' => $request->getBody('descricao_categoria')
     ]);
 
     return $result;
   }
 
-  #[Put('/:id')]
+  #[Put('/update')]
   #[Guard(AuthenticationMiddleware::class)]
   function update(Request $request) {
-    $id_categoria = $request->getAttribute('id_categoria');
+    $id_categoria = $request->getBody('id_categoria');
+    $descricao_categoria = $request->getBody('descricao_categoria');
 
     $result = $this->categoriaService->update([
       'id_categoria' => $id_categoria,
+      'descricao_categoria' => $descricao_categoria
     ]);
 
     return $result;
   }
 
-  #[Delete('/:id')]
+  #[Delete('/delete')]
   #[Guard(AuthenticationMiddleware::class)]
   function delete(Request $request) {
-    $id_categoria = $request->getAttribute('id_categoria');
+    $id_categoria = $request->getBody('id_categoria');
 
     $result = $this->categoriaService->delete([
       'id_categoria' => $id_categoria,

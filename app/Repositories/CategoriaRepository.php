@@ -7,10 +7,12 @@ use App\Models\Categoria;
 use Doctrine\ORM\Cache\Exception\FeatureNotImplemented;
 use Provider\Database\DatabaseException;
 
-class CategoriaRepository extends Repository implements ICategoriaRepository {
+class CategoriaRepository extends Repository implements ICategoriaRepository
+{
 
   #[\Override]
-  public function create(Categoria $categoria): Categoria {
+  public function create(Categoria $categoria): Categoria
+  {
     try {
       $this->entityManager->persist($categoria);
       $this->entityManager->flush();
@@ -22,7 +24,8 @@ class CategoriaRepository extends Repository implements ICategoriaRepository {
   }
 
   #[\Override]
-  public function update(Categoria $categoria): Categoria {
+  public function update(Categoria $categoria): Categoria
+  {
     try {
       throw new FeatureNotImplemented('Method "update" from "CategoriaRepository" not implemented');
     } catch (\Exception $e) {
@@ -31,7 +34,8 @@ class CategoriaRepository extends Repository implements ICategoriaRepository {
   }
 
   #[\Override]
-  public function deleteById(int $id_categoria) {
+  public function deleteById(int $id_categoria)
+  {
     try {
       $categoria = $this->findById($id_categoria);
 
@@ -46,7 +50,8 @@ class CategoriaRepository extends Repository implements ICategoriaRepository {
    */
 
   #[\Override]
-  public function findMany(): array {
+  public function findMany(): array
+  {
     try {
       $result = $this->entityManager
         ->createQuery('SELECT c FROM App\Models\Caregoria c')
@@ -59,7 +64,8 @@ class CategoriaRepository extends Repository implements ICategoriaRepository {
   }
 
   #[\Override]
-  public function findById(int $id_categoria): ? Categoria {
+  public function findById(int $id_categoria): ?Categoria
+  {
     try {
       $categoria = $this->entityManager->find(Categoria::class, $id_categoria);
 
