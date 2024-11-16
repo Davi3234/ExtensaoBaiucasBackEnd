@@ -9,14 +9,15 @@ use App\Models\User;
 use App\Repositories\IUserRepository;
 use Provider\Database\DatabaseException;
 
-class UserService {
+class UserService
+{
 
   public function __construct(
     private readonly IUserRepository $userRepository
-  ) {
-  }
+  ) {}
 
-  public function query() {
+  public function query()
+  {
     $users = $this->userRepository->findMany();
 
     $raw = array_map(function ($user) {
@@ -37,7 +38,8 @@ class UserService {
    * @throws \Exception\ValidationException
    * @return array{user: array{ active: bool, id: int, login: string, name: string, tipo: string}}
    */
-  public function getById(array $args) {
+  public function getById(array $args)
+  {
     $getSchema = Z::object([
       'id' => Z::number([
         'required' => 'Id do Usuário é obrigatório',
@@ -72,7 +74,8 @@ class UserService {
     ];
   }
 
-  public function create(array $args) {
+  public function create(array $args)
+  {
     $createSchema = Z::object([
       'name' => Z::string([
         'required' => 'Nome é obrigatório'
@@ -124,7 +127,8 @@ class UserService {
     return ['message' => 'Usuário cadastrado com sucesso'];
   }
 
-  public function update(array $args) {
+  public function update(array $args)
+  {
     $updateSchema = Z::object([
       'id' => Z::number([
         'required' => 'Id do Usuário é obrigatório',
@@ -161,7 +165,8 @@ class UserService {
     return ['message' => 'Usuário atualizado com sucesso'];
   }
 
-  public function delete(array $args) {
+  public function delete(array $args)
+  {
     $deleteSchema = Z::object([
       'id' => Z::number([
         'required' => 'Id do Usuário é obrigatório',

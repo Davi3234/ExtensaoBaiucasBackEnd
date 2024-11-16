@@ -50,7 +50,7 @@ class CategoriaService
 
     $categoria =  $this->categoriaRepository->findById($dto->id_categoria);
 
-    /* if (!$categoria)
+    if (!$categoria)
       throw new ValidationException('Não foi possível encontrar a Categoria', [
         [
           'message' => 'Categoria não encontrada',
@@ -63,7 +63,7 @@ class CategoriaService
         'id_categoria' => $categoria->getIdCategoria(),
         'descricao_categoria' => $categoria->getDescricaoCategoria()
       ]
-    ]; */
+    ];
   }
 
   public function create(array $args)
@@ -127,8 +127,9 @@ class CategoriaService
     $dto = $deleteSchema->parseNoSafe($args);
 
     $categoriaToDelete = $this->getById(['id_categoria' => $dto->id_categoria]);
+    //$categoriaToDelete = $this->getById($dto->id_categoria);
 
-    if ($categoriaToDelete) {
+    if (!$categoriaToDelete) {
       throw new ValidationException('Não é possível excluir a categoria', [
         [
           'message' => 'Categoria não encontrada',

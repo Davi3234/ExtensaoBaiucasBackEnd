@@ -7,6 +7,8 @@ use Core\Common\Attributes\{Controller, Get, Delete, Guard, Post, Put};
 use App\Middlewares\AuthenticationMiddleware;
 use App\Repositories\CategoriaRepository;
 use App\Services\CategoriaService;
+use Core\HTTP\RouterURL;
+
 
 #[Controller('/categoria')]
 class CategoriaController
@@ -24,11 +26,12 @@ class CategoriaController
   #[Guard(AuthenticationMiddleware::class)]
   function getOne(Request $request)
   {
-    $categoria_id = $request->getAttribute('id_categoria');
-
+    $categoria_id = $request->getBody('id_categoria');
+    $teste = RouterURL::getParamsFromRouter("/categoria/:id", "/categoria/1");
     $result = $this->categoriaService->getById([
       'id_categoria' => $categoria_id
     ]);
+
 
     return $result;
   }
@@ -59,7 +62,7 @@ class CategoriaController
     return $result;
   }
 
-  #[Delete('/delete')]
+  #[Delete('/:id')]
   #[Guard(AuthenticationMiddleware::class)]
   function delete(Request $request)
   {

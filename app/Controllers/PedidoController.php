@@ -2,12 +2,15 @@
 
 namespace App\Controllers;
 
+use App\Repositories\ProdutoRepository;
 use App\Repositories\UserRepository;
 use App\Services\UserService;
 use Core\HTTP\Request;
 use Core\Common\Attributes\{Controller, Get, Delete, Guard, Post, Put};
 use App\Middlewares\AuthenticationMiddleware;
+use App\Repositories\PedidoItemRepository;
 use App\Repositories\PedidoRepository;
+use App\Services\PedidoItemService;
 use App\Services\PedidoService;
 
 #[Controller('/pedido')]
@@ -19,7 +22,15 @@ class PedidoController
   function __construct()
   {
     $this->userService = new UserService(new UserRepository());
-    $this->pedidoService = new PedidoService(new PedidoRepository(), $this->userService);
+    $this->pedidoService = new PedidoService(
+      new PedidoRepository(),
+      $this->userService,
+      new PedidoItemService(
+        new PedidoItemRepository(),
+        new ProdutoRepository(),
+        new PedidoRepository()
+      )
+    );
   }
 
   #[Get('/:id')]
