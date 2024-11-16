@@ -10,98 +10,114 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Common\Model;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
+
 #[Entity]
 #[Table(name: 'produtos')]
-class Produto extends Model {
+class Produto extends Model
+{
 
 	#[Id]
 	#[GeneratedValue]
 	#[Column]
-	public int $id_produto;
+	public int $id;
 
 	#[Column]
 	public string $nome;
 
-    #[Column]
+	#[Column]
 	public string $descricao;
 
 	#[Column]
 	public float $valor;
 
 	#[ManyToOne(targetEntity: Categoria::class)]
-	#[JoinColumn(name: 'id_categoria', referencedColumnName: 'id_categoria')]
+	#[JoinColumn(name: 'id_categoria', referencedColumnName: 'id')]
 	public Categoria $categoria;
 
 	#[Column(options: ['default' => true])]
 	public bool $ativo;
 
-    #[Column]
+	#[Column]
 	public string $data_inclusao;
 
-	public function __construct($id_produto = 0, $nome = null, $descricao = 0, $valor  = 0, $categoria = null, $ativo = true, $data_inclusao = '') {
-		$this->id_produto = 0;
+	public function __construct($id = 0, $nome = null, $descricao = 0, $valor  = 0, $categoria = null, $ativo = true, $data_inclusao = '')
+	{
+		$this->id = 0;
 		$this->nome = '';
 		$this->descricao = '';
 		$this->valor = 0;
 		$this->categoria = $categoria;
-        $this->ativo = true;
-        $this->data_inclusao = 0;
+		$this->ativo = true;
+		$this->data_inclusao = 0;
 	}
 
-	public function getIdProduto(): int {
-		return $this->id_produto;
+	public function getIdProduto(): int
+	{
+		return $this->id;
 	}
 
-	public function setIdProduto(int $value) {
-		$this->id_produto = $value;
+	public function setIdProduto(int $value)
+	{
+		$this->id = $value;
 	}
 
-	public function getNome(): string {
+	public function getNome(): string
+	{
 		return $this->nome;
 	}
 
-	public function setNome(string $value) {
+	public function setNome(string $value)
+	{
 		$this->nome = $value;
 	}
 
-	public function getDescricao(): string {
+	public function getDescricao(): string
+	{
 		return $this->descricao;
 	}
 
-    public function setDescricao(string $value) {
-	    $this->descricao;
+	public function setDescricao(string $value)
+	{
+		$this->descricao;
 	}
 
-    public function getValor(): float {
+	public function getValor(): float
+	{
 		return $this->valor;
 	}
 
-	public function setValor(float $value) {
+	public function setValor(float $value)
+	{
 		$this->valor = $value;
 	}
 
-	public function getCategoria(): Categoria {
+	public function getCategoria(): Categoria
+	{
 		return $this->categoria;
 	}
 
-    public function setCategoria(Categoria $value) {
+	public function setCategoria(Categoria $value)
+	{
 		$this->categoria = $value;
 	}
 
-    public function getDataInclusao(): string {
+	public function getDataInclusao(): string
+	{
 		return $this->data_inclusao;
 	}
 
-	public function setDataInclusao(string $value) {
+	public function setDataInclusao(string $value)
+	{
 		$this->data_inclusao = $value;
 	}
 
-	public function getAtivo(): bool {
+	public function getAtivo(): bool
+	{
 		return $this->ativo;
 	}
 
-	public function setAtivo(bool $value) {
+	public function setAtivo(bool $value)
+	{
 		$this->ativo = $value;
 	}
-
 }

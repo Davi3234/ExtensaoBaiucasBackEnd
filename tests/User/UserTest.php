@@ -36,7 +36,7 @@ class UserTest extends TestCase
     //Act
     $userService = new UserService($userRepository);
 
-    $user = $userService->getById(['id' => $id])['user'];
+    $user = $userService->getById(['id' => $id]);
 
     //Assert
     $userComparacao = [
