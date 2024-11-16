@@ -31,6 +31,7 @@ class CategoriaController {
   }
 
   #[Post('/create')]
+  #[Guard(AuthenticationMiddleware::class)]
   function create(Request $request) {
     $result = $this->categoriaService->create([
       'id_categoria' => $request->getBody('id_categoria')
