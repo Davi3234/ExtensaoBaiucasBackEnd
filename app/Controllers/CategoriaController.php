@@ -21,7 +21,7 @@ class CategoriaController {
   #[Get('/:id')]
   #[Guard(AuthenticationMiddleware::class)]
   function getOne(Request $request) {
-    $categoria_id = $request->getAttribute('id_categoria');
+    $categoria_id = $request->getParam('id');
 
     $result = $this->categoriaService->getById([
       'id_categoria' => $categoria_id

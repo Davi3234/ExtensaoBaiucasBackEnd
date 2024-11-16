@@ -69,7 +69,7 @@ class Server {
   private function loadParamsRequest() {
     $fullPath = $this->requestManager->getEndpointRequested()['endpoint'];
 
-    $params = RouterURL::getParamsFromRouter($fullPath, $this->routerHttp);
+    $params = RouterURL::getParamsFromRouter($this->routerHttp, $fullPath);
 
     $this->requestBuilder->setParams($params);
     $this->request = $this->requestBuilder->build();

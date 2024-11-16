@@ -11,7 +11,6 @@ class JWT {
    * @return string Token JWT
    */
   static function encode(array $payload, array $options) {
-    var_dump($options['key']);
     if (!$options['key'])
       throw new JWTException('"Key" option encode JWT not defined', [
         [
