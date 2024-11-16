@@ -26,8 +26,8 @@ class CategoriaController
   #[Guard(AuthenticationMiddleware::class)]
   function getOne(Request $request)
   {
-    $categoria_id = $request->getBody('id_categoria');
-    $teste = RouterURL::getParamsFromRouter("/categoria/:id", "/categoria/1");
+    $categoria_id = $request->getParam('id');
+
     $result = $this->categoriaService->getById([
       'id_categoria' => $categoria_id
     ]);
@@ -37,6 +37,7 @@ class CategoriaController
   }
 
   #[Post('/create')]
+  #[Guard(AuthenticationMiddleware::class)]
   function create(Request $request)
   {
     $result = $this->categoriaService->create([
