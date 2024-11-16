@@ -27,7 +27,7 @@ class ProdutoService
         'descricao' => $produto->getDescricao(),
         'valor' => $produto->getValor(),
         'id_categoria' => $produto->getCategoria()->getIdCategoria(),
-        'descricao_categoria' => $produto->getCategoria()->getDescricaoCategoria(),
+        'descricao' => $produto->getCategoria()->getDescricaoCategoria(),
         'ativo' => $produto->getAtivo(),
         'data_inclusao' => $produto->getDataInclusao(),
       ];
@@ -72,7 +72,7 @@ class ProdutoService
         'descricao' => $produto->getDescricao(),
         'valor' => $produto->getValor(),
         'id_categoria' => $produto->getCategoria()->getIdCategoria(),
-        'descricao_categoria' => $produto->getCategoria()->getDescricaoCategoria(),
+        'descricao' => $produto->getCategoria()->getDescricaoCategoria(),
         'ativo' => $produto->getAtivo(),
         'data_inclusao' => $produto->getDataInclusao(),
       ]
@@ -92,7 +92,7 @@ class ProdutoService
 
     $dto = $createSchema->parseNoSafe($args);
 
-    $categoriaArgs = $this->categoriaService->getById($dto->id_categoria);
+    $categoriaArgs = $this->categoriaService->getById(['id' => $dto->id_categoria])['categoria'];
 
     if (!$categoriaArgs) {
       throw new ValidationException('Não foi possível inserir o Produto', [
@@ -104,8 +104,8 @@ class ProdutoService
     }
 
     $categoria = new Categoria(
-      id_categoria: $categoriaArgs['categoria']['id_categoria'],
-      descricao_categoria: $categoriaArgs['categoria']['descricao_categoria'],
+      id: $categoriaArgs['categoria']['id_categoria'],
+      descricao: $categoriaArgs['categoria']['descricao'],
     );
 
     $produto = new Produto();
@@ -147,7 +147,8 @@ class ProdutoService
       ]);
     }
 
-    $categoriaArgs = $this->categoriaService->getById($dto->id_categoria);
+    $categoriaArgs = $this->categoriaService->getById(['id' => $dto->id_categoria])['categoria'];
+
 
     if (!$categoriaArgs) {
       throw new ValidationException('Não foi possível atualizar o Produto', [
@@ -159,8 +160,8 @@ class ProdutoService
     }
 
     $categoria = new Categoria(
-      id_categoria: $categoriaArgs['categoria']['id_categoria'],
-      descricao_categoria: $categoriaArgs['categoria']['descricao_categoria'],
+      id: $categoriaArgs['categoria']['id_categoria'],
+      descricao: $categoriaArgs['categoria']['descricao'],
     );
 
     //Altera tudo menos o Id do Produto
@@ -190,7 +191,7 @@ class ProdutoService
 
     $dto = $deleteSchema->parseNoSafe($args);
 
-    $produtoToDelete = $this->getById($dto->id_produto)['produto'];
+    $produtoToDelete = $this->getById(['id' => $dto->id_produto])['produto'];
 
     if ($produtoToDelete) {
       throw new ValidationException('Não foi possível excluir o Produto', [

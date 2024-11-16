@@ -25,7 +25,7 @@ class PedidoService
 
     $raw = array_map(function ($pedido) {
       return [
-        'id_pedido' => $pedido->getIdPedido(),
+        'id' => $pedido->getIdPedido(),
         'data_pedido' => $pedido->getDataPedido(),
         'id_cliente' => $pedido->getCliente(),
         'cliente' => [
@@ -53,7 +53,7 @@ class PedidoService
   public function getById(array $args)
   {
     $getSchema = Z::object([
-      'id_pedido' => Z::number([
+      'id' => Z::number([
         'required' => 'Id do pedido é obrigatório',
         'invalidType' => 'Id do Pedido inválido'
       ])
@@ -64,19 +64,19 @@ class PedidoService
 
     $dto = $getSchema->parseNoSafe($args);
 
-    $pedido =  $this->pedidoRepository->findById($dto->id_pedido);
+    $pedido =  $this->pedidoRepository->findById($dto->id);
 
     if (!$pedido)
       throw new ValidationException('Não foi possível encontrar o Pedido', [
         [
           'message' => 'Pedido não encontrado',
-          'origin' => 'id_pedido'
+          'origin' => 'id'
         ]
       ]);
 
     return [
       'pedido' => [
-        'id_pedido' => $pedido->getIdPedido(),
+        'id' => $pedido->getIdPedido(),
         'data_pedido' => $pedido->getDataPedido(),
         'id_cliente' => $pedido->getCliente(),
         'cliente' => [
@@ -117,7 +117,7 @@ class PedidoService
 
     $dto = $createSchema->parseNoSafe($args);
 
-    $clienteArgs = $this->userService->getById($dto->id_cliente);
+    $clienteArgs = $this->userService->getById(['id_cliente' => $dto->id_cliente]);
 
     if (!$clienteArgs) {
       throw new ValidationException('Não foi possível inserir o Pedido', [
@@ -151,7 +151,7 @@ class PedidoService
     $pedidoCriado = $this->pedidoRepository->create($pedido);
 
     foreach ($dto->itens as $item) {
-      $item->id_pedido = $pedidoCriado->getIdPedido();
+      $item->id = $pedidoCriado->getIdPedido();
 
       $this->pedidoItemService->create($item);
     }
@@ -162,7 +162,7 @@ class PedidoService
   public function update(array $args)
   {
     $updateSchema = Z::object([
-      'id_pedido' => Z::string(['required' => 'Id do Pedido é obrigatório!']),
+      'id' => Z::string(['required' => 'Id do Pedido é obrigatório!']),
       'id_cliente' => Z::string(['required' => 'Id do cliente é obrigatório!']),
       'data_pedido' => Z::string(['required' => 'Data do pedido é obrigatória!']),
       'valor_total' => Z::string(['required' => 'Valor total é obrigatório!']),
@@ -174,7 +174,7 @@ class PedidoService
       'taxa_entrega' => Z::string(['required' => 'Taxa de entrega é obrigatória!']),
       'itens' => Z::arrayZod(
         Z::object([
-          'id_pedido' => Z::string(['required' => 'Id do Pedido é obrigatório!']),
+          'id' => Z::string(['required' => 'Id do Pedido é obrigatório!']),
           'id_produto' => Z::string(['required' => 'Id do Produto é obrigatório!']),
           'valor_item' => Z::string(['required' => 'Valor do ítem é obrigatório!']),
           'observacoes_item' => Z::string(['required' => 'Observação do Item é obrigatória!'])
@@ -184,18 +184,18 @@ class PedidoService
 
     $dto = $updateSchema->parseNoSafe($args);
 
-    $pedidoToUpdate = $this->pedidoRepository->findById($dto->id_pedido);
+    $pedidoToUpdate = $this->pedidoRepository->findById($dto->id);
 
     if (!$pedidoToUpdate) {
       throw new ValidationException('Não foi possível atualizar o Pedido', [
         [
           'message' => 'Pedido não encontrado',
-          'origin' => 'id_pedido'
+          'origin' => 'id'
         ]
       ]);
     }
 
-    $clienteArgs = $this->userService->getById($dto->id_cliente);
+    $clienteArgs = $this->userService->getById(['id_cliente' => $dto->id_cliente]);
 
     if (!$clienteArgs) {
       throw new ValidationException('Não foi possível atualizar o Pedido', [
@@ -227,7 +227,7 @@ class PedidoService
     $this->pedidoRepository->update($pedidoToUpdate);
 
     foreach ($dto->itens as $item) {
-      $item->id_pedido = $pedidoToUpdate->getIdPedido();
+      $item->id = $pedidoToUpdate->getIdPedido();
 
       $this->pedidoItemService->update($item);
     }
@@ -238,7 +238,7 @@ class PedidoService
   public function delete(array $args)
   {
     $deleteSchema = Z::object([
-      'id_pedido' => Z::number([
+      'id' => Z::number([
         'required' => 'Id do Pedido é obrigatório',
         'invalidType' => 'Id do Pedido inválido'
       ])
@@ -249,18 +249,18 @@ class PedidoService
 
     $dto = $deleteSchema->parseNoSafe($args);
 
-    $pedidoToDelete = $this->getById($dto->id_pedido)['pedido'];
+    $pedidoToDelete = $this->getById(['id' => $dto->id])['pedido'];
 
     if ($pedidoToDelete) {
       throw new ValidationException('Não é possível excluir o pedido', [
         [
           'message' => 'Pedido não encontrado',
-          'origin' => 'id_pedido'
+          'origin' => 'id'
         ]
       ]);
     }
 
-    $this->pedidoRepository->deleteById($dto->id_pedido);
+    $this->pedidoRepository->deleteById($dto->id);
 
     return ['message' => 'Pedido excluído com sucesso'];
   }

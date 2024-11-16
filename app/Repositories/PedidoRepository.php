@@ -7,10 +7,12 @@ use App\Models\Pedido;
 use Doctrine\ORM\Cache\Exception\FeatureNotImplemented;
 use Provider\Database\DatabaseException;
 
-class PedidoRepository extends Repository implements IPedidoRepository {
+class PedidoRepository extends Repository implements IPedidoRepository
+{
 
   #[\Override]
-  public function create(Pedido $pedido): Pedido {
+  public function create(Pedido $pedido): Pedido
+  {
     try {
       $this->entityManager->persist($pedido);
       $this->entityManager->flush();
@@ -22,7 +24,8 @@ class PedidoRepository extends Repository implements IPedidoRepository {
   }
 
   #[\Override]
-  public function update(Pedido $pedido): Pedido {
+  public function update(Pedido $pedido): Pedido
+  {
     try {
       throw new FeatureNotImplemented('Method "update" from "PedidoRepository" not implemented');
     } catch (\Exception $e) {
@@ -31,9 +34,10 @@ class PedidoRepository extends Repository implements IPedidoRepository {
   }
 
   #[\Override]
-  public function deleteById(int $id_pedido) {
+  public function deleteById(int $id)
+  {
     try {
-      $pedido = $this->findById($id_pedido);
+      $pedido = $this->findById($id);
 
       $this->entityManager->remove($pedido);
     } catch (\Exception $e) {
@@ -46,7 +50,8 @@ class PedidoRepository extends Repository implements IPedidoRepository {
    */
 
   #[\Override]
-  public function findMany(): array {
+  public function findMany(): array
+  {
     try {
       $result = $this->entityManager
         ->createQuery('SELECT p FROM App\Models\Pedido p')
@@ -59,9 +64,10 @@ class PedidoRepository extends Repository implements IPedidoRepository {
   }
 
   #[\Override]
-  public function findById(int $id_pedido): ? Pedido {
+  public function findById(int $id): ?Pedido
+  {
     try {
-      $pedido = $this->entityManager->find(Pedido::class, $id_pedido);
+      $pedido = $this->entityManager->find(Pedido::class, $id);
 
       return $pedido;
     } catch (\Exception $e) {

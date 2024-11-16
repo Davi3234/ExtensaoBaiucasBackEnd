@@ -4,15 +4,16 @@ namespace App\Repositories;
 
 use App\Models\Categoria;
 
-interface ICategoriaRepository {
+interface ICategoriaRepository
+{
 
   function create(Categoria $categoria): Categoria;
   function update(Categoria $categoria): Categoria;
-  function deleteById(int $id_categoria);
+  function deleteById(int $id);
 
   /**
    * @return Categoria[]
    */
   function findMany(): array;
-  function findById(int $id_categoria): ? Categoria;
+  function findById(int $id): ?Categoria;
 }

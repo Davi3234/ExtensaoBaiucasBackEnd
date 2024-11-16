@@ -34,10 +34,10 @@ class CategoriaRepository extends Repository implements ICategoriaRepository
   }
 
   #[\Override]
-  public function deleteById(int $id_categoria)
+  public function deleteById(int $id)
   {
     try {
-      $categoria = $this->findById($id_categoria);
+      $categoria = $this->findById($id);
 
       $this->entityManager->remove($categoria);
     } catch (\Exception $e) {
@@ -64,10 +64,10 @@ class CategoriaRepository extends Repository implements ICategoriaRepository
   }
 
   #[\Override]
-  public function findById(int $id_categoria): ?Categoria
+  public function findById(int $id): ?Categoria
   {
     try {
-      $categoria = $this->entityManager->find(Categoria::class, $id_categoria);
+      $categoria = $this->entityManager->find(Categoria::class, $id);
 
       return $categoria;
     } catch (\Exception $e) {

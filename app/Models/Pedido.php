@@ -16,12 +16,13 @@ use Doctrine\ORM\Mapping\ManyToOne;
 
 #[Entity]
 #[Table(name: 'pedidos')]
-class Pedido extends Model {
+class Pedido extends Model
+{
 
 	#[Id]
 	#[GeneratedValue]
 	#[Column]
-	public int $id_pedido;
+	public int $id;
 
 	#[Column]
 	public string $data_pedido;
@@ -51,8 +52,9 @@ class Pedido extends Model {
 	#[Column]
 	public float $taxa_entrega;
 
-	public function __construct($id_pedido = 0, $data_pedido = null, $cliente = 0, $valor_total  = 0, $status = '', $forma_pagamento = '', $observacoes = '', $tipo = '', $endereco_entrega = '', $taxa_entrega = 0,) {
-		$this->id_pedido = $id_pedido;
+	public function __construct($id = 0, $data_pedido = null, $cliente = 0, $valor_total  = 0, $status = '', $forma_pagamento = '', $observacoes = '', $tipo = '', $endereco_entrega = '', $taxa_entrega = 0,)
+	{
+		$this->id = $id;
 		$this->data_pedido = $data_pedido;
 		$this->cliente = $cliente;
 		$this->valor_total  = $valor_total;
@@ -65,89 +67,109 @@ class Pedido extends Model {
 	}
 
 	//Id do Pedido
-	public function getIdPedido(): int {
-		return $this->id_pedido;
+	public function getIdPedido(): int
+	{
+		return $this->id;
 	}
 
-	public function setIdPedido(int $value) {
-		$this->id_pedido = $value;
+	public function setIdPedido(int $value)
+	{
+		$this->id = $value;
 	}
 
-	public function getDataPedido(): string {
+	public function getDataPedido(): string
+	{
 		return $this->data_pedido;
 	}
 
-	public function setDataPedido(string $value) {
+	public function setDataPedido(string $value)
+	{
 		$this->data_pedido = $value;
 	}
 
-	public function getCliente(): User {
+	public function getCliente(): User
+	{
 		return $this->cliente;
 	}
 
-	public function setCliente(User $value) {
+	public function setCliente(User $value)
+	{
 		$this->cliente = $value;
 	}
 
-	public function getValorTotal(): float {
+	public function getValorTotal(): float
+	{
 		return $this->valor_total;
 	}
 
-	public function setValorTotal(float $value) {
+	public function setValorTotal(float $value)
+	{
 		$this->valor_total = $value;
 	}
 
 	//Status = Enum
-	public function getStatus(): string {
+	public function getStatus(): string
+	{
 		return $this->status;
 	}
 
-	public function setStatus(string $value) {
+	public function setStatus(string $value)
+	{
 		$this->status = $value;
 	}
 
 	//Forma de Pagamento = Enum
-	public function getFormaPagamento(): string {
+	public function getFormaPagamento(): string
+	{
 		return $this->forma_pagamento;
 	}
 
-	public function setFormaPagamento(string $value) {
+	public function setFormaPagamento(string $value)
+	{
 		$this->forma_pagamento = $value;
 	}
 
 	//Observações
-	public function getObservacoes(): string {
+	public function getObservacoes(): string
+	{
 		return $this->observacoes;
 	}
 
-	public function setObservacoes(string $value) {
+	public function setObservacoes(string $value)
+	{
 		$this->observacoes = $value;
 	}
 
 	//Tipo = Enum
-	public function getTipo(): string {
+	public function getTipo(): string
+	{
 		return $this->tipo;
 	}
 
-	public function setTipo(string $value) {
+	public function setTipo(string $value)
+	{
 		$this->tipo = $value;
 	}
 
 	//Endereço de entrega
-	public function getEnderecoEntrega(): string {
+	public function getEnderecoEntrega(): string
+	{
 		return $this->endereco_entrega;
 	}
 
-	public function setEnderecoEntrega(string $value) {
+	public function setEnderecoEntrega(string $value)
+	{
 		$this->endereco_entrega = $value;
 	}
 
 	//Taxa de Entrega
-	public function getTaxaEntrega(): float {
+	public function getTaxaEntrega(): float
+	{
 		return $this->taxa_entrega;
 	}
 
-	public function setTaxaEntrega(float $value) {
+	public function setTaxaEntrega(float $value)
+	{
 		$this->taxa_entrega = $value;
 	}
 }

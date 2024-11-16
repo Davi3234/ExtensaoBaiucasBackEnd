@@ -20,8 +20,8 @@ class CategoriaService
 
     $raw = array_map(function ($categoria) {
       return [
-        'id_categoria' => $categoria->getIdCategoria(),
-        'descricao_categoria' => $categoria->getDescricaoCategoria()
+        'id' => $categoria->getIdCategoria(),
+        'descricao' => $categoria->getDescricaoCategoria()
       ];
     }, $categorias);
 
@@ -37,7 +37,7 @@ class CategoriaService
   public function getById(array $args)
   {
     $getSchema = Z::object([
-      'id_categoria' => Z::number([
+      'id' => Z::number([
         'required' => 'Id da Categoria é obrigatório',
         'invalidType' => 'Id da Categoria inválido'
       ])
@@ -48,20 +48,20 @@ class CategoriaService
 
     $dto = $getSchema->parseNoSafe($args);
 
-    $categoria =  $this->categoriaRepository->findById($dto->id_categoria);
+    $categoria =  $this->categoriaRepository->findById($dto->id);
 
     if (!$categoria)
       throw new ValidationException('Não foi possível encontrar a Categoria', [
         [
           'message' => 'Categoria não encontrada',
-          'origin' => 'id_categoria'
+          'origin' => 'id'
         ]
       ]);
 
     return [
       'categoria' => [
-        'id_categoria' => $categoria->getIdCategoria(),
-        'descricao_categoria' => $categoria->getDescricaoCategoria()
+        'id' => $categoria->getIdCategoria(),
+        'descricao' => $categoria->getDescricaoCategoria()
       ]
     ];
   }
@@ -69,15 +69,15 @@ class CategoriaService
   public function create(array $args)
   {
     $createSchema = Z::object([
-      'id_categoria' => Z::number(['required' => 'Id da Categoria é obrigatório!']),
-      'descricao_categoria' => Z::string(['required' => 'Descrição da categoria é obrigatória!'])
+      'id' => Z::number(['required' => 'Id da Categoria é obrigatório!']),
+      'descricao' => Z::string(['required' => 'Descrição da categoria é obrigatória!'])
     ])->coerce();
 
     $dto = $createSchema->parseNoSafe($args);
 
     $categoria = new Categoria(
-      id_categoria: $dto->id_categoria,
-      descricao_categoria: $dto->descricao_categoria
+      id: $dto->id,
+      descricao: $dto->descricao
     );
 
     $this->categoriaRepository->create($categoria);
@@ -88,24 +88,24 @@ class CategoriaService
   public function update(array $args)
   {
     $updateSchema = Z::object([
-      'id_categoria' => Z::number(['required' => 'Id da Categoria é obrigatório!']),
-      'descricao_categoria' => Z::string(['required' => 'Descrição da categoria é obrigatória!'])
+      'id' => Z::number(['required' => 'Id da Categoria é obrigatório!']),
+      'descricao' => Z::string(['required' => 'Descrição da categoria é obrigatória!'])
     ])->coerce();
 
     $dto = $updateSchema->parseNoSafe($args);
 
-    $categoriaToUpdate = $this->categoriaRepository->findById($dto->id_categoria);
+    $categoriaToUpdate = $this->categoriaRepository->findById($dto->id);
 
     if (!$categoriaToUpdate) {
       throw new ValidationException('Não foi possível atualizar a Categoria', [
         [
           'message' => 'Categoria não encontrada',
-          'origin' => 'id_categoria'
+          'origin' => 'id'
         ]
       ]);
     }
 
-    $categoriaToUpdate->setDescricaoCategoria($dto->descricao_categoria);
+    $categoriaToUpdate->setDescricaoCategoria($dto->descricao);
 
     $this->categoriaRepository->update($categoriaToUpdate);
 
@@ -115,7 +115,7 @@ class CategoriaService
   public function delete(array $args)
   {
     $deleteSchema = Z::object([
-      'id_categoria' => Z::number([
+      'id' => Z::number([
         'required' => 'Id da Categoria é obrigatório',
         'invalidType' => 'Id da Categoria inválido'
       ])
@@ -126,19 +126,18 @@ class CategoriaService
 
     $dto = $deleteSchema->parseNoSafe($args);
 
-    $categoriaToDelete = $this->getById(['id_categoria' => $dto->id_categoria]);
-    //$categoriaToDelete = $this->getById($dto->id_categoria);
+    $categoriaToDelete = $this->getById(['id' => $dto->id]);
 
     if (!$categoriaToDelete) {
       throw new ValidationException('Não é possível excluir a categoria', [
         [
           'message' => 'Categoria não encontrada',
-          'origin' => 'id_categoria'
+          'origin' => 'id'
         ]
       ]);
     }
 
-    $this->categoriaRepository->deleteById($dto->id_categoria);
+    $this->categoriaRepository->deleteById($dto->id);
 
     return ['message' => 'Categoria excluída com sucesso'];
   }

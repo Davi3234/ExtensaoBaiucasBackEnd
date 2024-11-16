@@ -4,15 +4,16 @@ namespace App\Repositories;
 
 use App\Models\Pedido;
 
-interface IPedidoRepository {
+interface IPedidoRepository
+{
 
   function create(Pedido $pedido): Pedido;
   function update(Pedido $pedido): Pedido;
-  function deleteById(int $id_pedido);
+  function deleteById(int $id);
 
   /**
    * @return Pedido[]
    */
   function findMany(): array;
-  function findById(int $id_pedido): ? Pedido;
+  function findById(int $id): ?Pedido;
 }

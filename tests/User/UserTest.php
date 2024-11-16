@@ -9,10 +9,12 @@ use App\Models\User;
 use App\Services\UserService;
 use App\Repositories\IUserRepository;
 
-class UserTest extends TestCase {
+class UserTest extends TestCase
+{
 
   #[Test]
-  public function deveAcharUsuario() {
+  public function deveAcharUsuario()
+  {
     //Arrange
     $id = 1;
 
@@ -34,7 +36,7 @@ class UserTest extends TestCase {
     //Act
     $userService = new UserService($userRepository);
 
-    $user = $userService->getById(['id' => $id]);
+    $user = $userService->getById(['id' => $id])['user'];
 
     //Assert
     $userComparacao = [
@@ -51,7 +53,8 @@ class UserTest extends TestCase {
   }
 
   #[Test]
-  public function deveCadastrarUsuario() {
+  public function deveCadastrarUsuario()
+  {
     //Arrange
     $nome = 'Davi';
     $login = 'davi.fadriano@gmail.com';

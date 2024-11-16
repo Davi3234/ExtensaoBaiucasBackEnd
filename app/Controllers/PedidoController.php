@@ -37,10 +37,10 @@ class PedidoController
   #[Guard(AuthenticationMiddleware::class)]
   function getOne(Request $request)
   {
-    $pedido_id = $request->getAttribute('id_pedido');
+    $pedido_id = $request->getAttribute('id');
 
     $result = $this->pedidoService->getById([
-      'id_pedido' => $pedido_id
+      'id' => $pedido_id
     ]);
 
     return $result;
@@ -50,7 +50,7 @@ class PedidoController
   function create(Request $request)
   {
     $result = $this->pedidoService->create([
-      'id_pedido' => $request->getBody('id_pedido'),
+      'id' => $request->getBody('id'),
       'id_cliente' => $request->getBody('id_cliente'),
     ]);
 
@@ -61,10 +61,10 @@ class PedidoController
   #[Guard(AuthenticationMiddleware::class)]
   function update(Request $request)
   {
-    $id_pedido = $request->getAttribute('id_pedido');
+    $id = $request->getAttribute('id');
 
     $result = $this->pedidoService->update([
-      'id_pedido' => $id_pedido,
+      'id' => $id,
     ]);
 
     return $result;
@@ -74,10 +74,10 @@ class PedidoController
   #[Guard(AuthenticationMiddleware::class)]
   function delete(Request $request)
   {
-    $id_pedido = $request->getAttribute('id_pedido');
+    $id = $request->getAttribute('id');
 
     $result = $this->pedidoService->delete([
-      'id_pedido' => $id_pedido,
+      'id' => $id,
     ]);
 
     return $result;

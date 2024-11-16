@@ -18,29 +18,34 @@ class Categoria extends Model
 	#[Id]
 	#[GeneratedValue]
 	#[Column]
-	public int $id_categoria;
+	public int $id;
 
 	#[Column]
-	public string $descricao_categoria;
+	public string $descricao;
 
-	public function __construct($id_categoria = 0, $descricao_categoria = null){
-		$this->id_categoria = $id_categoria;
-		$this->descricao_categoria = $descricao_categoria;
+	public function __construct($id = 0, $descricao = null)
+	{
+		$this->id = $id;
+		$this->descricao = $descricao;
 	}
 
-	public function getIdCategoria(): int {
-		return $this->id_categoria;
+	public function getIdCategoria(): int
+	{
+		return $this->id;
 	}
 
-	public function setIdCategoria(int $value){
-		$this->id_categoria = $value;
+	public function setIdCategoria(int $value)
+	{
+		$this->id = $value;
 	}
 
-	public function getDescricaoCategoria(): string{
-		return $this->id_categoria;
+	public function getDescricaoCategoria(): string
+	{
+		return $this->descricao;
 	}
 
-	public function setDescricaoCategoria(string $value){
-		$this->descricao_categoria = $value;
+	public function setDescricaoCategoria(string $value)
+	{
+		$this->descricao = $value;
 	}
 }
