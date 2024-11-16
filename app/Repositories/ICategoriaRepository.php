@@ -16,4 +16,5 @@ interface ICategoriaRepository
    */
   function findMany(): array;
   function findById(int $id): ?Categoria;
+  function findByDescription(string $descricao): ?Categoria;
 }

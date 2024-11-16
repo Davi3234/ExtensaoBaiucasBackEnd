@@ -13,7 +13,8 @@ use Core\HTTP\Response;
 use Core\HTTP\RouterURL;
 use Core\Managers\RequestManager;
 
-class Server {
+class Server
+{
 
   private RequestManager $requestManager;
   private RequestBuilder $requestBuilder;
@@ -28,7 +29,8 @@ class Server {
   /**
    * @param array{controllers: class-string[]} $routersMap
    */
-  protected function __construct(private array $routersMap = []) {
+  protected function __construct(private array $routersMap = [])
+  {
     $this->routerHttp = Request::getRouterRequested();
     $this->methodHttp = Request::getMethodHttpRequested();
 
@@ -46,11 +48,13 @@ class Server {
   /**
    * @param array{controllers: class-string[]} $routersMap
    */
-  static function Bootstrap(array $routersMap) {
+  static function Bootstrap(array $routersMap)
+  {
     return new static($routersMap);
   }
 
-  function dispatch() {
+  function dispatch()
+  {
     try {
       if ($this->methodHttp != MethodHTTP::OPTIONS->value) {
         $this->handlers = $this->requestManager->loadRequest();
@@ -66,7 +70,8 @@ class Server {
     $this->sendResponse();
   }
 
-  private function loadParamsRequest() {
+  private function loadParamsRequest()
+  {
     $fullPath = $this->requestManager->getEndpointRequested()['endpoint'];
 
     $params = RouterURL::getParamsFromRouter($this->routerHttp, $fullPath);
@@ -75,7 +80,8 @@ class Server {
     $this->request = $this->requestBuilder->build();
   }
 
-  private function resolveHandlers() {
+  private function resolveHandlers()
+  {
     try {
       foreach ($this->handlers as $handler) {
         $response = $this->callHandler($handler['controller'], $handler['method']);
@@ -98,7 +104,8 @@ class Server {
    * @param string $methodName Method name
    * @return mixed Response of the controller
    */
-  function callHandler(string $controller, string $methodName) {
+  function callHandler(string $controller, string $methodName)
+  {
     $controller = new $controller;
 
     $response = $controller->$methodName($this->request, $this->response);
@@ -106,7 +113,8 @@ class Server {
     return $response;
   }
 
-  private function resolveResponseHandler($response) {
+  private function resolveResponseHandler($response)
+  {
     $isEndRequest = false;
 
     if ($response === null)
@@ -123,7 +131,8 @@ class Server {
     return ['isEndRequest' => $isEndRequest];
   }
 
-  private function sendResponse() {
+  private function sendResponse()
+  {
     $response = $this->response->getResponse();
     $statusCode = StatusCodeHTTP::OK->value;
 
@@ -134,7 +143,8 @@ class Server {
     $this->response->sendResponse($statusCode);
   }
 
-  private static function resolveErrorToResult(\Exception $err) {
+  private static function resolveErrorToResult(\Exception $err)
+  {
     if ($err instanceof CriticalException)
       return Result::failure(
         static::resolveCriticalErrorMessage($err->getInfoError()),
@@ -150,7 +160,8 @@ class Server {
     );
   }
 
-  private static function resolveCriticalErrorMessage($message) {
+  private static function resolveCriticalErrorMessage($message)
+  {
     if (env('ENV') == 'PROD')
       return ['message' => 'Internal server error. Please try again later'];
 

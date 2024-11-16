@@ -7,10 +7,11 @@ use Core\Common\Attributes\{Controller, Get, Delete, Guard, Post, Put};
 use App\Middlewares\AuthenticationMiddleware;
 use App\Repositories\CategoriaRepository;
 use App\Services\CategoriaService;
+use Core\Enum\StatusCodeHTTP;
 use Core\HTTP\RouterURL;
 
 
-#[Controller('/categoria')]
+#[Controller('/categorias')]
 class CategoriaController
 {
   private readonly CategoriaService $categoriaService;
@@ -36,23 +37,30 @@ class CategoriaController
     return $result;
   }
 
-  #[Post('/create')]
+  #[Get('')]
   #[Guard(AuthenticationMiddleware::class)]
+  function getMany(Request $request)
+  {
+    $result = $this->categoriaService->query();
+
+    return $result;
+  }
+
+  #[Post('/', StatusCodeHTTP::CREATED->value)]
   function create(Request $request)
   {
     $result = $this->categoriaService->create([
-      'id' => $request->getBody('id'),
       'descricao' => $request->getBody('descricao')
     ]);
 
     return $result;
   }
 
-  #[Put('/update')]
+  #[Put('/:id')]
   #[Guard(AuthenticationMiddleware::class)]
   function update(Request $request)
   {
-    $id = $request->getBody('id');
+    $id = $request->getParam('id');
     $descricao = $request->getBody('descricao');
 
     $result = $this->categoriaService->update([
@@ -67,7 +75,7 @@ class CategoriaController
   #[Guard(AuthenticationMiddleware::class)]
   function delete(Request $request)
   {
-    $id = $request->getBody('id');
+    $id = $request->getParam('id');
 
     $result = $this->categoriaService->delete([
       'id' => $id,

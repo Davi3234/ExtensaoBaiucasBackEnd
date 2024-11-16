@@ -27,7 +27,10 @@ class CategoriaRepository extends Repository implements ICategoriaRepository
   public function update(Categoria $categoria): Categoria
   {
     try {
-      throw new FeatureNotImplemented('Method "update" from "CategoriaRepository" not implemented');
+      $this->entityManager->persist($categoria);
+      $this->entityManager->flush();
+
+      return $categoria;
     } catch (\Exception $e) {
       throw new DatabaseException($e->getMessage());
     }
@@ -70,6 +73,23 @@ class CategoriaRepository extends Repository implements ICategoriaRepository
       $categoria = $this->entityManager->find(Categoria::class, $id);
 
       return $categoria;
+    } catch (\Exception $e) {
+      throw new DatabaseException($e->getMessage());
+    }
+  }
+
+  #[\Override]
+  public function findByDescription(string $descricao): ?Categoria
+  {
+    try {
+      $result = $this->entityManager
+        ->createQuery('SELECT c FROM App\Models\Categoria c WHERE c.descricao = :descricao')
+        ->setParameters([
+          'descricao' => $descricao,
+        ])
+        ->getResult();
+
+      return $result[0] ?? null;
     } catch (\Exception $e) {
       throw new DatabaseException($e->getMessage());
     }

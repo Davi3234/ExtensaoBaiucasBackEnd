@@ -6,6 +6,7 @@ use App\Models\Categoria;
 use Exception\ValidationException;
 use Provider\Zod\Z;
 use App\Repositories\ICategoriaRepository;
+use Provider\Database\DatabaseException;
 
 class CategoriaService
 {
@@ -69,14 +70,23 @@ class CategoriaService
   public function create(array $args)
   {
     $createSchema = Z::object([
-      'id' => Z::number(['required' => 'Id da Categoria é obrigatório!']),
       'descricao' => Z::string(['required' => 'Descrição da categoria é obrigatória!'])
     ])->coerce();
 
     $dto = $createSchema->parseNoSafe($args);
 
+    $categoriaToInsert = $this->categoriaRepository->findByDescription($dto->descricao);
+
+    if ($categoriaToInsert) {
+      throw new ValidationException('Não foi possível cadastrar a Categoria', [
+        [
+          'message' => 'Já existe uma Categoria com a mesma descrição informada',
+          'origin' => 'descricao'
+        ]
+      ]);
+    }
+
     $categoria = new Categoria(
-      id: $dto->id,
       descricao: $dto->descricao
     );
 
@@ -88,7 +98,9 @@ class CategoriaService
   public function update(array $args)
   {
     $updateSchema = Z::object([
-      'id' => Z::number(['required' => 'Id da Categoria é obrigatório!']),
+      'id' => Z::number(['required' => 'Id da Categoria é obrigatório!'])
+        ->coerce()
+        ->int(),
       'descricao' => Z::string(['required' => 'Descrição da categoria é obrigatória!'])
     ])->coerce();
 
@@ -126,7 +138,7 @@ class CategoriaService
 
     $dto = $deleteSchema->parseNoSafe($args);
 
-    $categoriaToDelete = $this->getById(['id' => $dto->id]);
+    $categoriaToDelete = $this->getById(['id' => $dto->id])['categoria'];
 
     if (!$categoriaToDelete) {
       throw new ValidationException('Não é possível excluir a categoria', [
@@ -137,7 +149,11 @@ class CategoriaService
       ]);
     }
 
-    $this->categoriaRepository->deleteById($dto->id);
+    try {
+      $this->categoriaRepository->deleteById($dto->id);
+    } catch (DatabaseException $th) {
+      throw new DatabaseException($th->getMessage());
+    }
 
     return ['message' => 'Categoria excluída com sucesso'];
   }

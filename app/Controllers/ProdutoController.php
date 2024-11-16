@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use App\Services\CategoriaService;
 use Core\Common\Attributes\{Controller, Get, Delete, Guard, Post, Put};
 use Core\Enum\StatusCodeHTTP;
 use Core\HTTP\Request;
@@ -10,18 +11,23 @@ use App\Repositories\ProdutoRepository;
 use App\Services\ProdutoService;
 
 #[Controller('/produto')]
-class ProdutoController {
+class ProdutoController
+{
   private readonly ProdutoService $produtoService;
+  private readonly CategoriaService $categoriaSerice;
 
-  function __construct() {
+  function __construct()
+  {
     $this->produtoService = new ProdutoService(
-      new ProdutoRepository()
+      new ProdutoRepository(),
+      $this->categoriaSerice
     );
   }
 
   #[Get('/:id')]
   #[Guard(AuthenticationMiddleware::class)]
-  function getOne(Request $request) {
+  function getOne(Request $request)
+  {
     $produtoId = $request->getAttribute('id_produto');
 
     $result = $this->produtoService->getById([
@@ -33,14 +39,16 @@ class ProdutoController {
 
   #[Get('')]
   #[Guard(AuthenticationMiddleware::class)]
-  function getMany(Request $request) {
+  function getMany(Request $request)
+  {
     $result = $this->produtoService->query();
 
     return $result;
   }
 
   #[Post('/create', StatusCodeHTTP::CREATED->value)]
-  function create(Request $request) {
+  function create(Request $request)
+  {
     $result = $this->produtoService->create([
       'nome' => $request->getBody('nome'),
       'valor' => $request->getBody('valor'),
@@ -53,7 +61,8 @@ class ProdutoController {
 
   #[Put('/')]
   #[Guard(AuthenticationMiddleware::class)]
-  function update(Request $request) {
+  function update(Request $request)
+  {
     $produtoId = $request->getAttribute('id_produto');
 
     $result = $this->produtoService->update([
@@ -65,7 +74,8 @@ class ProdutoController {
 
   #[Delete('/')]
   #[Guard(AuthenticationMiddleware::class)]
-  function delete(Request $request) {
+  function delete(Request $request)
+  {
     $produtoId = $request->getAttribute('id_produto');
 
     $result = $this->produtoService->delete([

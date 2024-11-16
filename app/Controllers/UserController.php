@@ -43,13 +43,14 @@ class UserController
     return $result;
   }
 
-  #[Post('/create', StatusCodeHTTP::CREATED->value)]
+  #[Post('/', StatusCodeHTTP::CREATED->value)]
   function create(Request $request)
   {
     $result = $this->userService->create([
       'name' => $request->getBody('name'),
       'login' => $request->getBody('login'),
       'password' => $request->getBody('password'),
+      'confirm_password' => $request->getBody('confirm_password'),
       'tipo' => $request->getBody('tipo')
     ]);
 
