@@ -30,9 +30,10 @@ class CategoriaService
   }
 
   /**
-   * Array de categoria
+   * Retorna uma categoria buscando pelo seu ID
    * @param array $args
-   * @return array
+   * @throws \Exception\ValidationException
+   * @return array{categoria: array{id: int, descricao: string}}
    */
 
   public function getById(array $args)

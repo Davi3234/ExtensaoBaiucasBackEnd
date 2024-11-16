@@ -43,6 +43,7 @@ class CategoriaRepository extends Repository implements ICategoriaRepository
       $categoria = $this->findById($id);
 
       $this->entityManager->remove($categoria);
+      $this->entityManager->flush();
     } catch (\Exception $e) {
       throw new DatabaseException($e->getMessage());
     }
@@ -57,7 +58,7 @@ class CategoriaRepository extends Repository implements ICategoriaRepository
   {
     try {
       $result = $this->entityManager
-        ->createQuery('SELECT c FROM App\Models\Caregoria c')
+        ->createQuery('SELECT c FROM App\Models\Categoria c')
         ->getResult();
 
       return $result;
