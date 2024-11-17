@@ -29,7 +29,6 @@ class Produto extends Model {
 	#[Column]
 	public float $valor;
 
-	//#[ManyToOne(targetEntity: Categoria::class)]
 	#[ManyToOne(targetEntity: Categoria::class, cascade: ['persist'])]
 	#[JoinColumn(name: 'id_categoria', referencedColumnName: 'id')]
 	public ?Categoria $categoria;

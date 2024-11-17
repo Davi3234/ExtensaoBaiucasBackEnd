@@ -15,12 +15,12 @@ use Doctrine\ORM\Mapping\ManyToOne;
 class PedidoItem extends Model {
 
 	#[Id]
-	#[ManyToOne(targetEntity: Pedido::class)]
+	#[ManyToOne(targetEntity: Pedido::class, cascade: ['persist'])]
 	#[JoinColumn(name: 'id_pedido', referencedColumnName: 'id', onDelete: "CASCADE")]
 	public Pedido $pedido;
 
 	#[Id]
-	#[ManyToOne(targetEntity: Produto::class)]
+	#[ManyToOne(targetEntity: Produto::class, cascade: ['persist'])]
 	#[JoinColumn(name: 'id_produto', referencedColumnName: 'id')]
 	public Produto $produto;
 

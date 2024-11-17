@@ -26,7 +26,7 @@ class Pedido extends Model {
 	#[Column(name: 'data_pedido')]
 	private string $dataPedido;
 
-	#[ManyToOne(targetEntity: User::class)]
+	#[ManyToOne(targetEntity: User::class, cascade: ['persist'])]
 	#[JoinColumn(name: 'id_cliente', referencedColumnName: 'id')]
 	private User $cliente;
 
