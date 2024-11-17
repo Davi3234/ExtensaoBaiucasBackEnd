@@ -11,10 +11,12 @@ use App\Repositories\ProdutoRepository;
 use App\Services\ProdutoService;
 
 #[Controller('/produtos')]
-class ProdutoController {
+class ProdutoController
+{
   private readonly ProdutoService $produtoService;
 
-  function __construct() {
+  function __construct()
+  {
     $this->produtoService = new ProdutoService(
       new ProdutoRepository(),
       new CategoriaRepository()
@@ -23,26 +25,30 @@ class ProdutoController {
 
   #[Get('/:id')]
   #[Guard(AuthenticationMiddleware::class)]
-  function getOne(Request $request) {
-    $produtoId = $request->getAttribute('id_produto');
+  function getOne(Request $request)
+  {
+    $id = $request->getParam('id');
 
     $result = $this->produtoService->getById([
-      'id_produto' => $produtoId,
+      'id' => $id
     ]);
+
 
     return $result;
   }
 
   #[Get('')]
   #[Guard(AuthenticationMiddleware::class)]
-  function getMany(Request $request) {
+  function getMany(Request $request)
+  {
     $result = $this->produtoService->query();
 
     return $result;
   }
 
   #[Post('/', StatusCodeHTTP::CREATED->value)]
-  function create(Request $request) {
+  function create(Request $request)
+  {
     $result = $this->produtoService->create([
       'nome' => $request->getBody('nome'),
       'valor' => $request->getBody('valor'),
@@ -57,11 +63,12 @@ class ProdutoController {
 
   #[Put('/:id')]
   #[Guard(AuthenticationMiddleware::class)]
-  function update(Request $request) {
-    $produtoId = $request->getAttribute('id_produto');
+  function update(Request $request)
+  {
+    $id = $request->getParam('id');
 
     $result = $this->produtoService->update([
-      'id_produto' => $produtoId,
+      'id' => $id,
       'nome' => $request->getBody('nome'),
       'valor' => $request->getBody('valor'),
       'descricao' => $request->getBody('descricao'),
@@ -75,11 +82,12 @@ class ProdutoController {
 
   #[Delete('/:id')]
   #[Guard(AuthenticationMiddleware::class)]
-  function delete(Request $request) {
-    $produtoId = $request->getAttribute('id_produto');
+  function delete(Request $request)
+  {
+    $id = $request->getParam('id');
 
     $result = $this->produtoService->delete([
-      'id_produto' => $produtoId,
+      'id' => $id,
     ]);
 
     return $result;

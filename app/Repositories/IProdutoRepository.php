@@ -4,7 +4,8 @@ namespace App\Repositories;
 
 use App\Models\Produto;
 
-interface IProdutoRepository {
+interface IProdutoRepository
+{
 
   function create(Produto $produto): Produto;
   function update(Produto $produto): Produto;
@@ -15,4 +16,5 @@ interface IProdutoRepository {
    */
   function findMany(): array;
   function findById(int $id_produto): ?Produto;
+  function findByDescription(string $descricao): ?Produto;
 }

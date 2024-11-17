@@ -8,15 +8,16 @@ use Provider\Zod\Z;
 use App\Models\Produto;
 use App\Repositories\IProdutoRepository;
 
-class ProdutoService {
+class ProdutoService
+{
 
   public function __construct(
     private readonly IProdutoRepository $produtoRepository,
     private readonly CategoriaRepository $categoriaRepository
-  ) {
-  }
+  ) {}
 
-  public function query() {
+  public function query()
+  {
     $produtos = $this->produtoRepository->findMany();
 
     $raw = array_map(function ($produto) {
@@ -40,15 +41,14 @@ class ProdutoService {
    * @param array $args
    * @return array
    */
-  public function getById(array $args) {
+  public function getById(array $args)
+  {
     $getSchema = Z::object([
       'id' => Z::number([
-        'required' => 'Id do Produto é obrigatório',
-        'invalidType' => 'Id do Produto inválido'
+        'required' => 'Id do Produto é obrigatório'
       ])
         ->coerce()
         ->int()
-        ->gt(0, 'Id do Produto inválido')
     ])->coerce();
 
     $dto = $getSchema->parseNoSafe($args);
@@ -59,7 +59,7 @@ class ProdutoService {
       throw new ValidationException('Não foi possível encontrar o Produto', [
         [
           'message' => 'Produto não encontrado',
-          'origin' => 'id_produto'
+          'origin' => 'id'
         ]
       ]);
 
@@ -77,7 +77,8 @@ class ProdutoService {
     ];
   }
 
-  public function create(array $args) {
+  public function create(array $args)
+  {
     $createSchema = Z::object([
       'nome' => Z::string(['required' => 'Nome é obrigatório']),
       'valor' => Z::number(['required' => 'Valor é obrigatório'])
@@ -92,6 +93,17 @@ class ProdutoService {
     ])->coerce();
 
     $dto = $createSchema->parseNoSafe($args);
+
+    $ProdutoToInsert = $this->produtoRepository->findByDescription($dto->descricao);
+
+    if ($ProdutoToInsert) {
+      throw new ValidationException('Não foi possível cadastrar o Produto', [
+        [
+          'message' => 'Já existe um Produto com a mesma descrição informada',
+          'origin' => 'descricao'
+        ]
+      ]);
+    }
 
     $categoria =  $this->categoriaRepository->findById($dto->id_categoria);
 
@@ -118,7 +130,8 @@ class ProdutoService {
     return ['message' => 'Produto cadastrado com sucesso'];
   }
 
-  public function update(array $args) {
+  public function update(array $args)
+  {
     $updateSchema = Z::object([
       'id' => Z::number(['required' => 'Id do produto é obrigatório'])
         ->coerce()
@@ -137,13 +150,13 @@ class ProdutoService {
 
     $dto = $updateSchema->parseNoSafe($args);
 
-    $produto = $this->produtoRepository->findById($dto->id_produto);
+    $produto = $this->produtoRepository->findById($dto->id);
 
     if (!$produto) {
       throw new ValidationException('Não foi possível atualizar o Produto', [
         [
           'message' => 'Produto não encontrado',
-          'origin' => 'id_produto'
+          'origin' => 'id'
         ]
       ]);
     }
@@ -154,7 +167,18 @@ class ProdutoService {
       throw new ValidationException('Não foi possível atualizar o Produto', [
         [
           'message' => 'Categoria não encontrada',
-          'origin' => 'categoria'
+          'origin' => 'id'
+        ]
+      ]);
+    }
+
+    $ProdutoToUpdate = $this->produtoRepository->findByDescription($dto->descricao);
+
+    if ($ProdutoToUpdate) {
+      throw new ValidationException('Não foi possível atualizar o Produto', [
+        [
+          'message' => 'Já existe um Produto com a mesma descrição informada',
+          'origin' => 'descricao'
         ]
       ]);
     }
@@ -172,9 +196,10 @@ class ProdutoService {
     return ['message' => 'Produto atualizado com sucesso'];
   }
 
-  public function delete(array $args) {
+  public function delete(array $args)
+  {
     $deleteSchema = Z::object([
-      'id_produto' => Z::number([
+      'id' => Z::number([
         'required' => 'Id do Produto é obrigatório',
         'invalidType' => 'Id do Produto inválido'
       ])
@@ -185,13 +210,13 @@ class ProdutoService {
 
     $dto = $deleteSchema->parseNoSafe($args);
 
-    $produtoToDelete = $this->produtoRepository->findById($dto->id_produto);
+    $produtoToDelete = $this->produtoRepository->findById($dto->id);
 
     if (!$produtoToDelete) {
       throw new ValidationException('Não foi possível excluir o Produto', [
         [
           'message' => 'Produto não encontrado',
-          'origin' => 'id_produto'
+          'origin' => 'id'
         ]
       ]);
     }
