@@ -12,15 +12,11 @@ class PedidoItemController {
 
     private readonly PedidoItemService $pedidoItemService;
 
-    #[Get('/')]
+    #[Get('/:id')]
     #[Guard(AuthenticationMiddleware::class)]
     function getOne(Request $request) {
-        $id_item = $request->getAttribute('id_item');
-        $id_pedido = $request->getAttribute('id_pedido');
-
         $result = $this->pedidoItemService->getById([
-            'id_item' => $id_item,
-            'id_pedido' => $id_pedido
+            'id' => $request->getParam('id'),
         ]);
 
         return $result;
@@ -31,34 +27,30 @@ class PedidoItemController {
         $result = $this->pedidoItemService->create([
             'id_pedido' => $request->getBody('id_pedido'),
             'id_item'   => $request->getBody('id_item'),
+            'valor_item' => $request->getBody('valor_item'),
+            'observacoes_item'   => $request->getBody('observacoes_item'),
         ]);
 
         return $result;
     }
 
-    #[Put('/')]
+    #[Put('/:id')]
     #[Guard(AuthenticationMiddleware::class)]
     function update(Request $request) {
-        $id_item = $request->getAttribute('id_item');
-        $id_pedido = $request->getAttribute('id_pedido');
-
         $result = $this->pedidoItemService->update([
-            'id_item' => $id_item,
-            'id_pedido' => $id_pedido
+            'id' => $request->getParam('id'),
+            'valor_item' => $request->getBody('valor_item'),
+            'observacoes_item' => $request->getBody('observacoes_item'),
         ]);
 
         return $result;
     }
 
-    #[Delete('/')]
+    #[Delete('/:id')]
     #[Guard(AuthenticationMiddleware::class)]
     function delete(Request $request) {
-        $id_item = $request->getAttribute('id_item');
-        $id_pedido = $request->getAttribute('id_pedido');
-
         $result = $this->pedidoItemService->delete([
-            'id_item' => $id_item,
-            'id_pedido' => $id_pedido
+            'id' => $request->getAttribute('id'),
         ]);
 
         return $result;

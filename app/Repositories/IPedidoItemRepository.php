@@ -8,7 +8,7 @@ interface IPedidoItemRepository {
 
   function create(PedidoItem $itemPedido): PedidoItem;
   function update(PedidoItem $itemPedido): PedidoItem;
-  function deleteById(int $id_pedido, int $id_produto);
+  function deleteById(int $id);
 
   /**
    * @return PedidoItem[]
@@ -19,5 +19,5 @@ interface IPedidoItemRepository {
    * @return PedidoItem[]
    */
   function findManyByIdPedido(int $id_pedido): array;
-  function findById(int $id_pedido, int $id_produto): ?PedidoItem;
+  function findById(int $id): ?PedidoItem;
 }

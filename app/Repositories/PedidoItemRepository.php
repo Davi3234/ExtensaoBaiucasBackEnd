@@ -31,9 +31,9 @@ class PedidoItemRepository extends Repository implements IPedidoItemRepository {
   }
 
   #[\Override]
-  public function deleteById(int $id_pedido, int $id_produto) {
+  public function deleteById(int $id) {
     try {
-      $item = $this->findById($id_pedido, $id_produto);
+      $item = $this->findById($id);
 
       $this->entityManager->remove($item);
     } catch (\Exception $e) {
@@ -78,17 +78,11 @@ class PedidoItemRepository extends Repository implements IPedidoItemRepository {
   }
 
   #[\Override]
-  public function findById(int $id_pedido, int $id_produto): ?PedidoItem {
+  public function findById(int $id): ?PedidoItem {
     try {
-      $result = $this->entityManager
-        ->createQuery('SELECT u FROM App\Models\PedidoItem p WHERE id_pedido :id_pedido AND id_produto = :id_produto')
-        ->setParameters([
-          'id_pedido' => $id_pedido,
-          'id_produto' => $id_produto,
-        ])
-        ->getResult();
+      $pedidoItem = $this->entityManager->find(PedidoItem::class, $id);
 
-      return $result[0] ?? null;
+      return $pedidoItem;
     } catch (\Exception $e) {
       throw new DatabaseException($e->getMessage());
     }

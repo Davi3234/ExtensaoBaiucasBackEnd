@@ -7,13 +7,18 @@ use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Id;
 use Common\Model;
+use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
 
 #[Entity]
 #[Table(name: 'itens_pedidos')]
-class PedidoItem extends Model
-{
+class PedidoItem extends Model {
+
+	#[Id]
+	#[GeneratedValue]
+	#[Column]
+	private int $id;
 
 	#[Id]
 	#[ManyToOne(targetEntity: Pedido::class, cascade: ['persist'])]
@@ -31,51 +36,50 @@ class PedidoItem extends Model
 	#[Column(name: 'observacoes_item')]
 	public string $observacoesItem;
 
-	public function __construct($produto = null, $pedido  = null, $valorItem = 0, $observacoesItem = '')
-	{
+	public function __construct($produto = null, $pedido  = null, $valorItem = 0, $observacoesItem = '') {
 		$this->produto = $produto;
 		$this->pedido  = $pedido;
 		$this->valorItem = $valorItem;
 		$this->observacoesItem = $observacoesItem;
 	}
 
-	public function getPedido(): Pedido
-	{
+	public function getId(): int {
+		return $this->id;
+	}
+
+	public function setId(int $value) {
+		$this->id = $value;
+	}
+
+	public function getPedido(): Pedido {
 		return $this->pedido;
 	}
 
-	public function setPedido(Pedido $value)
-	{
+	public function setPedido(Pedido $value) {
 		$this->pedido = $value;
 	}
 
-	public function getProduto(): Produto
-	{
+	public function getProduto(): Produto {
 		return $this->produto;
 	}
 
-	public function setProduto(Produto $value)
-	{
+	public function setProduto(Produto $value) {
 		$this->produto = $value;
 	}
 
-	public function getValorItem(): float
-	{
+	public function getValorItem(): float {
 		return $this->valorItem;
 	}
 
-	public function setValorItem(float $value)
-	{
+	public function setValorItem(float $value) {
 		$this->valorItem = $value;
 	}
 
-	public function getObservacoesItem(): string
-	{
+	public function getObservacoesItem(): string {
 		return $this->observacoesItem;
 	}
 
-	public function setObservacoesItem(string $value)
-	{
+	public function setObservacoesItem(string $value) {
 		$this->observacoesItem = $value;
 	}
 }
