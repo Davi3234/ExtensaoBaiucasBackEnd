@@ -26,7 +26,8 @@ class PedidoController
         new ProdutoRepository(),
         new PedidoRepository()
       ),
-      new UserRepository()
+      new UserRepository(),
+      new ProdutoRepository()
     );
   }
 
@@ -67,7 +68,6 @@ class PedidoController
       //Colocando itens
       'itens' => $request->getBody('itens'),
       'id_produto' => $request->getBody('id_produto'),
-      'valor_item' => $request->getBody('valor_item'),
       'observacoes_item' => $request->getBody('observacoes_item')
     ]);
 

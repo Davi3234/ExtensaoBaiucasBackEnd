@@ -29,7 +29,7 @@ class Pedido extends Model
 
 	#[ManyToOne(targetEntity: User::class, cascade: ['persist'])]
 	#[JoinColumn(name: 'id_cliente', referencedColumnName: 'id')]
-	private User $cliente;
+	private ?User $cliente;
 
 	#[Column(name: 'valor_total')]
 	private float $valorTotal;
@@ -52,7 +52,7 @@ class Pedido extends Model
 	#[Column(name: 'taxa_entrega')]
 	private float $taxaEntrega;
 
-	public function __construct($id = 0, $dataPedido = null, $cliente = 0, $valorTotal  = 0, $status = StatusPedido::EM_PREPARO, $formaPagamento = FormaPagamento::PIX, $observacoes = '', $tipo = TipoEntrega::NO_LOCAL, $enderecoEntrega = '', $taxaEntrega = 0,)
+	public function __construct($id = 0, $dataPedido = '', $cliente = null, $valorTotal  = 0, $status = StatusPedido::EM_PREPARO, $formaPagamento = FormaPagamento::PIX, $observacoes = '', $tipo = TipoEntrega::NO_LOCAL, $enderecoEntrega = '', $taxaEntrega = 0,)
 	{
 		$this->id = $id;
 		$this->dataPedido = $dataPedido;
