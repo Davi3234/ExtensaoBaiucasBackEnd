@@ -21,47 +21,47 @@ class Pedido extends Model {
 	#[Id]
 	#[GeneratedValue]
 	#[Column]
-	public int $id;
+	private int $id;
 
-	#[Column]
-	public string $data_pedido;
+	#[Column(name: 'data_pedido')]
+	private string $dataPedido;
 
 	#[ManyToOne(targetEntity: User::class)]
 	#[JoinColumn(name: 'id_cliente', referencedColumnName: 'id')]
-	public User $cliente;
+	private User $cliente;
 
-	#[Column]
-	public float $valor_total;
+	#[Column(name: 'valor_total')]
+	private float $valorTotal;
 
 	#[Column(type: 'string', enumType: StatusPedido::class)]
-	public string $status;
+	private string $status;
 
-	#[Column(type: 'string', enumType: FormaPagamento::class)]
-	public string $forma_pagamento;
+	#[Column(name: 'forma_pagamento', type: 'string', enumType: FormaPagamento::class)]
+	private string $formaPagamento;
 
 	#[Column]
-	public string $observacoes;
+	private string $observacoes;
 
 	#[Column(type: 'string', enumType: TipoEntrega::class)]
-	public string $tipo;
+	private string $tipo;
 
-	#[Column]
-	public string $endereco_entrega;
+	#[Column(name: 'endereco_entrega')]
+	private string $enderecoEntrega;
 
-	#[Column]
-	public float $taxa_entrega;
+	#[Column(name: 'taxa_entrega')]
+	private float $taxaEntrega;
 
-	public function __construct($id = 0, $data_pedido = null, $cliente = 0, $valor_total  = 0, $status = '', $forma_pagamento = '', $observacoes = '', $tipo = '', $endereco_entrega = '', $taxa_entrega = 0,) {
+	public function __construct($id = 0, $dataPedido = null, $cliente = 0, $valorTotal  = 0, $status = '', $formaPagamento = '', $observacoes = '', $tipo = '', $enderecoEntrega = '', $taxaEntrega = 0,) {
 		$this->id = $id;
-		$this->data_pedido = $data_pedido;
+		$this->dataPedido = $dataPedido;
 		$this->cliente = $cliente;
-		$this->valor_total  = $valor_total;
+		$this->valorTotal  = $valorTotal;
 		$this->status = $status;
-		$this->forma_pagamento = $forma_pagamento;
+		$this->formaPagamento = $formaPagamento;
 		$this->observacoes = $observacoes;
 		$this->tipo = $tipo;
-		$this->endereco_entrega = $endereco_entrega;
-		$this->taxa_entrega = $taxa_entrega;
+		$this->enderecoEntrega = $enderecoEntrega;
+		$this->taxaEntrega = $taxaEntrega;
 	}
 
 	//Id do Pedido
@@ -74,11 +74,11 @@ class Pedido extends Model {
 	}
 
 	public function getDataPedido(): string {
-		return $this->data_pedido;
+		return $this->dataPedido;
 	}
 
 	public function setDataPedido(string $value) {
-		$this->data_pedido = $value;
+		$this->dataPedido = $value;
 	}
 
 	public function getCliente(): User {
@@ -90,11 +90,11 @@ class Pedido extends Model {
 	}
 
 	public function getValorTotal(): float {
-		return $this->valor_total;
+		return $this->valorTotal;
 	}
 
 	public function setValorTotal(float $value) {
-		$this->valor_total = $value;
+		$this->valorTotal = $value;
 	}
 
 	//Status = Enum
@@ -108,11 +108,11 @@ class Pedido extends Model {
 
 	//Forma de Pagamento = Enum
 	public function getFormaPagamento(): string {
-		return $this->forma_pagamento;
+		return $this->formaPagamento;
 	}
 
 	public function setFormaPagamento(string $value) {
-		$this->forma_pagamento = $value;
+		$this->formaPagamento = $value;
 	}
 
 	//Observações
@@ -135,19 +135,19 @@ class Pedido extends Model {
 
 	//Endereço de entrega
 	public function getEnderecoEntrega(): string {
-		return $this->endereco_entrega;
+		return $this->enderecoEntrega;
 	}
 
 	public function setEnderecoEntrega(string $value) {
-		$this->endereco_entrega = $value;
+		$this->enderecoEntrega = $value;
 	}
 
 	//Taxa de Entrega
 	public function getTaxaEntrega(): float {
-		return $this->taxa_entrega;
+		return $this->taxaEntrega;
 	}
 
 	public function setTaxaEntrega(float $value) {
-		$this->taxa_entrega = $value;
+		$this->taxaEntrega = $value;
 	}
 }

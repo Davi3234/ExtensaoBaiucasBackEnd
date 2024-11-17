@@ -24,17 +24,17 @@ class PedidoItem extends Model {
 	#[JoinColumn(name: 'id_produto', referencedColumnName: 'id')]
 	public Produto $produto;
 
-	#[Column]
-	public float $valor_item;
+	#[Column(name: 'valor_item')]
+	public float $valorItem;
 
-	#[Column]
-	public string $observacoes_item;
+	#[Column(name: 'observacoes_item')]
+	public string $observacoesItem;
 
-	public function __construct(array $args = []) {
-		$this->produto = null;
-		$this->pedido  = null;
-		$this->valor_item = 0;
-		$this->observacoes_item = '';
+	public function __construct($produto = null, $pedido  = null, $valorItem = '', $observacoesItem = '') {
+		$this->produto = $produto;
+		$this->pedido  = $pedido;
+		$this->valorItem = $valorItem;
+		$this->observacoesItem = $observacoesItem;
 	}
 
 	public function getPedido(): Pedido {
@@ -54,18 +54,18 @@ class PedidoItem extends Model {
 	}
 
 	public function getValorItem(): float {
-		return $this->valor_item;
+		return $this->valorItem;
 	}
 
 	public function setValorItem(float $value) {
-		$this->valor_item = $value;
+		$this->valorItem = $value;
 	}
 
 	public function getObservacoesItem(): string {
-		return $this->observacoes_item;
+		return $this->observacoesItem;
 	}
 
 	public function setObservacoesItem(string $value) {
-		$this->observacoes_item = $value;
+		$this->observacoesItem = $value;
 	}
 }

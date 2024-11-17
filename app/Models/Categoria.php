@@ -13,7 +13,6 @@ use Common\Model;
 #[Table(name: 'categorias')]
 class Categoria extends Model {
 
-
 	#[Id]
 	#[GeneratedValue]
 	#[Column]
@@ -27,19 +26,19 @@ class Categoria extends Model {
 		$this->descricao = $descricao;
 	}
 
-	public function getIdCategoria(): int {
+	public function getId(): int {
 		return $this->id;
 	}
 
-	public function setIdCategoria(int $value) {
+	public function setId(int $value) {
 		$this->id = $value;
 	}
 
-	public function getDescricaoCategoria(): string {
+	public function getDescricao(): string {
 		return $this->descricao;
 	}
 
-	public function setDescricaoCategoria(string $value) {
+	public function setDescricao(string $value) {
 		$this->descricao = $value;
 	}
 }

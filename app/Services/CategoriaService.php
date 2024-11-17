@@ -20,8 +20,8 @@ class CategoriaService {
 
     $raw = array_map(function ($categoria) {
       return [
-        'id' => $categoria->getIdCategoria(),
-        'descricao' => $categoria->getDescricaoCategoria()
+        'id' => $categoria->getId(),
+        'descricao' => $categoria->getDescricao()
       ];
     }, $categorias);
 
@@ -60,8 +60,8 @@ class CategoriaService {
 
     return [
       'categoria' => [
-        'id' => $categoria->getIdCategoria(),
-        'descricao' => $categoria->getDescricaoCategoria()
+        'id' => $categoria->getId(),
+        'descricao' => $categoria->getDescricao()
       ]
     ];
   }
@@ -114,7 +114,7 @@ class CategoriaService {
       ]);
     }
 
-    $categoriaToUpdate->setDescricaoCategoria($dto->descricao);
+    $categoriaToUpdate->setDescricao($dto->descricao);
 
     $this->categoriaRepository->update($categoriaToUpdate);
 
@@ -146,7 +146,7 @@ class CategoriaService {
     }
 
     try {
-      $this->categoriaRepository->deleteById($categoriaToDelete->getIdCategoria());
+      $this->categoriaRepository->deleteById($categoriaToDelete->getId());
     } catch (DatabaseException $err) {
       throw new DatabaseException($err->getMessage());
     }

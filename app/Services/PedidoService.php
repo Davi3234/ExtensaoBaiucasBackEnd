@@ -125,15 +125,15 @@ class PedidoService {
     }
 
     $pedido = new Pedido(
-      data_pedido: $dto->data_pedido,
+      dataPedido: $dto->data_pedido,
       cliente: $cliente,
-      valor_total: $dto->valor_total,
+      valorTotal: $dto->valor_total,
       status: $dto->status,
       observacoes: $dto->observacoes,
-      forma_pagamento: $dto->forma_pagamento,
+      formaPagamento: $dto->forma_pagamento,
       tipo: $dto->tipo,
-      endereco_entrega: $dto->endereco_entrega,
-      taxa_entrega: $dto->taxa_entrega
+      enderecoEntrega: $dto->endereco_entrega,
+      taxaEntrega: $dto->taxa_entrega
     );
 
     $pedidoCriado = $this->pedidoRepository->create($pedido);

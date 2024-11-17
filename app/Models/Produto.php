@@ -38,17 +38,17 @@ class Produto extends Model {
 	#[Column(options: ['default' => true])]
 	public bool $ativo;
 
-	#[Column]
-	public string $data_inclusao;
+	#[Column(name: 'data_inclusao')]
+	public string $dataInclusao;
 
-	public function __construct($id = 0, $nome = '', $descricao = '', $valor  = 0, $categoria = null, $ativo = true, $data_inclusao = '') {
+	public function __construct($id = 0, $nome = '', $descricao = '', $valor  = 0, $categoria = null, $ativo = true, $dataInclusao = '') {
 		$this->id = $id;
 		$this->nome = $nome;
 		$this->descricao = $descricao;
 		$this->valor = $valor;
 		$this->categoria = $categoria;
 		$this->ativo = $ativo;
-		$this->data_inclusao = $data_inclusao;
+		$this->dataInclusao = $dataInclusao;
 	}
 
 	public function getIdProduto(): int {
@@ -92,11 +92,11 @@ class Produto extends Model {
 	}
 
 	public function getDataInclusao(): string {
-		return $this->data_inclusao;
+		return $this->dataInclusao;
 	}
 
 	public function setDataInclusao(string $value) {
-		$this->data_inclusao = $value;
+		$this->dataInclusao = $value;
 	}
 
 	public function getAtivo(): bool {
