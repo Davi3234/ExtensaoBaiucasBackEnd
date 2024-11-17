@@ -18,7 +18,7 @@ class Request {
   }
 
   function getParam(string $name) {
-    return $this->params[$name] ?: null;
+    return $this->params[$name] ?? null;
   }
 
   function getHeaders() {
@@ -26,7 +26,7 @@ class Request {
   }
 
   function getHeader(string $name) {
-    return $_SERVER[$name] ?: null;
+    return $_SERVER[$name] ?? null;
   }
 
   function getRouter() {
@@ -42,7 +42,7 @@ class Request {
   }
 
   function getBody(string $name) {
-    return $this->body[$name] ?: null;
+    return $this->body[$name] ?? null;
   }
 
   function getAttributes() {
@@ -50,7 +50,7 @@ class Request {
   }
 
   function getAttribute(string $name) {
-    return $this->attributes[$name] ?: null;
+    return $this->attributes[$name] ?? null;
   }
 
   function setAttribute(string $name, $value) {
@@ -79,7 +79,7 @@ class Request {
 
   static function getBodyRequest() {
     $dataJson = file_get_contents('php://input');
-    return json_decode($dataJson, true) ?? [];
+    return json_decode($dataJson, true) ?: [];
   }
 
   static function getParamsRequest() {
