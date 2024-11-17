@@ -25,7 +25,7 @@ class User extends Model
 	private string $login;
 	#[Column]
 	private string $password;
-	//#[Column(options: ['default' => true])]
+	#[Column(options: ['default' => true])]
 	private bool $active;
 	#[Column(type: 'string', enumType: TipoUsuario::class)]
 	private TipoUsuario $tipo;

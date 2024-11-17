@@ -12,7 +12,7 @@ use App\Repositories\PedidoRepository;
 use App\Services\PedidoItemService;
 use App\Services\PedidoService;
 
-#[Controller('/pedido')]
+#[Controller('/pedidos')]
 class PedidoController
 {
   private readonly PedidoService $pedidoService;
@@ -34,7 +34,7 @@ class PedidoController
   #[Guard(AuthenticationMiddleware::class)]
   function getOne(Request $request)
   {
-    $pedido_id = $request->getAttribute('id');
+    $pedido_id = $request->getParam('id');
 
     $result = $this->pedidoService->getById([
       'id' => $pedido_id
@@ -43,12 +43,32 @@ class PedidoController
     return $result;
   }
 
-  #[Post('/create')]
+  #[Get('')]
+  #[Guard(AuthenticationMiddleware::class)]
+  function getMany(Request $request)
+  {
+    $result = $this->pedidoService->query();
+
+    return $result;
+  }
+
+  #[Post('/')]
   function create(Request $request)
   {
     $result = $this->pedidoService->create([
-      'id' => $request->getBody('id'),
       'id_cliente' => $request->getBody('id_cliente'),
+      'data_pedido' => $request->getBody('data_pedido'),
+      'status' => $request->getBody('status'),
+      'observacoes' => $request->getBody('observacoes'),
+      'forma_pagamento' => $request->getBody('forma_pagamento'),
+      'tipo_entrega' => $request->getBody('tipo'),
+      'endereco_entrega' => $request->getBody('endereco_entrega'),
+      'taxa_entrega' => $request->getBody('taxa_entrega'),
+      //Colocando itens
+      'itens' => $request->getBody('itens'),
+      'id_produto' => $request->getBody('id_produto'),
+      'valor_item' => $request->getBody('valor_item'),
+      'observacoes_item' => $request->getBody('observacoes_item')
     ]);
 
     return $result;
@@ -58,7 +78,7 @@ class PedidoController
   #[Guard(AuthenticationMiddleware::class)]
   function update(Request $request)
   {
-    $id = $request->getAttribute('id');
+    $id = $request->getParam('id');
 
     $result = $this->pedidoService->update([
       'id' => $id,
@@ -71,7 +91,7 @@ class PedidoController
   #[Guard(AuthenticationMiddleware::class)]
   function delete(Request $request)
   {
-    $id = $request->getAttribute('id');
+    $id = $request->getParam('id');
 
     $result = $this->pedidoService->delete([
       'id' => $id,

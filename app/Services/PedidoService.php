@@ -2,6 +2,9 @@
 
 namespace App\Services;
 
+use App\Enums\FormaPagamento;
+use App\Enums\TipoEntrega;
+use App\Enums\StatusPedido;
 use Exception\ValidationException;
 use Provider\Zod\Z;
 use App\Models\Pedido;
@@ -9,16 +12,17 @@ use App\Repositories\IPedidoRepository;
 use App\Repositories\IUserRepository;
 use App\Services\PedidoItemService;
 
-class PedidoService {
+class PedidoService
+{
 
   public function __construct(
     private readonly IPedidoRepository $pedidoRepository,
     private readonly PedidoItemService $pedidoItemService,
     private readonly IUserRepository $userRepository
-  ) {
-  }
+  ) {}
 
-  public function query() {
+  public function query()
+  {
     $pedidos = $this->pedidoRepository->findMany();
 
     $raw = array_map(function ($pedido) {
@@ -48,7 +52,8 @@ class PedidoService {
    * @return array
    */
 
-  public function getById(array $args) {
+  public function getById(array $args)
+  {
     $getSchema = Z::object([
       'id' => Z::number([
         'required' => 'Id do pedido é obrigatório',
@@ -77,30 +82,37 @@ class PedidoService {
         'data_pedido' => $pedido->getDataPedido(),
         'id_cliente' => $pedido->getCliente(),
         'cliente' => [
-          'nome' => $pedido->getCliente()->getName(),
+          'id' => $pedido->getCliente()->getId(),
+          'nome' => $pedido->getCliente()->getName()
         ],
+        //'itens' => [
+        //  'id' => $pedidoItem->getItem()->getId(),
+        //  'decricao' => $pedido->getDescricao()->getId()
+        // ],
         'valor_total' => $pedido->getValorTotal(),
         'status' => $pedido->getStatus(),
         'forma_pagamento' => $pedido->getFormaPagamento(),
         'observacoes' => $pedido->getObservacoes(),
         'tipo' => $pedido->getTipo(),
         'endereco_entrega' => $pedido->getEnderecoEntrega(),
-        'taxa_entrega' => $pedido->getTaxaEntrega(),
+        'taxa_entrega' => $pedido->getTaxaEntrega()
       ]
     ];
   }
 
-  public function create(array $args) {
+  public function create(array $args)
+  {
     $createSchema = Z::object([
-      'id_cliente' => Z::string(['required' => 'Id do cliente é obrigatório!']),
+      'id_cliente' => Z::number(['required' => 'Id do cliente é obrigatório!'])
+        ->coerce()->int(),
       'data_pedido' => Z::string(['required' => 'Data do pedido é obrigatória!']),
-      'valor_total' => Z::string(['required' => 'Valor total é obrigatório!']),
       'status' => Z::string(['required' => 'Status é obrigatório!']),
       'observacoes' => Z::string(['required' => 'Observações é obrigatório!']),
       'forma_pagamento' => Z::string(['required' => 'Forma de Pagamento é obrigatória!']),
-      'tipo' => Z::string(['required' => 'Tipo do pedido é obrigatório!']),
+      'tipo_entrega' => Z::string(['required' => 'Tipo do pedido é obrigatório!']),
       'endereco_entrega' => Z::string(['required' => 'Endereço de entrega é obrigatório!']),
-      'taxa_entrega' => Z::string(['required' => 'Taxa de entrega é obrigatória!']),
+      'taxa_entrega' => Z::number(['required' => 'Taxa de entrega é obrigatória!'])
+        ->coerce()->int(),
       //Colocando itens
       'itens' => Z::arrayZod(
         Z::object([
@@ -124,22 +136,26 @@ class PedidoService {
       ]);
     }
 
-    $pedido = new Pedido(
-      dataPedido: $dto->data_pedido,
-      cliente: $cliente,
-      valorTotal: $dto->valor_total,
-      status: $dto->status,
-      observacoes: $dto->observacoes,
-      formaPagamento: $dto->forma_pagamento,
-      tipo: $dto->tipo,
-      enderecoEntrega: $dto->endereco_entrega,
-      taxaEntrega: $dto->taxa_entrega
-    );
+
+    $pedido = new Pedido();
+
+    $pedido->setDataPedido($dto->data_pedido);
+    $pedido->setCliente($cliente);
+    //$pedido->setValorTotal($dto->$valor_total);
+    $pedido->setStatus(StatusPedido::tryFrom($dto->status));
+    $pedido->setObservacoes($dto->observacoes);
+    $pedido->setFormaPagamento(FormaPagamento::tryFrom($dto->forma_pagamento));
+    $pedido->setTipo(TipoEntrega::tryFrom($dto->tipo_entrega));
+    $pedido->setEnderecoEntrega($dto->endereco_entrega);
+    $pedido->setTaxaEntrega($dto->taxa_entrega);
 
     $pedidoCriado = $this->pedidoRepository->create($pedido);
 
     foreach ($dto->itens as $item) {
-      $item->id = $pedidoCriado->getIdPedido();
+      $item->id_pedido = $pedidoCriado->getIdPedido();
+      $item->id_item = $dto->id_produto;
+      $item->valor_item =  $dto->valor_item;
+      $item->observacoes_item =  $dto->observacoes_item;
 
       $this->pedidoItemService->create($item);
     }
@@ -147,7 +163,8 @@ class PedidoService {
     return ['message' => 'Pedido inserido com sucesso!'];
   }
 
-  public function update(array $args) {
+  public function update(array $args)
+  {
     $updateSchema = Z::object([
       'id' => Z::string(['required' => 'Id do Pedido é obrigatório!']),
       'id_cliente' => Z::string(['required' => 'Id do cliente é obrigatório!']),
@@ -214,7 +231,8 @@ class PedidoService {
     return ['message' => 'Pedido atualizado com sucesso'];
   }
 
-  public function delete(array $args) {
+  public function delete(array $args)
+  {
     $deleteSchema = Z::object([
       'id' => Z::number([
         'required' => 'Id do Pedido é obrigatório',

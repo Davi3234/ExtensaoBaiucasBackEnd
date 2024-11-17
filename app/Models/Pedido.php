@@ -16,7 +16,8 @@ use Doctrine\ORM\Mapping\ManyToOne;
 
 #[Entity]
 #[Table(name: 'pedidos')]
-class Pedido extends Model {
+class Pedido extends Model
+{
 
 	#[Id]
 	#[GeneratedValue]
@@ -34,16 +35,16 @@ class Pedido extends Model {
 	private float $valorTotal;
 
 	#[Column(type: 'string', enumType: StatusPedido::class)]
-	private string $status;
+	private StatusPedido $status;
 
 	#[Column(name: 'forma_pagamento', type: 'string', enumType: FormaPagamento::class)]
-	private string $formaPagamento;
+	private FormaPagamento $formaPagamento;
 
 	#[Column]
 	private string $observacoes;
 
 	#[Column(type: 'string', enumType: TipoEntrega::class)]
-	private string $tipo;
+	private TipoEntrega $tipo;
 
 	#[Column(name: 'endereco_entrega')]
 	private string $enderecoEntrega;
@@ -51,7 +52,8 @@ class Pedido extends Model {
 	#[Column(name: 'taxa_entrega')]
 	private float $taxaEntrega;
 
-	public function __construct($id = 0, $dataPedido = null, $cliente = 0, $valorTotal  = 0, $status = '', $formaPagamento = '', $observacoes = '', $tipo = '', $enderecoEntrega = '', $taxaEntrega = 0,) {
+	public function __construct($id = 0, $dataPedido = null, $cliente = 0, $valorTotal  = 0, $status = StatusPedido::EM_PREPARO, $formaPagamento = FormaPagamento::PIX, $observacoes = '', $tipo = TipoEntrega::NO_LOCAL, $enderecoEntrega = '', $taxaEntrega = 0,)
+	{
 		$this->id = $id;
 		$this->dataPedido = $dataPedido;
 		$this->cliente = $cliente;
@@ -65,89 +67,109 @@ class Pedido extends Model {
 	}
 
 	//Id do Pedido
-	public function getIdPedido(): int {
+	public function getIdPedido(): int
+	{
 		return $this->id;
 	}
 
-	public function setIdPedido(int $value) {
+	public function setIdPedido(int $value)
+	{
 		$this->id = $value;
 	}
 
-	public function getDataPedido(): string {
+	public function getDataPedido(): string
+	{
 		return $this->dataPedido;
 	}
 
-	public function setDataPedido(string $value) {
+	public function setDataPedido(string $value)
+	{
 		$this->dataPedido = $value;
 	}
 
-	public function getCliente(): User {
+	public function getCliente(): User
+	{
 		return $this->cliente;
 	}
 
-	public function setCliente(User $value) {
+	public function setCliente(User $value)
+	{
 		$this->cliente = $value;
 	}
 
-	public function getValorTotal(): float {
+	public function getValorTotal(): float
+	{
 		return $this->valorTotal;
 	}
 
-	public function setValorTotal(float $value) {
+	public function setValorTotal(float $value)
+	{
 		$this->valorTotal = $value;
 	}
 
 	//Status = Enum
-	public function getStatus(): string {
+	public function getStatus(): StatusPedido
+	{
 		return $this->status;
 	}
 
-	public function setStatus(string $value) {
+	public function setStatus(StatusPedido $value)
+	{
 		$this->status = $value;
 	}
 
 	//Forma de Pagamento = Enum
-	public function getFormaPagamento(): string {
+	public function getFormaPagamento(): FormaPagamento
+	{
 		return $this->formaPagamento;
 	}
 
-	public function setFormaPagamento(string $value) {
+	public function setFormaPagamento(FormaPagamento $value)
+	{
 		$this->formaPagamento = $value;
 	}
 
 	//Observações
-	public function getObservacoes(): string {
+	public function getObservacoes(): string
+	{
 		return $this->observacoes;
 	}
 
-	public function setObservacoes(string $value) {
+	public function setObservacoes(string $value)
+	{
 		$this->observacoes = $value;
 	}
 
 	//Tipo = Enum
-	public function getTipo(): string {
+	public function getTipo(): TipoEntrega
+	{
 		return $this->tipo;
 	}
 
-	public function setTipo(string $value) {
+	public function setTipo(TipoEntrega $value)
+	{
 		$this->tipo = $value;
 	}
 
 	//Endereço de entrega
-	public function getEnderecoEntrega(): string {
+	public function getEnderecoEntrega(): string
+	{
 		return $this->enderecoEntrega;
 	}
 
-	public function setEnderecoEntrega(string $value) {
+	public function setEnderecoEntrega(string $value)
+	{
 		$this->enderecoEntrega = $value;
 	}
 
 	//Taxa de Entrega
-	public function getTaxaEntrega(): float {
+	public function getTaxaEntrega(): float
+	{
 		return $this->taxaEntrega;
 	}
 
-	public function setTaxaEntrega(float $value) {
+	public function setTaxaEntrega(float $value)
+	{
 		$this->taxaEntrega = $value;
 	}
 }
