@@ -20,12 +20,10 @@ class PedidoItem extends Model {
 	#[Column]
 	private int $id;
 
-	#[Id]
 	#[ManyToOne(targetEntity: Pedido::class, cascade: ['persist'])]
 	#[JoinColumn(name: 'id_pedido', referencedColumnName: 'id', onDelete: "CASCADE")]
 	public ?Pedido $pedido;
 
-	#[Id]
 	#[ManyToOne(targetEntity: Produto::class, cascade: ['persist'])]
 	#[JoinColumn(name: 'id_produto', referencedColumnName: 'id')]
 	public ?Produto $produto;
