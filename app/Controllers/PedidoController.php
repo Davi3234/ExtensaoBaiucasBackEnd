@@ -13,10 +13,12 @@ use App\Services\PedidoItemService;
 use App\Services\PedidoService;
 
 #[Controller('/pedido')]
-class PedidoController {
+class PedidoController
+{
   private readonly PedidoService $pedidoService;
 
-  function __construct() {
+  function __construct()
+  {
     $this->pedidoService = new PedidoService(
       new PedidoRepository(),
       new PedidoItemService(
@@ -30,7 +32,8 @@ class PedidoController {
 
   #[Get('/:id')]
   #[Guard(AuthenticationMiddleware::class)]
-  function getOne(Request $request) {
+  function getOne(Request $request)
+  {
     $pedido_id = $request->getAttribute('id');
 
     $result = $this->pedidoService->getById([
@@ -41,7 +44,8 @@ class PedidoController {
   }
 
   #[Post('/create')]
-  function create(Request $request) {
+  function create(Request $request)
+  {
     $result = $this->pedidoService->create([
       'id' => $request->getBody('id'),
       'id_cliente' => $request->getBody('id_cliente'),
@@ -52,7 +56,8 @@ class PedidoController {
 
   #[Put('/:id')]
   #[Guard(AuthenticationMiddleware::class)]
-  function update(Request $request) {
+  function update(Request $request)
+  {
     $id = $request->getAttribute('id');
 
     $result = $this->pedidoService->update([
@@ -64,7 +69,8 @@ class PedidoController {
 
   #[Delete('/:id')]
   #[Guard(AuthenticationMiddleware::class)]
-  function delete(Request $request) {
+  function delete(Request $request)
+  {
     $id = $request->getAttribute('id');
 
     $result = $this->pedidoService->delete([

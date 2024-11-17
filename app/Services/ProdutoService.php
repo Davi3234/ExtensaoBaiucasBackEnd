@@ -183,7 +183,6 @@ class ProdutoService
       ]);
     }
 
-    //Altera tudo menos o Id do Produto
     $produto->setNome($dto->nome);
     $produto->setDescricao($dto->descricao);
     $produto->setValor($dto->valor);
