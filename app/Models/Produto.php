@@ -30,9 +30,11 @@ class Produto extends Model
 	#[Column]
 	public float $valor;
 
+	//#[ManyToOne(targetEntity: Categoria::class)]
 	#[ManyToOne(targetEntity: Categoria::class)]
 	#[JoinColumn(name: 'id_categoria', referencedColumnName: 'id')]
-	public Categoria $categoria;
+	public ?Categoria $categoria;
+
 
 	#[Column(options: ['default' => true])]
 	public bool $ativo;
@@ -40,15 +42,15 @@ class Produto extends Model
 	#[Column]
 	public string $data_inclusao;
 
-	public function __construct($id = 0, $nome = null, $descricao = 0, $valor  = 0, $categoria = null, $ativo = true, $data_inclusao = '')
+	public function __construct($id = 0, $nome = '', $descricao = '', $valor  = 0, $categoria = null, $ativo = true, $data_inclusao = '')
 	{
-		$this->id = 0;
-		$this->nome = '';
-		$this->descricao = '';
-		$this->valor = 0;
+		$this->id = $id;
+		$this->nome = $nome;
+		$this->descricao = $descricao;
+		$this->valor = $valor;
 		$this->categoria = $categoria;
-		$this->ativo = true;
-		$this->data_inclusao = 0;
+		$this->ativo = $ativo;
+		$this->data_inclusao = $data_inclusao;
 	}
 
 	public function getIdProduto(): int
@@ -78,7 +80,7 @@ class Produto extends Model
 
 	public function setDescricao(string $value)
 	{
-		$this->descricao;
+		$this->descricao = $value;
 	}
 
 	public function getValor(): float

@@ -22,7 +22,7 @@ class ProdutoService
 
     $raw = array_map(function ($produto) {
       return [
-        'id_produto' => $produto->getIdProduto(),
+        'id' => $produto->getIdProduto(),
         'nome' => $produto->getNome(),
         'descricao' => $produto->getDescricao(),
         'valor' => $produto->getValor(),
@@ -44,7 +44,7 @@ class ProdutoService
   public function getById(array $args)
   {
     $getSchema = Z::object([
-      'id_produto' => Z::number([
+      'id' => Z::number([
         'required' => 'Id do Produto é obrigatório',
         'invalidType' => 'Id do Produto inválido'
       ])
@@ -58,21 +58,21 @@ class ProdutoService
     $produto =  $this->produtoRepository->findById($dto->id);
 
     if (!$produto)
-      throw new ValidationException('Não foi possível encontrar o usuário', [
+      throw new ValidationException('Não foi possível encontrar o Produto', [
         [
-          'message' => 'Usuário não encontrado',
+          'message' => 'Produto não encontrado',
           'origin' => 'id_produto'
         ]
       ]);
 
     return [
       'produto' => [
-        'id_produto' => $produto->getIdProduto(),
+        'id' => $produto->getIdProduto(),
         'nome' => $produto->getNome(),
         'descricao' => $produto->getDescricao(),
         'valor' => $produto->getValor(),
         'id_categoria' => $produto->getCategoria()->getIdCategoria(),
-        'descricao' => $produto->getCategoria()->getDescricaoCategoria(),
+        'descricao_categoria' => $produto->getCategoria()->getDescricaoCategoria(),
         'ativo' => $produto->getAtivo(),
         'data_inclusao' => $produto->getDataInclusao(),
       ]
@@ -83,11 +83,15 @@ class ProdutoService
   {
     $createSchema = Z::object([
       'nome' => Z::string(['required' => 'Nome é obrigatório']),
-      'valor' => Z::string(['required' => 'Valor é obrigatório']),
+      'valor' => Z::number(['required' => 'Valor é obrigatório'])
+        ->coerce()
+        ->int(),
       'descricao' => Z::string(['required' => 'Descrição é obrigatória']),
-      'id_categoria' => Z::string(['required' => 'Categoria é obrigatória']),
+      'id_categoria' => Z::number(['required' => 'Categoria é obrigatória'])
+        ->coerce()
+        ->int(),
       'data_inclusao' => Z::string(['required' => 'Data de inclusão é obrigatória']),
-      'ativo' => Z::string(['required' => 'Ativo é obrigatório']),
+      'ativo' => Z::boolean(['required' => 'Ativo é obrigatório']),
     ])->coerce();
 
     $dto = $createSchema->parseNoSafe($args);
@@ -98,14 +102,14 @@ class ProdutoService
       throw new ValidationException('Não foi possível inserir o Produto', [
         [
           'message' => 'Categoria não encontrada',
-          'origin' => 'categoria'
+          'origin' => 'id'
         ]
       ]);
     }
 
     $categoria = new Categoria(
-      id: $categoriaArgs['categoria']['id_categoria'],
-      descricao: $categoriaArgs['categoria']['descricao'],
+      id: (int) $categoriaArgs['id'],
+      descricao: (string) $categoriaArgs['descricao']
     );
 
     $produto = new Produto();
@@ -113,7 +117,7 @@ class ProdutoService
     $produto->setNome($dto->nome);
     $produto->setDescricao($dto->descricao);
     $produto->setValor($dto->valor);
-    $produto->setCategoria($dto->$categoria);
+    $produto->setCategoria($categoria);
     $produto->setDataInclusao($dto->data_inclusao);
     $produto->setAtivo($dto->ativo);
 
@@ -125,13 +129,19 @@ class ProdutoService
   public function update(array $args)
   {
     $updateSchema = Z::object([
-      'id_produto' => Z::string(['required' => 'Id do produto é obrigatório']),
+      'id' => Z::number(['required' => 'Id do produto é obrigatório'])
+        ->coerce()
+        ->int(),
       'nome' => Z::string(['required' => 'Nome é obrigatório']),
-      'valor' => Z::string(['required' => 'Valor é obrigatório']),
+      'valor' => Z::number(['required' => 'Valor é obrigatório'])
+        ->coerce()
+        ->int(),
       'descricao' => Z::string(['required' => 'Descrição é obrigatória']),
-      'id_categoria' => Z::string(['required' => 'Categoria é obrigatória']),
+      'id_categoria' => Z::number(['required' => 'Categoria é obrigatória'])
+        ->coerce()
+        ->int(),
       'data_inclusao' => Z::string(['required' => 'Data de inclusão é obrigatória']),
-      'ativo' => Z::string(['required' => 'Ativo é obrigatório'])
+      'ativo' => Z::boolean(['required' => 'Ativo é obrigatório'])
     ])->coerce();
 
     $dto = $updateSchema->parseNoSafe($args);
@@ -159,16 +169,16 @@ class ProdutoService
       ]);
     }
 
-    $categoria = new Categoria(
-      id: $categoriaArgs['categoria']['id_categoria'],
-      descricao: $categoriaArgs['categoria']['descricao'],
-    );
+    //$categoria = new Categoria(
+    //  id: $categoriaArgs['categoria']['id_categoria'],
+    //  descricao: $categoriaArgs['categoria']['descricao'],
+    //);
 
     //Altera tudo menos o Id do Produto
     $produto->setNome($dto->nome);
     $produto->setDescricao($dto->descricao);
     $produto->setValor($dto->valor);
-    $produto->setCategoria($dto->$categoria);
+    $produto->setCategoria($dto->$categoriaArgs);
     $produto->setDataInclusao($dto->data_inclusao);
     $produto->setAtivo($dto->ativo);
 

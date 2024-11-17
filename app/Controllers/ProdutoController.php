@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use App\Repositories\CategoriaRepository;
 use App\Services\CategoriaService;
 use Core\Common\Attributes\{Controller, Get, Delete, Guard, Post, Put};
 use Core\Enum\StatusCodeHTTP;
@@ -10,17 +11,18 @@ use App\Middlewares\AuthenticationMiddleware;
 use App\Repositories\ProdutoRepository;
 use App\Services\ProdutoService;
 
-#[Controller('/produto')]
+#[Controller('/produtos')]
 class ProdutoController
 {
   private readonly ProdutoService $produtoService;
-  private readonly CategoriaService $categoriaSerice;
+  private readonly CategoriaService $categoriaService;
 
   function __construct()
   {
+    $this->categoriaService = new CategoriaService(new CategoriaRepository()); // Inicialize a propriedade aqui
     $this->produtoService = new ProdutoService(
       new ProdutoRepository(),
-      $this->categoriaSerice
+      $this->categoriaService
     );
   }
 
@@ -46,33 +48,41 @@ class ProdutoController
     return $result;
   }
 
-  #[Post('/create', StatusCodeHTTP::CREATED->value)]
+  #[Post('/', StatusCodeHTTP::CREATED->value)]
   function create(Request $request)
   {
     $result = $this->produtoService->create([
       'nome' => $request->getBody('nome'),
       'valor' => $request->getBody('valor'),
+      'descricao' => $request->getBody('descricao'),
       'id_categoria' => $request->getBody('id_categoria'),
-      'data_inclusao' => $request->getBody('data_inclusao')
+      'data_inclusao' => $request->getBody('data_inclusao'),
+      'ativo' => $request->getBody('ativo')
     ]);
 
     return $result;
   }
 
-  #[Put('/')]
+  #[Put('/:id')]
   #[Guard(AuthenticationMiddleware::class)]
   function update(Request $request)
   {
     $produtoId = $request->getAttribute('id_produto');
 
     $result = $this->produtoService->update([
-      'id_produto' => $produtoId
+      'id_produto' => $produtoId,
+      'nome' => $request->getBody('nome'),
+      'valor' => $request->getBody('valor'),
+      'descricao' => $request->getBody('descricao'),
+      'id_categoria' => $request->getBody('id_categoria'),
+      'data_inclusao' => $request->getBody('data_inclusao'),
+      'ativo' => $request->getBody('ativo')
     ]);
 
     return $result;
   }
 
-  #[Delete('/')]
+  #[Delete('/:id')]
   #[Guard(AuthenticationMiddleware::class)]
   function delete(Request $request)
   {
