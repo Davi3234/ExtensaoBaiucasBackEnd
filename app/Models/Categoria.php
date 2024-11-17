@@ -11,8 +11,7 @@ use Common\Model;
 
 #[Entity]
 #[Table(name: 'categorias')]
-class Categoria extends Model
-{
+class Categoria extends Model {
 
 
 	#[Id]
@@ -23,29 +22,24 @@ class Categoria extends Model
 	#[Column]
 	public string $descricao;
 
-	public function __construct($id = 0, $descricao = null)
-	{
+	public function __construct($id = 0, $descricao = null) {
 		$this->id = $id;
 		$this->descricao = $descricao;
 	}
 
-	public function getIdCategoria(): int
-	{
+	public function getIdCategoria(): int {
 		return $this->id;
 	}
 
-	public function setIdCategoria(int $value)
-	{
+	public function setIdCategoria(int $value) {
 		$this->id = $value;
 	}
 
-	public function getDescricaoCategoria(): string
-	{
+	public function getDescricaoCategoria(): string {
 		return $this->descricao;
 	}
 
-	public function setDescricaoCategoria(string $value)
-	{
+	public function setDescricaoCategoria(string $value) {
 		$this->descricao = $value;
 	}
 }

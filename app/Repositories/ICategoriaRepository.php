@@ -4,8 +4,7 @@ namespace App\Repositories;
 
 use App\Models\Categoria;
 
-interface ICategoriaRepository
-{
+interface ICategoriaRepository {
 
   function create(Categoria $categoria): Categoria;
   function update(Categoria $categoria): Categoria;

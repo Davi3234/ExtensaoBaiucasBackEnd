@@ -10,12 +10,10 @@ use App\Repositories\UserRepository;
 use App\Services\UserService;
 
 #[Controller('/users')]
-class UserController
-{
+class UserController {
   private readonly UserService $userService;
 
-  function __construct()
-  {
+  function __construct() {
     $this->userService = new UserService(
       new UserRepository()
     );
@@ -23,8 +21,7 @@ class UserController
 
   #[Get('/:id')]
   #[Guard(AuthenticationMiddleware::class)]
-  function getOne(Request $request)
-  {
+  function getOne(Request $request) {
     $userId = str_replace("/users/", "", $request->getParam('url'));
 
     $result = $this->userService->getById([
@@ -36,16 +33,14 @@ class UserController
 
   #[Get('')]
   #[Guard(AuthenticationMiddleware::class)]
-  function getMany(Request $request)
-  {
+  function getMany(Request $request) {
     $result = $this->userService->query();
 
     return $result;
   }
 
   #[Post('/', StatusCodeHTTP::CREATED->value)]
-  function create(Request $request)
-  {
+  function create(Request $request) {
     $result = $this->userService->create([
       'name' => $request->getBody('name'),
       'login' => $request->getBody('login'),
@@ -59,8 +54,7 @@ class UserController
 
   #[Put('/:id')]
   #[Guard(AuthenticationMiddleware::class)]
-  function update(Request $request)
-  {
+  function update(Request $request) {
     $userId = str_replace("/users/", "", $request->getParam('url'));
 
     $result = $this->userService->update([
@@ -75,8 +69,7 @@ class UserController
 
   #[Delete('/:id')]
   #[Guard(AuthenticationMiddleware::class)]
-  function delete(Request $request)
-  {
+  function delete(Request $request) {
     $userId = str_replace("/users/", "", $request->getParam('url'));
 
     $result = $this->userService->delete([

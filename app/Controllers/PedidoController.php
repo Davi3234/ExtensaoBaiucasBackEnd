@@ -4,7 +4,6 @@ namespace App\Controllers;
 
 use App\Repositories\ProdutoRepository;
 use App\Repositories\UserRepository;
-use App\Services\UserService;
 use Core\HTTP\Request;
 use Core\Common\Attributes\{Controller, Get, Delete, Guard, Post, Put};
 use App\Middlewares\AuthenticationMiddleware;
@@ -14,29 +13,24 @@ use App\Services\PedidoItemService;
 use App\Services\PedidoService;
 
 #[Controller('/pedido')]
-class PedidoController
-{
+class PedidoController {
   private readonly PedidoService $pedidoService;
-  private readonly UserService $userService;
 
-  function __construct()
-  {
-    $this->userService = new UserService(new UserRepository());
+  function __construct() {
     $this->pedidoService = new PedidoService(
       new PedidoRepository(),
-      $this->userService,
       new PedidoItemService(
         new PedidoItemRepository(),
         new ProdutoRepository(),
         new PedidoRepository()
-      )
+      ),
+      new UserRepository()
     );
   }
 
   #[Get('/:id')]
   #[Guard(AuthenticationMiddleware::class)]
-  function getOne(Request $request)
-  {
+  function getOne(Request $request) {
     $pedido_id = $request->getAttribute('id');
 
     $result = $this->pedidoService->getById([
@@ -47,8 +41,7 @@ class PedidoController
   }
 
   #[Post('/create')]
-  function create(Request $request)
-  {
+  function create(Request $request) {
     $result = $this->pedidoService->create([
       'id' => $request->getBody('id'),
       'id_cliente' => $request->getBody('id_cliente'),
@@ -59,8 +52,7 @@ class PedidoController
 
   #[Put('/:id')]
   #[Guard(AuthenticationMiddleware::class)]
-  function update(Request $request)
-  {
+  function update(Request $request) {
     $id = $request->getAttribute('id');
 
     $result = $this->pedidoService->update([
@@ -72,8 +64,7 @@ class PedidoController
 
   #[Delete('/:id')]
   #[Guard(AuthenticationMiddleware::class)]
-  function delete(Request $request)
-  {
+  function delete(Request $request) {
     $id = $request->getAttribute('id');
 
     $result = $this->pedidoService->delete([

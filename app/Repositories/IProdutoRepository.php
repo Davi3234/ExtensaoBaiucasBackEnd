@@ -14,5 +14,5 @@ interface IProdutoRepository {
    * @return Produto[]
    */
   function findMany(): array;
-  function findById(int $id_produto): ? Produto;
+  function findById(int $id_produto): ?Produto;
 }

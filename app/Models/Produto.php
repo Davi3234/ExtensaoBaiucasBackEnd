@@ -13,8 +13,7 @@ use Doctrine\ORM\Mapping\ManyToOne;
 
 #[Entity]
 #[Table(name: 'produtos')]
-class Produto extends Model
-{
+class Produto extends Model {
 
 	#[Id]
 	#[GeneratedValue]
@@ -31,7 +30,7 @@ class Produto extends Model
 	public float $valor;
 
 	//#[ManyToOne(targetEntity: Categoria::class)]
-	#[ManyToOne(targetEntity: Categoria::class)]
+	#[ManyToOne(targetEntity: Categoria::class, cascade: ['persist'])]
 	#[JoinColumn(name: 'id_categoria', referencedColumnName: 'id')]
 	public ?Categoria $categoria;
 
@@ -42,8 +41,7 @@ class Produto extends Model
 	#[Column]
 	public string $data_inclusao;
 
-	public function __construct($id = 0, $nome = '', $descricao = '', $valor  = 0, $categoria = null, $ativo = true, $data_inclusao = '')
-	{
+	public function __construct($id = 0, $nome = '', $descricao = '', $valor  = 0, $categoria = null, $ativo = true, $data_inclusao = '') {
 		$this->id = $id;
 		$this->nome = $nome;
 		$this->descricao = $descricao;
@@ -53,73 +51,59 @@ class Produto extends Model
 		$this->data_inclusao = $data_inclusao;
 	}
 
-	public function getIdProduto(): int
-	{
+	public function getIdProduto(): int {
 		return $this->id;
 	}
 
-	public function setIdProduto(int $value)
-	{
+	public function setIdProduto(int $value) {
 		$this->id = $value;
 	}
 
-	public function getNome(): string
-	{
+	public function getNome(): string {
 		return $this->nome;
 	}
 
-	public function setNome(string $value)
-	{
+	public function setNome(string $value) {
 		$this->nome = $value;
 	}
 
-	public function getDescricao(): string
-	{
+	public function getDescricao(): string {
 		return $this->descricao;
 	}
 
-	public function setDescricao(string $value)
-	{
+	public function setDescricao(string $value) {
 		$this->descricao = $value;
 	}
 
-	public function getValor(): float
-	{
+	public function getValor(): float {
 		return $this->valor;
 	}
 
-	public function setValor(float $value)
-	{
+	public function setValor(float $value) {
 		$this->valor = $value;
 	}
 
-	public function getCategoria(): Categoria
-	{
+	public function getCategoria(): Categoria {
 		return $this->categoria;
 	}
 
-	public function setCategoria(Categoria $value)
-	{
+	public function setCategoria(Categoria $value) {
 		$this->categoria = $value;
 	}
 
-	public function getDataInclusao(): string
-	{
+	public function getDataInclusao(): string {
 		return $this->data_inclusao;
 	}
 
-	public function setDataInclusao(string $value)
-	{
+	public function setDataInclusao(string $value) {
 		$this->data_inclusao = $value;
 	}
 
-	public function getAtivo(): bool
-	{
+	public function getAtivo(): bool {
 		return $this->ativo;
 	}
 
-	public function setAtivo(bool $value)
-	{
+	public function setAtivo(bool $value) {
 		$this->ativo = $value;
 	}
 }

@@ -12,8 +12,7 @@ use Doctrine\ORM\Mapping\ManyToOne;
 
 #[Entity]
 #[Table(name: 'itens_pedidos')]
-class PedidoItem extends Model
-{
+class PedidoItem extends Model {
 
 	#[Id]
 	#[ManyToOne(targetEntity: Pedido::class)]
@@ -31,51 +30,42 @@ class PedidoItem extends Model
 	#[Column]
 	public string $observacoes_item;
 
-	public function __construct(array $args = [])
-	{
+	public function __construct(array $args = []) {
 		$this->produto = null;
 		$this->pedido  = null;
 		$this->valor_item = 0;
 		$this->observacoes_item = '';
 	}
 
-	public function getPedido(): Pedido
-	{
+	public function getPedido(): Pedido {
 		return $this->pedido;
 	}
 
-	public function setPedido(Pedido $value)
-	{
+	public function setPedido(Pedido $value) {
 		$this->pedido = $value;
 	}
 
-	public function getProduto(): Produto
-	{
+	public function getProduto(): Produto {
 		return $this->produto;
 	}
 
-	public function setProduto(Produto $value)
-	{
+	public function setProduto(Produto $value) {
 		$this->produto = $value;
 	}
 
-	public function getValorItem(): float
-	{
+	public function getValorItem(): float {
 		return $this->valor_item;
 	}
 
-	public function setValorItem(float $value)
-	{
+	public function setValorItem(float $value) {
 		$this->valor_item = $value;
 	}
 
-	public function getObservacoesItem(): string
-	{
+	public function getObservacoesItem(): string {
 		return $this->observacoes_item;
 	}
 
-	public function setObservacoesItem(string $value)
-	{
+	public function setObservacoesItem(string $value) {
 		$this->observacoes_item = $value;
 	}
 }

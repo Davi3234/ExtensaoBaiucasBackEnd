@@ -12,13 +12,12 @@ use App\Enums\TipoUsuario;
 
 #[Entity]
 #[Table(name: 'users')]
-class User extends Model
-{
+class User extends Model {
 
 	#[Id]
 	#[GeneratedValue]
 	#[Column]
-	public int $id;
+	private int $id;
 	#[Column]
 	private string $name;
 	#[Column]
@@ -30,8 +29,7 @@ class User extends Model
 	#[Column(type: 'string', enumType: TipoUsuario::class)]
 	private TipoUsuario $tipo;
 
-	public function __construct($id = 0, $name = '', $login = '', $password = '', $active = true, $tipo = TipoUsuario::CLIENTE)
-	{
+	public function __construct($id = 0, $name = '', $login = '', $password = '', $active = true, $tipo = TipoUsuario::CLIENTE) {
 		$this->id = $id;
 		$this->name = $name;
 		$this->login = $login;
@@ -40,63 +38,51 @@ class User extends Model
 		$this->tipo = $tipo;
 	}
 
-	public function getId(): int
-	{
+	public function getId(): int {
 		return $this->id;
 	}
 
-	public function setId(int $value)
-	{
+	public function setId(int $value) {
 		$this->id = $value;
 	}
 
-	public function getName(): string
-	{
+	public function getName(): string {
 		return $this->name;
 	}
 
-	public function setName(string $value)
-	{
+	public function setName(string $value) {
 		$this->name = $value;
 	}
 
-	public function getLogin(): string
-	{
+	public function getLogin(): string {
 		return $this->login;
 	}
 
-	public function getTipo(): TipoUsuario
-	{
+	public function getTipo(): TipoUsuario {
 		return $this->tipo;
 	}
 
-	public function setLogin(string $value)
-	{
+	public function setLogin(string $value) {
 		$this->login = $value;
 	}
 
-	public function getPassword(): string
-	{
+	public function getPassword(): string {
 		return $this->password;
 	}
 
-	public function setPassword(string $value)
-	{
+	public function setPassword(string $value) {
 		$this->password = $value;
 	}
 
-	public function getActive(): bool
-	{
+	public function getActive(): bool {
 		return $this->active;
 	}
 
-	public function setActive(bool $value)
-	{
+	public function setActive(bool $value) {
 		$this->active = $value;
 	}
 
-	public function setTipo(TipoUsuario $value)
-	{
+	public function setTipo(TipoUsuario $value) {
 		$this->tipo = $value;
 	}
 }

@@ -2,25 +2,23 @@
 
 namespace App\Services;
 
-use App\Enums\TipoUsuario;
 use Exception\ValidationException;
 use Provider\Zod\Z;
 use App\Models\Pedido;
-use App\Models\User;
 use App\Repositories\IPedidoRepository;
+use App\Repositories\IUserRepository;
 use App\Services\PedidoItemService;
 
-class PedidoService
-{
+class PedidoService {
 
   public function __construct(
     private readonly IPedidoRepository $pedidoRepository,
-    private readonly UserService $userService,
-    private readonly PedidoItemService $pedidoItemService
-  ) {}
+    private readonly PedidoItemService $pedidoItemService,
+    private readonly IUserRepository $userRepository
+  ) {
+  }
 
-  public function query()
-  {
+  public function query() {
     $pedidos = $this->pedidoRepository->findMany();
 
     $raw = array_map(function ($pedido) {
@@ -50,8 +48,7 @@ class PedidoService
    * @return array
    */
 
-  public function getById(array $args)
-  {
+  public function getById(array $args) {
     $getSchema = Z::object([
       'id' => Z::number([
         'required' => 'Id do pedido é obrigatório',
@@ -93,8 +90,7 @@ class PedidoService
     ];
   }
 
-  public function create(array $args)
-  {
+  public function create(array $args) {
     $createSchema = Z::object([
       'id_cliente' => Z::string(['required' => 'Id do cliente é obrigatório!']),
       'data_pedido' => Z::string(['required' => 'Data do pedido é obrigatória!']),
@@ -117,9 +113,9 @@ class PedidoService
 
     $dto = $createSchema->parseNoSafe($args);
 
-    $clienteArgs = $this->userService->getById(['id_cliente' => $dto->id_cliente]);
+    $cliente = $this->userRepository->findById($dto->id_cliente);
 
-    if (!$clienteArgs) {
+    if (!$cliente) {
       throw new ValidationException('Não foi possível inserir o Pedido', [
         [
           'message' => 'Cliente não encontrado',
@@ -127,14 +123,6 @@ class PedidoService
         ]
       ]);
     }
-
-    $cliente = new User(
-      id: $clienteArgs['user']['id'],
-      name: $clienteArgs['user']['name'],
-      login: $clienteArgs['user']['login'],
-      active: $clienteArgs['user']['active'],
-      tipo: TipoUsuario::tryFrom($clienteArgs['user']['tipo']),
-    );
 
     $pedido = new Pedido(
       data_pedido: $dto->data_pedido,
@@ -159,8 +147,7 @@ class PedidoService
     return ['message' => 'Pedido inserido com sucesso!'];
   }
 
-  public function update(array $args)
-  {
+  public function update(array $args) {
     $updateSchema = Z::object([
       'id' => Z::string(['required' => 'Id do Pedido é obrigatório!']),
       'id_cliente' => Z::string(['required' => 'Id do cliente é obrigatório!']),
@@ -195,9 +182,9 @@ class PedidoService
       ]);
     }
 
-    $clienteArgs = $this->userService->getById(['id_cliente' => $dto->id_cliente]);
+    $cliente = $this->userRepository->findById($dto->id_cliente);
 
-    if (!$clienteArgs) {
+    if (!$cliente) {
       throw new ValidationException('Não foi possível atualizar o Pedido', [
         [
           'message' => 'Cliente não encontrado',
@@ -205,14 +192,6 @@ class PedidoService
         ]
       ]);
     }
-
-    $cliente = new User(
-      id: $clienteArgs['user']['id'],
-      name: $clienteArgs['user']['name'],
-      login: $clienteArgs['user']['login'],
-      active: $clienteArgs['user']['active'],
-      tipo: $clienteArgs['user']['tipo'],
-    );
 
     $pedidoToUpdate->setDataPedido($dto->data_pedido);
     $pedidoToUpdate->setCliente($cliente);
@@ -235,8 +214,7 @@ class PedidoService
     return ['message' => 'Pedido atualizado com sucesso'];
   }
 
-  public function delete(array $args)
-  {
+  public function delete(array $args) {
     $deleteSchema = Z::object([
       'id' => Z::number([
         'required' => 'Id do Pedido é obrigatório',
@@ -249,9 +227,9 @@ class PedidoService
 
     $dto = $deleteSchema->parseNoSafe($args);
 
-    $pedidoToDelete = $this->getById(['id' => $dto->id])['pedido'];
+    $pedidoToDelete = $this->pedidoRepository->findById($dto->id);
 
-    if ($pedidoToDelete) {
+    if (!$pedidoToDelete) {
       throw new ValidationException('Não é possível excluir o pedido', [
         [
           'message' => 'Pedido não encontrado',
@@ -260,7 +238,7 @@ class PedidoService
       ]);
     }
 
-    $this->pedidoRepository->deleteById($dto->id);
+    $this->pedidoRepository->deleteById($pedidoToDelete->getIdPedido());
 
     return ['message' => 'Pedido excluído com sucesso'];
   }
