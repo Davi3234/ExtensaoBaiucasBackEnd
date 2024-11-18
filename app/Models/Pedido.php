@@ -135,7 +135,7 @@ class Pedido extends Model
 		return $this->observacoes;
 	}
 
-	public function setObservacoes(string $value)
+	public function setObservacoes(?string $value)
 	{
 		$this->observacoes = $value;
 	}

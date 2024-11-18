@@ -9,16 +9,17 @@ use App\Repositories\IPedidoItemRepository;
 use App\Repositories\IPedidoRepository;
 use App\Repositories\IProdutoRepository;
 
-class PedidoItemService {
+class PedidoItemService
+{
 
   public function __construct(
     private readonly IPedidoItemRepository $pedidoItemRepository,
     private readonly IProdutoRepository $produtoRepository,
     private readonly IPedidoRepository $pedidoRepository
-  ) {
-  }
+  ) {}
 
-  public function query() {
+  public function query()
+  {
     $itens = $this->pedidoItemRepository->findMany();
 
     $raw = array_map(function ($item) {
@@ -41,7 +42,8 @@ class PedidoItemService {
    * @return array
    */
 
-  public function getById(array $args) {
+  public function getById(array $args)
+  {
     $getSchema = Z::object([
       'id' => Z::number([
         'required' => 'Id do Item é obrigatório',
@@ -75,7 +77,13 @@ class PedidoItemService {
     ];
   }
 
-  public function create(array $args) {
+  public function findManyByIdPed(int $id): array
+  {
+    return $this->pedidoItemRepository->findManyByIdPedido($id);
+  }
+
+  public function create(array $args)
+  {
     $createSchema = Z::object([
       'id_produto' => Z::number(['required' => 'Id do Produto é obrigatório!'])->coerce()->int(),
       'id_pedido' => Z::number(['required' => 'Id do Pedido é obrigatório!'])->coerce()->coerce()->int(),
@@ -117,10 +125,11 @@ class PedidoItemService {
     return ['message' => 'Item inserido com sucesso ao Pedido!'];
   }
 
-  public function update(array $args) {
+  public function update(array $args)
+  {
     $updateSchema = Z::object([
-      'id' => Z::string(['required' => 'Id do Item do Pedido é obrigatório!']),
-      'valor_item' => Z::string(['required' => 'Valor do ítem é obrigatório!']),
+      'id' => Z::number(['required' => 'Id do Item do Pedido é obrigatório!'])->coerce()->int(),
+      'valor_item' => Z::number(['required' => 'Valor do ítem é obrigatório!'])->coerce(),
       'observacoes_item' => Z::string(['required' => 'Observação do Item é obrigatória!'])
     ])->coerce();
 
@@ -146,7 +155,8 @@ class PedidoItemService {
     return ['message' => 'Item atualizado com sucesso'];
   }
 
-  public function delete(array $args) {
+  public function delete(array $args)
+  {
     $deleteSchema = Z::object([
       'id' => Z::number([
         'required' => 'Id do Item é obrigatório',

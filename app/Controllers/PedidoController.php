@@ -28,6 +28,7 @@ class PedidoController
       ),
       new UserRepository(),
       new ProdutoRepository()
+
     );
   }
 
@@ -65,7 +66,6 @@ class PedidoController
       'tipo_entrega' => $request->getBody('tipo'),
       'endereco_entrega' => $request->getBody('endereco_entrega'),
       'taxa_entrega' => $request->getBody('taxa_entrega'),
-      //Colocando itens
       'itens' => $request->getBody('itens'),
       'id_produto' => $request->getBody('id_produto'),
       'observacoes_item' => $request->getBody('observacoes_item')
@@ -78,10 +78,21 @@ class PedidoController
   #[Guard(AuthenticationMiddleware::class)]
   function update(Request $request)
   {
-    $id = $request->getParam('id');
+    $pedido_id = $request->getParam('id');
 
     $result = $this->pedidoService->update([
-      'id' => $id,
+      'id' => $pedido_id,
+      'id_cliente' => $request->getBody('id_cliente'),
+      'data_pedido' => $request->getBody('data_pedido'),
+      'status' => $request->getBody('status'),
+      'observacoes' => $request->getBody('observacoes'),
+      'forma_pagamento' => $request->getBody('forma_pagamento'),
+      'tipo_entrega' => $request->getBody('tipo'),
+      'endereco_entrega' => $request->getBody('endereco_entrega'),
+      'taxa_entrega' => $request->getBody('taxa_entrega'),
+      'id_produto' => $request->getBody('id_produto'),
+      'observacoes_item' => $request->getBody('observacoes_item'),
+      'valor_item' => $request->getBody('valor_item')
     ]);
 
     return $result;

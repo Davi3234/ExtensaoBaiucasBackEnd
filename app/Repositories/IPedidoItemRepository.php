@@ -4,7 +4,8 @@ namespace App\Repositories;
 
 use App\Models\PedidoItem;
 
-interface IPedidoItemRepository {
+interface IPedidoItemRepository
+{
 
   function create(PedidoItem $itemPedido): PedidoItem;
   function update(PedidoItem $itemPedido): PedidoItem;

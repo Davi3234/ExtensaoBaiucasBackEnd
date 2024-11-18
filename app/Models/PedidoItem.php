@@ -13,7 +13,8 @@ use Doctrine\ORM\Mapping\ManyToOne;
 
 #[Entity]
 #[Table(name: 'itens_pedidos')]
-class PedidoItem extends Model {
+class PedidoItem extends Model
+{
 
 	#[Id]
 	#[GeneratedValue]
@@ -31,53 +32,64 @@ class PedidoItem extends Model {
 	#[Column(name: 'valor_item')]
 	public float $valorItem;
 
-	#[Column(name: 'observacoes_item')]
-	public string $observacoesItem;
+	#[Column(name: 'observacoes_item', type: 'string', nullable: true)]
+	public ?string $observacoesItem;
 
-	public function __construct($produto = null, $pedido  = null, $valorItem = 0, $observacoesItem = '') {
+	public function __construct($produto = null, $pedido  = null, $valorItem = 0, $observacoesItem = null)
+	{
 		$this->produto = $produto;
 		$this->pedido  = $pedido;
 		$this->valorItem = $valorItem;
 		$this->observacoesItem = $observacoesItem;
 	}
 
-	public function getId(): int {
+	public function getId(): int
+	{
 		return $this->id;
 	}
 
-	public function setId(int $value) {
+	public function setId(int $value)
+	{
 		$this->id = $value;
 	}
 
-	public function getPedido(): Pedido {
+	public function getPedido(): Pedido
+	{
 		return $this->pedido;
 	}
 
-	public function setPedido(Pedido $value) {
+	public function setPedido(Pedido $value)
+	{
 		$this->pedido = $value;
 	}
 
-	public function getProduto(): Produto {
+	public function getProduto(): Produto
+	{
 		return $this->produto;
 	}
 
-	public function setProduto(Produto $value) {
+	public function setProduto(Produto $value)
+	{
 		$this->produto = $value;
 	}
 
-	public function getValorItem(): float {
+	public function getValorItem(): float
+	{
 		return $this->valorItem;
 	}
 
-	public function setValorItem(float $value) {
+	public function setValorItem(float $value)
+	{
 		$this->valorItem = $value;
 	}
 
-	public function getObservacoesItem(): string {
+	public function getObservacoesItem(): string
+	{
 		return $this->observacoesItem;
 	}
 
-	public function setObservacoesItem(string $value) {
+	public function setObservacoesItem(?string $value)
+	{
 		$this->observacoesItem = $value;
 	}
 }

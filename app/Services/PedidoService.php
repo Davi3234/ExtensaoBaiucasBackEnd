@@ -12,7 +12,9 @@ use App\Repositories\IPedidoRepository;
 use App\Repositories\IProdutoRepository;
 use App\Repositories\IUserRepository;
 use App\Services\PedidoItemService;
+use App\Services\IPedidoItemRepository;
 use App\Repositories\ProdutoRepository;
+use App\Models\PedidoItem;
 
 class PedidoService
 {
@@ -32,7 +34,6 @@ class PedidoService
       return [
         'id' => $pedido->getIdPedido(),
         'data_pedido' => $pedido->getDataPedido(),
-        'id_cliente' => $pedido->getCliente(),
         'cliente' => [
           'nome' => $pedido->getCliente()->getName(),
         ],
@@ -70,6 +71,7 @@ class PedidoService
     $dto = $getSchema->parseNoSafe($args);
 
     $pedido =  $this->pedidoRepository->findById($dto->id);
+    $itens = $this->pedidoItemService->findManyByIdPed($dto->id);
 
     if (!$pedido)
       throw new ValidationException('Não foi possível encontrar o Pedido', [
@@ -83,15 +85,19 @@ class PedidoService
       'pedido' => [
         'id' => $pedido->getIdPedido(),
         'data_pedido' => $pedido->getDataPedido(),
-        'id_cliente' => $pedido->getCliente(),
         'cliente' => [
           'id' => $pedido->getCliente()->getId(),
           'nome' => $pedido->getCliente()->getName()
         ],
-        //'itens' => [
-        //  'id' => $pedidoItem->getItem()->getId(),
-        //  'decricao' => $pedido->getDescricao()->getId()
-        // ],
+        'itens' => array_map(function (PedidoItem $item) {
+          return [
+            'id' => $item->getId(),
+            'id_produto' => $item->getProduto()->getIdProduto(),
+            'nome_produto' => $item->getProduto()->getNome(),
+            'valor_item' => $item->getValorItem(),
+            'observacoes_item' => $item->getObservacoesItem()
+          ];
+        }, $itens),
         'valor_total' => $pedido->getValorTotal(),
         'status' => $pedido->getStatus(),
         'forma_pagamento' => $pedido->getFormaPagamento(),
@@ -113,10 +119,9 @@ class PedidoService
       'observacoes' => Z::string(['required' => 'Observações é obrigatório!']),
       'forma_pagamento' => Z::enumNative(FormaPagamento::class, ['required' => 'Forma de Pagamento é obrigatória!']),
       'tipo_entrega' => Z::enumNative(TipoEntrega::class, ['required' => 'Tipo do pedido é obrigatório!']),
-      'endereco_entrega' => Z::string(['required' => 'Endereço de entrega é obrigatório!']),
+      'endereco_entrega' => Z::string(['required' => 'Endereço de entrega é obrigatório!'])->optional(),
       'taxa_entrega' => Z::number(['required' => 'Taxa de entrega é obrigatória!'])
-        ->coerce()->int(),
-      //Colocando itens
+        ->coerce()->optional(),
       'itens' => Z::arrayZod(
         Z::object([
           'id_produto' => Z::number(['required' => 'Id do Produto é obrigatório!'])
@@ -140,8 +145,8 @@ class PedidoService
     }
 
     $valor_total = 0;
-    foreach ($dto->itens as &$item) {
-      $produto = $this->produtoRepository->findById($item->id_produto);
+    foreach ($dto->itens as &$itemProduto) {
+      $produto = $this->produtoRepository->findById($itemProduto->id_produto);
 
       if (!$produto) {
         throw new ValidationException('Não foi possível inserir o Produto', [
@@ -153,7 +158,7 @@ class PedidoService
       }
 
       $valor_total += $produto->getValor();
-      $item->valor_item = $produto->getValor();
+      $itemProduto->valor_item = $produto->getValor();
     }
 
     $pedido = new Pedido();
@@ -171,9 +176,11 @@ class PedidoService
     $pedidoCriado = $this->pedidoRepository->create($pedido);
 
     foreach ($dto->itens as $item) {
+
       $item->id_pedido = $pedidoCriado->getIdPedido();
 
-      $this->pedidoItemService->create((array)$item);
+      $itemPedido = (array)$item;
+      $this->pedidoItemService->create($itemPedido);
     }
 
     return ['message' => 'Pedido inserido com sucesso!'];
@@ -182,24 +189,25 @@ class PedidoService
   public function update(array $args)
   {
     $updateSchema = Z::object([
-      'id' => Z::string(['required' => 'Id do Pedido é obrigatório!']),
-      'id_cliente' => Z::string(['required' => 'Id do cliente é obrigatório!']),
+      'id' => Z::number(['required' => 'Id do Pedido é obrigatório!'])->coerce()->int(),
+      'id_cliente' => Z::number(['required' => 'Id do cliente é obrigatório!'])
+        ->coerce()->int(),
       'data_pedido' => Z::string(['required' => 'Data do pedido é obrigatória!']),
-      'valor_total' => Z::string(['required' => 'Valor total é obrigatório!']),
-      'status' => Z::string(['required' => 'Status é obrigatório!']),
+      'status' => Z::enumNative(StatusPedido::class, ['required' => 'Status é obrigatório!']),
       'observacoes' => Z::string(['required' => 'Observações é obrigatório!']),
-      'forma_pagamento' => Z::string(['required' => 'Forma de Pagamento é obrigatória!']),
-      'tipo' => Z::string(['required' => 'Tipo do pedido é obrigatório!']),
-      'endereco_entrega' => Z::string(['required' => 'Endereço de entrega é obrigatório!']),
-      'taxa_entrega' => Z::string(['required' => 'Taxa de entrega é obrigatória!']),
+      'forma_pagamento' => Z::enumNative(FormaPagamento::class, ['required' => 'Forma de Pagamento é obrigatória!']),
+      'tipo_entrega' => Z::enumNative(TipoEntrega::class, ['required' => 'Tipo do pedido é obrigatório!']),
+      'endereco_entrega' => Z::string(['required' => 'Endereço de entrega é obrigatório!'])->optional(),
+      'taxa_entrega' => Z::number(['required' => 'Taxa de entrega é obrigatória!'])
+        ->coerce()->optional(),
       'itens' => Z::arrayZod(
         Z::object([
-          'id' => Z::string(['required' => 'Id do Pedido é obrigatório!']),
-          'id_produto' => Z::string(['required' => 'Id do Produto é obrigatório!']),
-          'valor_item' => Z::string(['required' => 'Valor do ítem é obrigatório!']),
-          'observacoes_item' => Z::string(['required' => 'Observação do Item é obrigatória!'])
+          'id_produto' => Z::number(['required' => 'Id do Produto é obrigatório!'])
+            ->coerce()->int(),
+          'valor_item' => Z::number(['required' => 'Valor do Item é obrigatório!']),
+          'observacoes_item' => Z::string(['required' => 'Observação do Item é obrigatória!'])->optional()
         ])->coerce()
-      )
+      )->coerce()
     ])->coerce();
 
     $dto = $updateSchema->parseNoSafe($args);
@@ -228,11 +236,10 @@ class PedidoService
 
     $pedidoToUpdate->setDataPedido($dto->data_pedido);
     $pedidoToUpdate->setCliente($cliente);
-    $pedidoToUpdate->setValorTotal($dto->valor_total);
-    $pedidoToUpdate->setStatus($dto->status);
-    $pedidoToUpdate->setFormaPagamento($dto->data_pedido);
+    $pedidoToUpdate->setStatus(StatusPedido::tryFrom($dto->status));
     $pedidoToUpdate->setObservacoes($dto->observacoes);
-    $pedidoToUpdate->setTipo($dto->tipo);
+    $pedidoToUpdate->setFormaPagamento(FormaPagamento::tryFrom($dto->forma_pagamento));
+    $pedidoToUpdate->setTipo(TipoEntrega::tryFrom($dto->tipo_entrega));
     $pedidoToUpdate->setEnderecoEntrega($dto->endereco_entrega);
     $pedidoToUpdate->setTaxaEntrega($dto->taxa_entrega);
 
@@ -241,7 +248,8 @@ class PedidoService
     foreach ($dto->itens as $item) {
       $item->id = $pedidoToUpdate->getIdPedido();
 
-      $this->pedidoItemService->update($item);
+      $itemPedido = (array)$item;
+      $this->pedidoItemService->update($itemPedido);
     }
 
     return ['message' => 'Pedido atualizado com sucesso'];
