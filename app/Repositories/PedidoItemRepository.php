@@ -64,7 +64,7 @@ class PedidoItemRepository extends Repository implements IPedidoItemRepository {
   public function findManyByIdPedido(int $id_pedido): array {
     try {
       return $this->entityManager
-        ->createQuery('SELECT p FROM App\Models\PedidoItem p WHERE p.id = :id_pedido')
+        ->createQuery('SELECT p FROM App\Models\PedidoItem p LEFT JOIN p.pedido pd WHERE pd.id = :id_pedido')
         ->setParameter('id_pedido', $id_pedido)
         ->getResult();
     } catch (\Exception $e) {

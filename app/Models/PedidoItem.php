@@ -83,7 +83,7 @@ class PedidoItem extends Model
 		$this->valorItem = $value;
 	}
 
-	public function getObservacoesItem(): string
+	public function getObservacoesItem(): ?string
 	{
 		return $this->observacoesItem;
 	}
