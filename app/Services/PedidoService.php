@@ -71,7 +71,7 @@ class PedidoService
     $dto = $getSchema->parseNoSafe($args);
 
     $pedido =  $this->pedidoRepository->findById($dto->id);
-    $itens = $this->pedidoItemService->findManyByIdPed($dto->id);
+
 
     if (!$pedido)
       throw new ValidationException('Não foi possível encontrar o Pedido', [
@@ -81,6 +81,8 @@ class PedidoService
         ]
       ]);
 
+    $itens = $this->pedidoItemService->findManyByIdPed($dto->id);
+
     return [
       'pedido' => [
         'id' => $pedido->getIdPedido(),
@@ -89,7 +91,7 @@ class PedidoService
           'id' => $pedido->getCliente()->getId(),
           'nome' => $pedido->getCliente()->getName()
         ],
-        'itens' => array_map(function (PedidoItem $item) {
+        'itens' => array_map(function ($item) {
           return [
             'id' => $item->getId(),
             'id_produto' => $item->getProduto()->getIdProduto(),

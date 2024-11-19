@@ -77,6 +77,9 @@ class PedidoItemService
     ];
   }
 
+  /**
+   * @return PedidoItem[]
+   */
   public function findManyByIdPed(int $id): array
   {
     return $this->pedidoItemRepository->findManyByIdPedido($id);
