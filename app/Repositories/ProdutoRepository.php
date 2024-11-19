@@ -7,12 +7,10 @@ use App\Models\Produto;
 use Doctrine\ORM\Cache\Exception\FeatureNotImplemented;
 use Provider\Database\DatabaseException;
 
-class ProdutoRepository extends Repository implements IProdutoRepository
-{
+class ProdutoRepository extends Repository implements IProdutoRepository {
 
   #[\Override]
-  public function create(Produto $produto): Produto
-  {
+  public function create(Produto $produto): Produto {
     try {
       $this->entityManager->persist($produto);
       $this->entityManager->flush();
@@ -24,8 +22,7 @@ class ProdutoRepository extends Repository implements IProdutoRepository
   }
 
   #[\Override]
-  public function update(Produto $produto): Produto
-  {
+  public function update(Produto $produto): Produto {
     try {
       $this->entityManager->persist($produto);
       $this->entityManager->flush();
@@ -37,8 +34,7 @@ class ProdutoRepository extends Repository implements IProdutoRepository
   }
 
   #[\Override]
-  public function deleteById(int $id_produto)
-  {
+  public function deleteById(int $id_produto) {
     try {
       $produto = $this->findById($id_produto);
 
@@ -50,11 +46,10 @@ class ProdutoRepository extends Repository implements IProdutoRepository
   }
 
   /**
-   * @return Produto[]
+   * @inheritDoc
    */
   #[\Override]
-  public function findMany(): array
-  {
+  public function findMany(): array {
     try {
       $result = $this->entityManager
         ->createQuery('SELECT p FROM App\Models\Produto p')
@@ -67,8 +62,7 @@ class ProdutoRepository extends Repository implements IProdutoRepository
   }
 
   #[\Override]
-  public function findById(int $id_produto): ?Produto
-  {
+  public function findById(int $id_produto): ?Produto {
     try {
       $produto = $this->entityManager->find(Produto::class, $id_produto);
 
@@ -79,8 +73,7 @@ class ProdutoRepository extends Repository implements IProdutoRepository
   }
 
   #[\Override]
-  public function findByDescription(string $descricao): ?Produto
-  {
+  public function findByDescription(string $descricao): ?Produto {
     try {
       $result = $this->entityManager
         ->createQuery('SELECT p FROM App\Models\Produto p WHERE p.descricao = :descricao')

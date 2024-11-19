@@ -2,8 +2,7 @@
 
 namespace Core\HTTP;
 
-class Request
-{
+class Request {
 
   function __construct(
     private readonly array $body = [],
@@ -11,72 +10,60 @@ class Request
     private array $attributes = [],
     private readonly string $router = '/',
     private readonly string $method = ''
-  ) {}
+  ) {
+  }
 
-  function getParams()
-  {
+  function getParams() {
     return $this->params;
   }
 
-  function getParam(string $name)
-  {
+  function getParam(string $name) {
     return $this->params[$name] ?? null;
   }
 
-  function getHeaders()
-  {
+  function getHeaders() {
     return $_SERVER;
   }
 
-  function getHeader(string $name)
-  {
+  function getHeader(string $name) {
     return $_SERVER[$name] ?? null;
   }
 
-  function getRouter()
-  {
+  function getRouter() {
     return $this->router;
   }
 
-  function getMethod()
-  {
+  function getMethod() {
     return $this->method;
   }
 
-  function getAllBody()
-  {
+  function getAllBody() {
     return $this->body;
   }
 
-  function getBody(string $name)
-  {
+  function getBody(string $name) {
     return $this->body[$name] ?? null;
   }
 
-  function getAttributes()
-  {
+  function getAttributes() {
     return $this->attributes;
   }
 
-  function getAttribute(string $name)
-  {
+  function getAttribute(string $name) {
     return $this->attributes[$name] ?? null;
   }
 
-  function setAttribute(string $name, $value)
-  {
+  function setAttribute(string $name, $value) {
     $this->attributes[$name] = $value;
   }
 
-  static function getHeadersServer()
-  {
+  static function getHeadersServer() {
     return $_SERVER;
   }
 
-  static function getRouterRequested()
-  {
+  static function getRouterRequested() {
     if (!isset($_GET['url']))
-      $_GET['url'] = $_SERVER['PATH_INFO'] ?: $_SERVER['REQUEST_URI'];
+      $_GET['url'] = ($_SERVER['PATH_INFO'] ?? $_SERVER['REDIRECT_URL'] ?? $_SERVER['REQUEST_URI']) ?: null;
 
     if (!$_GET['url'])
       $_GET['url'] = '/';
@@ -86,19 +73,18 @@ class Request
     return $_GET['url'];
   }
 
-  static function getMethodHttpRequested()
-  {
-    return $_SERVER['REDIRECT_REQUEST_METHOD'] ?? $_SERVER['REQUEST_METHOD'] ?? null;
+  static function getMethodHttpRequested() {
+    return ($_SERVER['REDIRECT_REQUEST_METHOD'] ?? $_SERVER['REQUEST_METHOD']) ?: null;
   }
 
-  static function getBodyRequest()
-  {
+  static function getBodyRequest() {
     $dataJson = file_get_contents('php://input');
     return json_decode($dataJson, true) ?: [];
   }
 
-  static function getParamsRequest()
-  {
-    return $_GET ?? [];
+  static function getParamsRequest() {
+    parse_str($_SERVER['REDIRECT_QUERY_STRING'] ?? '', $params);
+
+    return [...$_GET, ...$params];
   }
 }

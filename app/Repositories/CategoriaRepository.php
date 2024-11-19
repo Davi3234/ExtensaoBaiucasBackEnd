@@ -7,12 +7,10 @@ use App\Models\Categoria;
 use Doctrine\ORM\Cache\Exception\FeatureNotImplemented;
 use Provider\Database\DatabaseException;
 
-class CategoriaRepository extends Repository implements ICategoriaRepository
-{
+class CategoriaRepository extends Repository implements ICategoriaRepository {
 
   #[\Override]
-  public function create(Categoria $categoria): Categoria
-  {
+  public function create(Categoria $categoria): Categoria {
     try {
       $this->entityManager->persist($categoria);
       $this->entityManager->flush();
@@ -24,8 +22,7 @@ class CategoriaRepository extends Repository implements ICategoriaRepository
   }
 
   #[\Override]
-  public function update(Categoria $categoria): Categoria
-  {
+  public function update(Categoria $categoria): Categoria {
     try {
       $this->entityManager->persist($categoria);
       $this->entityManager->flush();
@@ -37,8 +34,7 @@ class CategoriaRepository extends Repository implements ICategoriaRepository
   }
 
   #[\Override]
-  public function deleteById(int $id)
-  {
+  public function deleteById(int $id) {
     try {
       $categoria = $this->findById($id);
 
@@ -50,12 +46,11 @@ class CategoriaRepository extends Repository implements ICategoriaRepository
   }
 
   /**
-   * @return Categoria[]
+   * @inheritDoc
    */
 
   #[\Override]
-  public function findMany(): array
-  {
+  public function findMany(): array {
     try {
       $result = $this->entityManager
         ->createQuery('SELECT c FROM App\Models\Categoria c')
@@ -68,8 +63,7 @@ class CategoriaRepository extends Repository implements ICategoriaRepository
   }
 
   #[\Override]
-  public function findById(int $id): ?Categoria
-  {
+  public function findById(int $id): ?Categoria {
     try {
       $categoria = $this->entityManager->find(Categoria::class, $id);
 
@@ -80,8 +74,7 @@ class CategoriaRepository extends Repository implements ICategoriaRepository
   }
 
   #[\Override]
-  public function findByDescription(string $descricao): ?Categoria
-  {
+  public function findByDescription(string $descricao): ?Categoria {
     try {
       $result = $this->entityManager
         ->createQuery('SELECT c FROM App\Models\Categoria c WHERE c.descricao = :descricao')

@@ -11,9 +11,11 @@ interface IUserRepository {
   function deleteById(int $id);
 
   /**
+   * @param array{pageIndex: ?int, limit: ?int} $args
    * @return User[]
    */
-  function findMany(): array;
+  function findMany(array $args = []): array;
+  function count(): int;
   function findByLogin(string $login): ?User;
   function findById(int $id): ?User;
 }
