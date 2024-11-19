@@ -7,7 +7,6 @@ use Exception\ValidationException;
 use Provider\Zod\Z;
 use App\Models\User;
 use App\Repositories\IUserRepository;
-use Core\HTTP\Response;
 use Provider\Database\DatabaseException;
 
 class UserService {
@@ -17,29 +16,10 @@ class UserService {
   ) {
   }
 
-  public function query(array $args) {
-    $querySchema = Z::object([
-      'limit' => Z::number()
-        ->coerce()
-        ->int()
-        ->defaultValue(10),
-      'pageIndex' => Z::number()
-        ->coerce()
-        ->int()
-        ->gt(0, 'Número da página precisa ser maior que 0 (zero)')
-        ->defaultValue(1)
-        ->transform(fn($value) => $value - 1),
-    ])->coerce();
+  public function query() {
+    $users = $this->userRepository->findMany();
 
-    $dto = $querySchema->parseNoSafe($args);
-
-    $total = $this->userRepository->count();
-    $users = $this->userRepository->findMany([
-      'limit' => $dto->limit,
-      'pageIndex' => $dto->pageIndex,
-    ]);
-
-    $rawUsers = array_map(function ($user) {
+    $raw = array_map(function ($user) {
       return [
         'id' => $user->getId(),
         'name' => $user->getName(),
@@ -48,15 +28,7 @@ class UserService {
       ];
     }, $users);
 
-    return [
-      'users' => $rawUsers,
-      'metadata' => [
-        'currentPage' => $dto->pageIndex + 1,
-        'itemsPerPage' => $dto->limit,
-        'totalItems' => $total,
-        'totalPages' => ceil($total / $dto->limit),
-      ]
-    ];
+    return $raw;
   }
 
   /**

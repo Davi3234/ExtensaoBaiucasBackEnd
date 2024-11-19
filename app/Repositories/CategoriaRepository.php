@@ -46,7 +46,7 @@ class CategoriaRepository extends Repository implements ICategoriaRepository {
   }
 
   /**
-   * @inheritDoc
+   * @return Categoria[]
    */
 
   #[\Override]

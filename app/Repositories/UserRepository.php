@@ -46,36 +46,16 @@ class UserRepository extends Repository implements IUserRepository {
   }
 
   /**
-   * @inheritDoc
+   * @return User[]
    */
   #[\Override]
-  public function findMany(array $args = []): array {
+  public function findMany(): array {
     try {
-      $query = $this->entityManager->createQuery('SELECT u FROM App\Models\User u');
-
-      if ($args['limit']) {
-        $query->setMaxResults($args['limit']);
-
-        if ($args['pageIndex'])
-          $query->setFirstResult(ceil($args['limit'] * $args['pageIndex']));
-      }
-
-      $result = $query->getResult();
+      $result = $this->entityManager
+        ->createQuery('SELECT u FROM App\Models\User u')
+        ->getResult();
 
       return $result;
-    } catch (\Exception $e) {
-      throw new DatabaseException($e->getMessage());
-    }
-  }
-
-  #[\Override]
-  public function count(): int {
-    try {
-      $query = $this->entityManager->createQuery('SELECT COUNT(u) total FROM App\Models\User u');
-
-      $result = $query->getResult();
-
-      return $result[0]['total'] ?? 0;
     } catch (\Exception $e) {
       throw new DatabaseException($e->getMessage());
     }

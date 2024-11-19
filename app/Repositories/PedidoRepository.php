@@ -46,7 +46,7 @@ class PedidoRepository extends Repository implements IPedidoRepository {
   }
 
   /**
-   * @inheritDoc
+   * @return Pedido[]
    */
 
   #[\Override]

@@ -46,7 +46,7 @@ class ProdutoRepository extends Repository implements IProdutoRepository {
   }
 
   /**
-   * @inheritDoc
+   * @return Produto[]
    */
   #[\Override]
   public function findMany(): array {
