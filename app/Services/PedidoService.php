@@ -119,29 +119,30 @@ class PedidoService {
     $itens = $this->pedidoItemService->findManyByIdPed($dto->id);
 
     return [
-      'pedido' => [
+      'order' => [
         'id' => $pedido->getIdPedido(),
-        'data_pedido' => $pedido->getDataPedido(),
-        'cliente' => [
+        'date' => $pedido->getDataPedido(),
+        'client' => [
           'id' => $pedido->getCliente()->getId(),
-          'nome' => $pedido->getCliente()->getName()
+          'name' => $pedido->getCliente()->getName()
         ],
-        'itens' => array_map(function ($item) {
+        'items' => array_map(function ($item) {
           return [
             'id' => $item->getId(),
-            'id_produto' => $item->getProduto()->getIdProduto(),
-            'nome_produto' => $item->getProduto()->getNome(),
-            'valor_item' => $item->getValorItem(),
-            'observacoes_item' => $item->getObservacoesItem()
+            'product' => [
+              'id' => $item->getProduto()->getIdProduto(),
+              'name' => $item->getProduto()->getNome(),
+            ],
+            'price' => $item->getValorItem(),
+            'observation' => $item->getObservacoesItem()
           ];
         }, $itens),
-        'valor_total' => $pedido->getValorTotal(),
-        'status' => $pedido->getStatus(),
-        'forma_pagamento' => $pedido->getFormaPagamento(),
-        'observacoes' => $pedido->getObservacoes(),
-        'tipo' => $pedido->getTipo(),
-        'endereco_entrega' => $pedido->getEnderecoEntrega(),
-        'taxa_entrega' => $pedido->getTaxaEntrega()
+        'totalPrice' => $pedido->getValorTotal(),
+        'state' => $pedido->getStatus(),
+        'paymentMethod' => $pedido->getFormaPagamento(),
+        'observation' => $pedido->getObservacoes(),
+        'type' => $pedido->getTipo(),
+        'address' => $pedido->getEnderecoEntrega()
       ]
     ];
   }
