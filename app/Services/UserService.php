@@ -135,7 +135,7 @@ class UserService
         ->int(),
       'name' => Z::string([
         'required' => 'Nome é obrigatório'
-      ])
+      ])->optional()
         ->trim()
         ->min(3, 'Nome precisa ter no mínimo 3 caracteres'),
       'login' => Z::string(['required' => 'Login é obrigatório'])->optional()
