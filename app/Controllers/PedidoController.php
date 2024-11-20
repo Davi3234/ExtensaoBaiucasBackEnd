@@ -55,20 +55,16 @@ class PedidoController
   }
 
   #[Post('/')]
+  #[Guard(AuthenticationMiddleware::class)]
   function create(Request $request)
   {
     $result = $this->pedidoService->create([
-      'id_cliente' => $request->getBody('cliente')['id_cliente'],
-      'data_pedido' => $request->getBody('data_pedido'),
-      'status' => $request->getBody('status'),
-      'observacoes' => $request->getBody('observacoes'),
-      'forma_pagamento' => $request->getBody('forma_pagamento'),
-      'tipo_entrega' => $request->getBody('tipo'),
-      'endereco_entrega' => $request->getBody('endereco_entrega'),
-      'taxa_entrega' => $request->getBody('taxa_entrega'),
-      'itens' => $request->getBody('itens'),
-      'id_produto' => $request->getBody('id_produto'),
-      'observacoes_item' => $request->getBody('observacoes_item')
+      'id_cliente' => $request->getAttribute('userId'),
+      'observacoes' => $request->getBody('observation'),
+      'forma_pagamento' => $request->getBody('paymentMethod'),
+      'tipo_entrega' => $request->getBody('type'),
+      'endereco_entrega' => $request->getBody('address'),
+      'itens' => $request->getBody('items')
     ]);
 
     return $result;
@@ -90,9 +86,6 @@ class PedidoController
       'tipo_entrega' => $request->getBody('tipo'),
       'endereco_entrega' => $request->getBody('endereco_entrega'),
       'taxa_entrega' => $request->getBody('taxa_entrega'),
-      'id_produto' => $request->getBody('id_produto'),
-      'observacoes_item' => $request->getBody('observacoes_item'),
-      'valor_item' => $request->getBody('valor_item')
     ]);
 
     return $result;

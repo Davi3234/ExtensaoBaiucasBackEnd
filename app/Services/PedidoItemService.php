@@ -88,10 +88,12 @@ class PedidoItemService
   public function create(array $args)
   {
     $createSchema = Z::object([
-      'id_produto' => Z::number(['required' => 'Id do Produto é obrigatório!'])->coerce()->int(),
+      'product' =>Z::object([
+        'id' => Z::number(['required' => 'O item é de preenchimento obrigatório']),
+      ])->coerce(),
       'id_pedido' => Z::number(['required' => 'Id do Pedido é obrigatório!'])->coerce()->coerce()->int(),
       'valor_item' => Z::number(['required' => 'Valor do ítem é obrigatório!'])->coerce(),
-      'observacoes_item' => Z::string(['required' => 'Observação do Item é obrigatória!'])->optional()
+      'observation' => Z::string(['required' => 'Observação do Item é obrigatória!'])->optional()
     ])->coerce();
 
     $dto = $createSchema->parseNoSafe($args);
@@ -106,13 +108,13 @@ class PedidoItemService
         ]
       ]);
 
-    $produto = $this->produtoRepository->findById($dto->id_produto);
+    $produto = $this->produtoRepository->findById($dto->product->id);
 
     if (!$produto)
       throw new ValidationException('Não foi possível cadastrar o Item do Pedido', [
         [
           'message' => 'Produto não encontrado',
-          'origin' => 'id_produto'
+          'origin' => 'id'
         ]
       ]);
 
@@ -121,7 +123,7 @@ class PedidoItemService
     $item->setPedido($pedido);
     $item->setProduto($produto);
     $item->setValorItem($dto->valor_item);
-    $item->setObservacoesItem($dto->observacoes_item);
+    $item->setObservacoesItem($dto->observation);
 
     $this->pedidoItemRepository->create($item);
 

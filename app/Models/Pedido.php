@@ -40,8 +40,8 @@ class Pedido extends Model
 	#[Column(name: 'forma_pagamento', type: 'string', enumType: FormaPagamento::class)]
 	private FormaPagamento $formaPagamento;
 
-	#[Column]
-	private string $observacoes;
+	#[Column(nullable: true)]
+	private ?string $observacoes;
 
 	#[Column(type: 'string', enumType: TipoEntrega::class)]
 	private TipoEntrega $tipo;
@@ -130,7 +130,7 @@ class Pedido extends Model
 	}
 
 	//Observações
-	public function getObservacoes(): string
+	public function getObservacoes(): ?string
 	{
 		return $this->observacoes;
 	}

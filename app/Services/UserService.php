@@ -87,6 +87,7 @@ class UserService {
       'confirm_password' => Z::string(['required' => 'Confirmação de senha é obrigatório'])
         ->trim(),
       'tipo' => Z::enumNative(TipoUsuario::class, ['required' => 'Tipo é obrigatório'])
+        ->defaultValue(TipoUsuario::CLIENTE->value)
     ])->coerce();
 
     $dto = $createSchema->parseNoSafe($args);
