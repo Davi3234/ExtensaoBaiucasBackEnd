@@ -2,22 +2,21 @@
 
 namespace App\Services;
 
-use App\Repositories\CategoriaRepository;
+use App\Repositories\ICategoriaRepository;
 use Exception\ValidationException;
 use Provider\Zod\Z;
 use App\Models\Produto;
 use App\Repositories\IProdutoRepository;
 
-class ProdutoService
-{
+class ProdutoService {
 
   public function __construct(
     private readonly IProdutoRepository $produtoRepository,
-    private readonly CategoriaRepository $categoriaRepository
-  ) {}
+    private readonly ICategoriaRepository $categoriaRepository
+  ) {
+  }
 
-  public function query()
-  {
+  public function query() {
     $produtos = $this->produtoRepository->findMany();
 
     $raw = array_map(function ($produto) {
@@ -41,8 +40,7 @@ class ProdutoService
    * @param array $args
    * @return array
    */
-  public function getById(array $args)
-  {
+  public function getById(array $args) {
     $getSchema = Z::object([
       'id' => Z::number([
         'required' => 'Id do Produto é obrigatório'
@@ -77,8 +75,7 @@ class ProdutoService
     ];
   }
 
-  public function create(array $args)
-  {
+  public function create(array $args) {
     $createSchema = Z::object([
       'nome' => Z::string(['required' => 'Nome é obrigatório']),
       'valor' => Z::number(['required' => 'Valor é obrigatório'])
@@ -130,8 +127,7 @@ class ProdutoService
     return ['message' => 'Produto cadastrado com sucesso'];
   }
 
-  public function update(array $args)
-  {
+  public function update(array $args) {
     $updateSchema = Z::object([
       'id' => Z::number(['required' => 'Id do produto é obrigatório'])
         ->coerce()
@@ -195,8 +191,7 @@ class ProdutoService
     return ['message' => 'Produto atualizado com sucesso'];
   }
 
-  public function delete(array $args)
-  {
+  public function delete(array $args) {
     $deleteSchema = Z::object([
       'id' => Z::number([
         'required' => 'Id do Produto é obrigatório',

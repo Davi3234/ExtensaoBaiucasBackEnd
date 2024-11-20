@@ -6,17 +6,18 @@ use App\Models\Categoria;
 use Exception\ValidationException;
 use Provider\Zod\Z;
 use App\Repositories\ICategoriaRepository;
+use App\Repositories\IProdutoRepository;
 use Provider\Database\DatabaseException;
 
-class CategoriaService
-{
+class CategoriaService {
 
   public function __construct(
-    private readonly ICategoriaRepository $categoriaRepository
-  ) {}
+    private readonly ICategoriaRepository $categoriaRepository,
+    private readonly IProdutoRepository $produtoRepository
+  ) {
+  }
 
-  public function query()
-  {
+  public function query() {
     $categorias = $this->categoriaRepository->findMany();
 
     $raw = array_map(function ($categoria) {
@@ -29,6 +30,37 @@ class CategoriaService
     return $raw;
   }
 
+  public function queryProdutos() {
+    $categorias = $this->categoriaRepository->findMany();
+
+    $rawCategorias = [];
+    foreach ($categorias as $categoria) {
+      $produtos = $this->produtoRepository->findManyByIdCategoria($categoria->getId());
+
+      $rawCategoria = [
+        'id' => $categoria->getId(),
+        'descricao' => $categoria->getDescricao(),
+        'produtos' => array_map(function ($produto) {
+          return [
+            'id' => $produto->getIdProduto(),
+            'nome' => $produto->getNome(),
+            'descricao' => $produto->getDescricao(),
+            'valor' => $produto->getValor(),
+            'descricao_categoria' => $produto->getCategoria()->getDescricao(),
+            'ativo' => $produto->getAtivo(),
+            'data_inclusao' => $produto->getDataInclusao(),
+          ];
+        }, $produtos),
+      ];
+
+      $rawCategorias[] = $rawCategoria;
+    }
+
+    return [
+      'categorias' => $rawCategorias
+    ];
+  }
+
   /**
    * Retorna uma categoria buscando pelo seu ID
    * @param array $args
@@ -36,8 +68,7 @@ class CategoriaService
    * @return array{categoria: array{id: int, descricao: string}}
    */
 
-  public function getById(array $args)
-  {
+  public function getById(array $args) {
     $getSchema = Z::object([
       'id' => Z::number([
         'required' => 'Id da Categoria é obrigatório',
@@ -68,8 +99,7 @@ class CategoriaService
     ];
   }
 
-  public function create(array $args)
-  {
+  public function create(array $args) {
     $createSchema = Z::object([
       'descricao' => Z::string(['required' => 'Descrição da categoria é obrigatória!'])
     ])->coerce();
@@ -96,8 +126,7 @@ class CategoriaService
     return ['message' => 'Categoria inserida com sucesso!'];
   }
 
-  public function update(array $args)
-  {
+  public function update(array $args) {
     $updateSchema = Z::object([
       'id' => Z::number(['required' => 'Id da Categoria é obrigatório!'])
         ->coerce()
@@ -125,8 +154,7 @@ class CategoriaService
     return ['message' => 'Categoria atualizada com sucesso'];
   }
 
-  public function delete(array $args)
-  {
+  public function delete(array $args) {
     $deleteSchema = Z::object([
       'id' => Z::number([
         'required' => 'Id da Categoria é obrigatório',

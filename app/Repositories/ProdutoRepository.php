@@ -34,9 +34,9 @@ class ProdutoRepository extends Repository implements IProdutoRepository {
   }
 
   #[\Override]
-  public function deleteById(int $id_produto) {
+  public function deleteById(int $id) {
     try {
-      $produto = $this->findById($id_produto);
+      $produto = $this->findById($id);
 
       $this->entityManager->remove($produto);
       $this->entityManager->flush();
@@ -61,10 +61,27 @@ class ProdutoRepository extends Repository implements IProdutoRepository {
     }
   }
 
+  /**
+   * @return Produto[]
+   */
   #[\Override]
-  public function findById(int $id_produto): ?Produto {
+  public  function findManyByIdCategoria(int $id_categoria): array {
     try {
-      $produto = $this->entityManager->find(Produto::class, $id_produto);
+      $result = $this->entityManager
+        ->createQuery('SELECT p FROM App\Models\Produto p LEFT JOIN p.categoria c WHERE c.id = :id_categoria')
+        ->setParameter('id_categoria', $id_categoria)
+        ->getResult();
+
+      return $result;
+    } catch (\Exception $e) {
+      throw new DatabaseException($e->getMessage());
+    }
+  }
+
+  #[\Override]
+  public function findById(int $id): ?Produto {
+    try {
+      $produto = $this->entityManager->find(Produto::class, $id);
 
       return $produto;
     } catch (\Exception $e) {
