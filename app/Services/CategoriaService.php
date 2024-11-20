@@ -36,17 +36,13 @@ class CategoriaService {
   public function queryProdutos(array $args) {
     $user = $this->userRepository->findById($args['userId']);
 
-    $ativo = true;
-
-    if($user->getTipo() == TipoUsuario::ADMNISTRADOR){
-      $ativo = false;
-    }
+    $isExibirOnlyAtivos = $user->getTipo() == TipoUsuario::CLIENTE;
 
     $categorias = $this->categoriaRepository->findMany();
 
     $rawCategorias = [];
     foreach ($categorias as $categoria) {
-      $produtos = $this->produtoRepository->findManyByIdCategoria($categoria->getId(), $ativo);
+      $produtos = $this->produtoRepository->findManyByIdCategoria($categoria->getId(), $isExibirOnlyAtivos);
 
       $rawCategoria = [
         'category' => [
