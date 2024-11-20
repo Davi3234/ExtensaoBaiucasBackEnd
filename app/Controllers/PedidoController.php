@@ -12,7 +12,7 @@ use App\Repositories\PedidoRepository;
 use App\Services\PedidoItemService;
 use App\Services\PedidoService;
 
-#[Controller('/pedidos')]
+#[Controller('/orders')]
 class PedidoController
 {
   private readonly PedidoService $pedidoService;

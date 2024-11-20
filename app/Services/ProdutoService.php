@@ -8,15 +8,16 @@ use Provider\Zod\Z;
 use App\Models\Produto;
 use App\Repositories\IProdutoRepository;
 
-class ProdutoService {
+class ProdutoService
+{
 
   public function __construct(
     private readonly IProdutoRepository $produtoRepository,
     private readonly ICategoriaRepository $categoriaRepository
-  ) {
-  }
+  ) {}
 
-  public function query() {
+  public function query()
+  {
     $produtos = $this->produtoRepository->findMany();
 
     $raw = array_map(function ($produto) {
@@ -40,7 +41,8 @@ class ProdutoService {
    * @param array $args
    * @return array
    */
-  public function getById(array $args) {
+  public function getById(array $args)
+  {
     $getSchema = Z::object([
       'id' => Z::number([
         'required' => 'Id do Produto é obrigatório'
@@ -62,20 +64,22 @@ class ProdutoService {
       ]);
 
     return [
-      'produto' => [
+      'product' => [
         'id' => $produto->getIdProduto(),
-        'nome' => $produto->getNome(),
-        'descricao' => $produto->getDescricao(),
-        'valor' => $produto->getValor(),
-        'id_categoria' => $produto->getCategoria()->getId(),
-        'descricao_categoria' => $produto->getCategoria()->getDescricao(),
+        'name' => $produto->getNome(),
+        'description' => $produto->getDescricao(),
+        'value' => $produto->getValor(),
+        'category' => [
+          'id' => $produto->getCategoria()->getId()
+        ],
         'ativo' => $produto->getAtivo(),
         'data_inclusao' => $produto->getDataInclusao(),
       ]
     ];
   }
 
-  public function create(array $args) {
+  public function create(array $args)
+  {
     $createSchema = Z::object([
       'nome' => Z::string(['required' => 'Nome é obrigatório']),
       'valor' => Z::number(['required' => 'Valor é obrigatório'])
@@ -85,8 +89,10 @@ class ProdutoService {
       'id_categoria' => Z::number(['required' => 'Categoria é obrigatória'])
         ->coerce()
         ->int(),
-      'data_inclusao' => Z::string(['required' => 'Data de inclusão é obrigatória']),
-      'ativo' => Z::boolean(['required' => 'Ativo é obrigatório']),
+      'data_inclusao' => Z::string(['required' => 'Data de inclusão é obrigatória'])
+        ->defaultValue(date('Y-m-d')),
+      'ativo' => Z::boolean(['required' => 'Ativo é obrigatório'])
+        ->defaultValue(true),
     ])->coerce();
 
     $dto = $createSchema->parseNoSafe($args);
@@ -127,7 +133,8 @@ class ProdutoService {
     return ['message' => 'Produto cadastrado com sucesso'];
   }
 
-  public function update(array $args) {
+  public function update(array $args)
+  {
     $updateSchema = Z::object([
       'id' => Z::number(['required' => 'Id do produto é obrigatório'])
         ->coerce()
@@ -140,7 +147,8 @@ class ProdutoService {
       'id_categoria' => Z::number(['required' => 'Categoria é obrigatória'])
         ->coerce()
         ->int(),
-      'data_inclusao' => Z::string(['required' => 'Data de inclusão é obrigatória']),
+      'data_inclusao' => Z::string(['required' => 'Data de inclusão é obrigatória'])
+        ->defaultValue(date('Y-m-d')),
       'ativo' => Z::boolean(['required' => 'Ativo é obrigatório'])
     ])->coerce();
 
@@ -191,7 +199,8 @@ class ProdutoService {
     return ['message' => 'Produto atualizado com sucesso'];
   }
 
-  public function delete(array $args) {
+  public function delete(array $args)
+  {
     $deleteSchema = Z::object([
       'id' => Z::number([
         'required' => 'Id do Produto é obrigatório',

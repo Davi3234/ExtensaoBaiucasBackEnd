@@ -10,7 +10,7 @@ use App\Middlewares\AuthenticationMiddleware;
 use App\Repositories\ProdutoRepository;
 use App\Services\ProdutoService;
 
-#[Controller('/produtos')]
+#[Controller('/products')]
 class ProdutoController
 {
   private readonly ProdutoService $produtoService;
@@ -33,7 +33,6 @@ class ProdutoController
       'id' => $id
     ]);
 
-
     return $result;
   }
 
@@ -50,10 +49,10 @@ class ProdutoController
   function create(Request $request)
   {
     $result = $this->produtoService->create([
-      'nome' => $request->getBody('nome'),
-      'valor' => $request->getBody('valor'),
-      'descricao' => $request->getBody('descricao'),
-      'id_categoria' => $request->getBody('categoria')['id'],
+      'nome' => $request->getBody('name'),
+      'valor' => $request->getBody('value'),
+      'descricao' => $request->getBody('description'),
+      'id_categoria' => $request->getBody('category')['id'],
       'data_inclusao' => $request->getBody('data_inclusao'),
       'ativo' => $request->getBody('ativo')
     ]);
@@ -69,10 +68,10 @@ class ProdutoController
 
     $result = $this->produtoService->update([
       'id' => $id,
-      'nome' => $request->getBody('nome'),
-      'valor' => $request->getBody('valor'),
-      'descricao' => $request->getBody('descricao'),
-      'id_categoria' => $request->getBody('categoria')['id'],
+      'nome' => $request->getBody('name'),
+      'valor' => $request->getBody('value'),
+      'descricao' => $request->getBody('description'),
+      'id_categoria' => $request->getBody('category')['id'],
       'data_inclusao' => $request->getBody('data_inclusao'),
       'ativo' => $request->getBody('ativo')
     ]);

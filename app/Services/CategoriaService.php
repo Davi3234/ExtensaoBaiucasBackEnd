@@ -23,7 +23,7 @@ class CategoriaService {
     $raw = array_map(function ($categoria) {
       return [
         'id' => $categoria->getId(),
-        'descricao' => $categoria->getDescricao()
+        'name' => $categoria->getDescricao()
       ];
     }, $categorias);
 
@@ -38,15 +38,20 @@ class CategoriaService {
       $produtos = $this->produtoRepository->findManyByIdCategoria($categoria->getId());
 
       $rawCategoria = [
-        'id' => $categoria->getId(),
-        'descricao' => $categoria->getDescricao(),
-        'produtos' => array_map(function ($produto) {
+        'category' => [
+          'id' => $categoria->getId(),
+          'name' => $categoria->getDescricao()
+        ],
+        'products' => array_map(function ($produto) {
           return [
             'id' => $produto->getIdProduto(),
-            'nome' => $produto->getNome(),
-            'descricao' => $produto->getDescricao(),
-            'valor' => $produto->getValor(),
-            'descricao_categoria' => $produto->getCategoria()->getDescricao(),
+            'name' => $produto->getNome(),
+            'description' => $produto->getDescricao(),
+            'value' => $produto->getValor(),
+            'category' => [
+              'id' => $produto->getCategoria()->getId(),
+              'name' => $produto->getCategoria()->getDescricao()
+            ],
             'ativo' => $produto->getAtivo(),
             'data_inclusao' => $produto->getDataInclusao(),
           ];
@@ -92,9 +97,9 @@ class CategoriaService {
       ]);
 
     return [
-      'categoria' => [
+      'category' => [
         'id' => $categoria->getId(),
-        'descricao' => $categoria->getDescricao()
+        'name' => $categoria->getDescricao()
       ]
     ];
   }

@@ -10,7 +10,7 @@ use App\Repositories\ProdutoRepository;
 use App\Services\CategoriaService;
 use Core\Enum\StatusCodeHTTP;
 
-#[Controller('/categorias')]
+#[Controller('/categories')]
 class CategoriaController {
   private readonly CategoriaService $categoriaService;
 
@@ -53,7 +53,7 @@ class CategoriaController {
   #[Post('/', StatusCodeHTTP::CREATED->value)]
   function create(Request $request) {
     $result = $this->categoriaService->create([
-      'descricao' => $request->getBody('descricao')
+      'descricao' => $request->getBody('name')
     ]);
 
     return $result;
@@ -63,7 +63,7 @@ class CategoriaController {
   #[Guard(AuthenticationMiddleware::class)]
   function update(Request $request) {
     $id = $request->getParam('id');
-    $descricao = $request->getBody('descricao');
+    $descricao = $request->getBody('name');
 
     $result = $this->categoriaService->update([
       'id' => $id,
