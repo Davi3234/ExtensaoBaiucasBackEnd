@@ -16,15 +16,15 @@ use App\Services\IPedidoItemRepository;
 use App\Repositories\ProdutoRepository;
 use App\Models\PedidoItem;
 
-class PedidoService
-{
+class PedidoService {
 
   public function __construct(
     private readonly IPedidoRepository $pedidoRepository,
     private readonly PedidoItemService $pedidoItemService,
     private readonly IUserRepository $userRepository,
     private readonly IProdutoRepository $produtoRepository
-  ) {}
+  ) {
+  }
 
   /*  public function query()
   {
@@ -50,8 +50,7 @@ class PedidoService
     return $raw;
   }*/
 
-  public function query()
-  {
+  public function query() {
     $pedidos = $this->pedidoRepository->findMany();
 
     $raw = array_map(function ($pedido) {
@@ -59,25 +58,26 @@ class PedidoService
 
       return [
         'id' => $pedido->getIdPedido(),
-        'data_pedido' => $pedido->getDataPedido(),
-        'cliente' => [
-          'nome' => $pedido->getCliente()->getName(),
+        'date' => $pedido->getDataPedido(),
+        'client' => [
+          'id' => $pedido->getCliente()->getId(),
+          'name' => $pedido->getCliente()->getName(),
+          'login' => $pedido->getCliente()->getLogin(),
+          'active' => $pedido->getCliente()->getActive(),
         ],
-        'valor_total' => $pedido->getValorTotal(),
-        'status' => $pedido->getStatus(),
-        'forma_pagamento' => $pedido->getFormaPagamento(),
-        'observacoes' => $pedido->getObservacoes(),
+        'totalPrice' => $pedido->getValorTotal(),
+        'state' => $pedido->getStatus(),
+        'paymentMethod' => $pedido->getFormaPagamento(),
+        'observation' => $pedido->getObservacoes(),
         'tipo' => $pedido->getTipo(),
-        'endereco_entrega' => $pedido->getEnderecoEntrega(),
-        'taxa_entrega' => $pedido->getTaxaEntrega(),
-        // Itens do pedido
-        'itens' => array_map(function ($item) {
+        'type' => $pedido->getEnderecoEntrega(),
+        'address' => $pedido->getTaxaEntrega(),
+        'items' => array_map(function ($item) {
           return [
             'id' => $item->getId(),
-            'id_produto' => $item->getProduto()->getIdProduto(),
-            'nome_produto' => $item->getProduto()->getNome(),
-            'valor_item' => $item->getValorItem(),
-            'observacoes_item' => $item->getObservacoesItem()
+            'product' => $item->getProduto()->getIdProduto(),
+            'price' => $item->getValorItem(),
+            'observation' => $item->getObservacoesItem()
           ];
         }, $itens),
       ];
@@ -92,8 +92,7 @@ class PedidoService
    * @return array
    */
 
-  public function getById(array $args)
-  {
+  public function getById(array $args) {
     $getSchema = Z::object([
       'id' => Z::number([
         'required' => 'Id do pedido é obrigatório',
@@ -147,8 +146,7 @@ class PedidoService
     ];
   }
 
-  public function create(array $args)
-  {
+  public function create(array $args) {
     $createSchema = Z::object([
       'id_cliente' => Z::number(['required' => 'Id do cliente é obrigatório!'])
         ->coerce()->int(),
@@ -224,8 +222,7 @@ class PedidoService
     return ['message' => 'Pedido inserido com sucesso!'];
   }
 
-  public function update(array $args)
-  {
+  public function update(array $args) {
     $updateSchema = Z::object([
       'id' => Z::number(['required' => 'Id do Pedido é obrigatório!'])->coerce()->int(),
       'id_cliente' => Z::number(['required' => 'Id do cliente é obrigatório!'])
@@ -294,8 +291,7 @@ class PedidoService
     return ['message' => 'Pedido atualizado com sucesso'];
   }
 
-  public function delete(array $args)
-  {
+  public function delete(array $args) {
     $deleteSchema = Z::object([
       'id' => Z::number([
         'required' => 'Id do Pedido é obrigatório',
