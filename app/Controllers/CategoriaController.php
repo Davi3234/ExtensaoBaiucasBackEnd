@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use App\Repositories\UserRepository;
 use Core\HTTP\Request;
 use Core\Common\Attributes\{Controller, Get, Delete, Guard, Post, Put};
 use App\Middlewares\AuthenticationMiddleware;
@@ -17,7 +18,8 @@ class CategoriaController {
   function __construct() {
     $this->categoriaService = new CategoriaService(
       new CategoriaRepository(),
-      new ProdutoRepository()
+      new ProdutoRepository(),
+      new UserRepository()
     );
   }
 
@@ -37,7 +39,9 @@ class CategoriaController {
   #[Get('/products')]
   #[Guard(AuthenticationMiddleware::class)]
   function getManyProducts(Request $request) {
-    $result = $this->categoriaService->queryProdutos();
+    $result = $this->categoriaService->queryProdutos([
+      'userId' => $request->getAttribute('userId')
+    ]);
 
     return $result;
   }

@@ -176,7 +176,7 @@ class ProdutoService
       ]);
     }
 
-    $ProdutoToUpdate = $this->produtoRepository->findByDescription($dto->descricao);
+    $ProdutoToUpdate = $this->produtoRepository->findByDescription($dto->descricao, $dto->id);
 
     if ($ProdutoToUpdate) {
       throw new ValidationException('Não foi possível atualizar o Produto', [

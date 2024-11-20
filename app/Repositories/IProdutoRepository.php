@@ -19,6 +19,6 @@ interface IProdutoRepository {
   /**
    * @return Produto[]
    */
-  function findManyByIdCategoria(int $id_categoria): array;
-  function findByDescription(string $descricao): ?Produto;
+  function findManyByIdCategoria(int $id_categoria, bool $ativo = true): array;
+  function findByDescription(string $descricao, int $id = 0): ?Produto;
 }

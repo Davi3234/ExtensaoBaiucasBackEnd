@@ -2,18 +2,21 @@
 
 namespace App\Services;
 
+use App\Enums\TipoUsuario;
 use App\Models\Categoria;
 use Exception\ValidationException;
 use Provider\Zod\Z;
 use App\Repositories\ICategoriaRepository;
 use App\Repositories\IProdutoRepository;
+use App\Repositories\IUserRepository;
 use Provider\Database\DatabaseException;
 
 class CategoriaService {
 
   public function __construct(
     private readonly ICategoriaRepository $categoriaRepository,
-    private readonly IProdutoRepository $produtoRepository
+    private readonly IProdutoRepository $produtoRepository,
+    private readonly IUserRepository $userRepository
   ) {
   }
 
@@ -30,12 +33,20 @@ class CategoriaService {
     return $raw;
   }
 
-  public function queryProdutos() {
+  public function queryProdutos(array $args) {
+    $user = $this->userRepository->findById($args['userId']);
+
+    $ativo = true;
+
+    if($user->getTipo() == TipoUsuario::ADMNISTRADOR){
+      $ativo = false;
+    }
+
     $categorias = $this->categoriaRepository->findMany();
 
     $rawCategorias = [];
     foreach ($categorias as $categoria) {
-      $produtos = $this->produtoRepository->findManyByIdCategoria($categoria->getId());
+      $produtos = $this->produtoRepository->findManyByIdCategoria($categoria->getId(), $ativo);
 
       $rawCategoria = [
         'category' => [

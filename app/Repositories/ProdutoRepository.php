@@ -65,10 +65,12 @@ class ProdutoRepository extends Repository implements IProdutoRepository {
    * @return Produto[]
    */
   #[\Override]
-  public  function findManyByIdCategoria(int $id_categoria): array {
+  public  function findManyByIdCategoria(int $id_categoria, bool $ativo = true): array {
     try {
+      $condicao = $ativo ? " AND p.ativo = true" : '';
       $result = $this->entityManager
-        ->createQuery('SELECT p FROM App\Models\Produto p LEFT JOIN p.categoria c WHERE c.id = :id_categoria')
+        ->createQuery('SELECT p FROM App\Models\Produto p LEFT JOIN p.categoria c 
+          WHERE c.id = :id_categoria'.$condicao)
         ->setParameter('id_categoria', $id_categoria)
         ->getResult();
 
@@ -90,12 +92,15 @@ class ProdutoRepository extends Repository implements IProdutoRepository {
   }
 
   #[\Override]
-  public function findByDescription(string $descricao): ?Produto {
+  public function findByDescription(string $descricao, int $id = 0): ?Produto {
     try {
       $result = $this->entityManager
-        ->createQuery('SELECT p FROM App\Models\Produto p WHERE p.descricao = :descricao')
+        ->createQuery('SELECT p FROM App\Models\Produto p 
+        WHERE p.descricao = :descricao
+          AND p.id NOT IN (:id)')
         ->setParameters([
           'descricao' => $descricao,
+          'id' => $id
         ])
         ->getResult();
 
