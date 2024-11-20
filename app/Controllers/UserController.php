@@ -19,13 +19,21 @@ class UserController {
     );
   }
 
+  #[Get('/current')]
+  #[Guard(AuthenticationMiddleware::class)]
+  function getCurrent(Request $request) {
+    $result = $this->userService->getById([
+      'id' => $request->getAttribute('userId'),
+    ]);
+
+    return $result;
+  }
+
   #[Get('/:id')]
   #[Guard(AuthenticationMiddleware::class)]
   function getOne(Request $request) {
-    $userId = str_replace("/users/", "", $request->getParam('url'));
-
     $result = $this->userService->getById([
-      'id' => $userId,
+      'id' => $request->getParam('id'),
     ]);
 
     return $result;
@@ -45,7 +53,7 @@ class UserController {
       'name' => $request->getBody('name'),
       'login' => $request->getBody('login'),
       'password' => $request->getBody('password'),
-      'confirm_password' => $request->getBody('confirm_password'),
+      'confirm_password' => $request->getBody('confirmPassword'),
       'tipo' => $request->getBody('tipo')
     ]);
 
@@ -63,7 +71,7 @@ class UserController {
       'login' => $request->getBody('login'),
       'tipo' => $request->getBody('tipo'),
       'password' => $request->getBody('password'),
-      'confirm_password' => $request->getBody('confirm_password'),
+      'confirm_password' => $request->getBody('confirmPassword'),
       'active' => $request->getBody('active')
     ]);
 
@@ -73,10 +81,8 @@ class UserController {
   #[Delete('/:id')]
   #[Guard(AuthenticationMiddleware::class)]
   function delete(Request $request) {
-    $userId = str_replace("/users/", "", $request->getParam('url'));
-
     $result = $this->userService->delete([
-      'id' => $userId,
+      'id' => $request->getParam('id'),
     ]);
 
     return $result;
