@@ -7,10 +7,12 @@ use App\Models\Pedido;
 use Doctrine\ORM\Cache\Exception\FeatureNotImplemented;
 use Provider\Database\DatabaseException;
 
-class PedidoRepository extends Repository implements IPedidoRepository {
+class PedidoRepository extends Repository implements IPedidoRepository
+{
 
   #[\Override]
-  public function create(Pedido $pedido): Pedido {
+  public function create(Pedido $pedido): Pedido
+  {
     try {
       $this->entityManager->persist($pedido);
       $this->entityManager->flush();
@@ -22,7 +24,8 @@ class PedidoRepository extends Repository implements IPedidoRepository {
   }
 
   #[\Override]
-  public function update(Pedido $pedido): Pedido {
+  public function update(Pedido $pedido): Pedido
+  {
     try {
       $this->entityManager->persist($pedido);
       $this->entityManager->flush();
@@ -34,7 +37,8 @@ class PedidoRepository extends Repository implements IPedidoRepository {
   }
 
   #[\Override]
-  public function deleteById(int $id) {
+  public function deleteById(int $id)
+  {
     try {
       $pedido = $this->findById($id);
 
@@ -50,7 +54,8 @@ class PedidoRepository extends Repository implements IPedidoRepository {
    */
 
   #[\Override]
-  public function findMany(): array {
+  public function findMany(): array
+  {
     try {
       $result = $this->entityManager
         ->createQuery('SELECT p FROM App\Models\Pedido p')
@@ -63,7 +68,8 @@ class PedidoRepository extends Repository implements IPedidoRepository {
   }
 
   #[\Override]
-  public function findById(int $id): ?Pedido {
+  public function findById(int $id): ?Pedido
+  {
     try {
       $pedido = $this->entityManager->find(Pedido::class, $id);
 

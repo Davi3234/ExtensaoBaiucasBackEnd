@@ -26,7 +26,7 @@ class PedidoService
     private readonly IProdutoRepository $produtoRepository
   ) {}
 
-  public function query()
+  /*  public function query()
   {
     $pedidos = $this->pedidoRepository->findMany();
 
@@ -44,6 +44,42 @@ class PedidoService
         'tipo' => $pedido->getTipo(),
         'endereco_entrega' => $pedido->getEnderecoEntrega(),
         'taxa_entrega' => $pedido->getTaxaEntrega(),
+      ];
+    }, $pedidos);
+
+    return $raw;
+  }*/
+
+  public function query()
+  {
+    $pedidos = $this->pedidoRepository->findMany();
+
+    $raw = array_map(function ($pedido) {
+      $itens = $this->pedidoItemService->findManyByIdPed($pedido->getIdPedido());
+
+      return [
+        'id' => $pedido->getIdPedido(),
+        'data_pedido' => $pedido->getDataPedido(),
+        'cliente' => [
+          'nome' => $pedido->getCliente()->getName(),
+        ],
+        'valor_total' => $pedido->getValorTotal(),
+        'status' => $pedido->getStatus(),
+        'forma_pagamento' => $pedido->getFormaPagamento(),
+        'observacoes' => $pedido->getObservacoes(),
+        'tipo' => $pedido->getTipo(),
+        'endereco_entrega' => $pedido->getEnderecoEntrega(),
+        'taxa_entrega' => $pedido->getTaxaEntrega(),
+        // Itens do pedido
+        'itens' => array_map(function ($item) {
+          return [
+            'id' => $item->getId(),
+            'id_produto' => $item->getProduto()->getIdProduto(),
+            'nome_produto' => $item->getProduto()->getNome(),
+            'valor_item' => $item->getValorItem(),
+            'observacoes_item' => $item->getObservacoesItem()
+          ];
+        }, $itens),
       ];
     }, $pedidos);
 
@@ -248,7 +284,8 @@ class PedidoService
     $this->pedidoRepository->update($pedidoToUpdate);
 
     foreach ($dto->itens as $item) {
-      $item->id = $pedidoToUpdate->getIdPedido();
+
+      $item->id_pedido = $pedidoToUpdate->getIdPedido();
 
       $itemPedido = (array)$item;
       $this->pedidoItemService->update($itemPedido);

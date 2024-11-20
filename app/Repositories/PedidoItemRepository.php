@@ -7,10 +7,12 @@ use App\Models\PedidoItem;
 use Doctrine\ORM\Cache\Exception\FeatureNotImplemented;
 use Provider\Database\DatabaseException;
 
-class PedidoItemRepository extends Repository implements IPedidoItemRepository {
+class PedidoItemRepository extends Repository implements IPedidoItemRepository
+{
 
   #[\Override]
-  public function create(PedidoItem $item): PedidoItem {
+  public function create(PedidoItem $item): PedidoItem
+  {
     try {
       $this->entityManager->persist($item);
       $this->entityManager->flush();
@@ -22,16 +24,21 @@ class PedidoItemRepository extends Repository implements IPedidoItemRepository {
   }
 
   #[\Override]
-  public function update(PedidoItem $item): PedidoItem {
+  public function update(PedidoItem $item): PedidoItem
+  {
     try {
-      throw new FeatureNotImplemented('Method "update" from "PedidoRepository" not implemented');
+      $this->entityManager->persist($item);
+      $this->entityManager->flush();
+
+      return $item;
     } catch (\Exception $e) {
       throw new DatabaseException($e->getMessage());
     }
   }
 
   #[\Override]
-  public function deleteById(int $id) {
+  public function deleteById(int $id)
+  {
     try {
       $item = $this->findById($id);
 
@@ -45,7 +52,8 @@ class PedidoItemRepository extends Repository implements IPedidoItemRepository {
    * @return PedidoItem[]
    */
   #[\Override]
-  public function findMany(): array {
+  public function findMany(): array
+  {
     try {
       $result = $this->entityManager
         ->createQuery('SELECT u FROM App\Models\PedidoItem p')
@@ -60,7 +68,8 @@ class PedidoItemRepository extends Repository implements IPedidoItemRepository {
   /**
    * @return PedidoItem[]
    */
-  public function findManyByIdPedido(int $id_pedido): array {
+  public function findManyByIdPedido(int $id_pedido): array
+  {
     try {
       return $this->entityManager
         ->createQuery('SELECT p FROM App\Models\PedidoItem p LEFT JOIN p.pedido pd WHERE pd.id = :id_pedido')
@@ -72,7 +81,8 @@ class PedidoItemRepository extends Repository implements IPedidoItemRepository {
   }
 
   #[\Override]
-  public function findById(int $id): ?PedidoItem {
+  public function findById(int $id): ?PedidoItem
+  {
     try {
       $pedidoItem = $this->entityManager->find(PedidoItem::class, $id);
 

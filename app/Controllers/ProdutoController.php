@@ -72,7 +72,7 @@ class ProdutoController
       'nome' => $request->getBody('nome'),
       'valor' => $request->getBody('valor'),
       'descricao' => $request->getBody('descricao'),
-      'id_categoria' => $request->getBody('id_categoria'),
+      'id_categoria' => $request->getBody('categoria')['id'],
       'data_inclusao' => $request->getBody('data_inclusao'),
       'ativo' => $request->getBody('ativo')
     ]);

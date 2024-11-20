@@ -58,7 +58,7 @@ class PedidoController
   function create(Request $request)
   {
     $result = $this->pedidoService->create([
-      'id_cliente' => $request->getBody('id_cliente'),
+      'id_cliente' => $request->getBody('cliente')['id_cliente'],
       'data_pedido' => $request->getBody('data_pedido'),
       'status' => $request->getBody('status'),
       'observacoes' => $request->getBody('observacoes'),
@@ -82,7 +82,7 @@ class PedidoController
 
     $result = $this->pedidoService->update([
       'id' => $pedido_id,
-      'id_cliente' => $request->getBody('id_cliente'),
+      'id_cliente' => $request->getBody('cliente')['id_cliente'],
       'data_pedido' => $request->getBody('data_pedido'),
       'status' => $request->getBody('status'),
       'observacoes' => $request->getBody('observacoes'),
