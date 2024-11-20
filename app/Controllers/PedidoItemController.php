@@ -7,7 +7,7 @@ use Core\Common\Attributes\{Controller, Get, Delete, Guard, Post, Put};
 use App\Middlewares\AuthenticationMiddleware;
 use App\Services\PedidoItemService;
 
-#[Controller('/item')]
+#[Controller('/items')]
 class PedidoItemController {
 
     private readonly PedidoItemService $pedidoItemService;

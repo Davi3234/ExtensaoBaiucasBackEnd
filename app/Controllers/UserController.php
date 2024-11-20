@@ -53,7 +53,7 @@ class UserController {
       'name' => $request->getBody('name'),
       'login' => $request->getBody('login'),
       'password' => $request->getBody('password'),
-      'confirm_password' => $request->getBody('confirm_password'),
+      'confirm_password' => $request->getBody('confirmPassword'),
       'tipo' => $request->getBody('tipo')
     ]);
 
@@ -71,7 +71,7 @@ class UserController {
       'login' => $request->getBody('login'),
       'tipo' => $request->getBody('tipo'),
       'password' => $request->getBody('password'),
-      'confirm_password' => $request->getBody('confirm_password'),
+      'confirm_password' => $request->getBody('confirmPassword'),
       'active' => $request->getBody('active')
     ]);
 
