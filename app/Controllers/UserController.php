@@ -19,13 +19,21 @@ class UserController {
     );
   }
 
+  #[Get('/current')]
+  #[Guard(AuthenticationMiddleware::class)]
+  function getCurrent(Request $request) {
+    $result = $this->userService->getById([
+      'id' => $request->getAttribute('userId'),
+    ]);
+
+    return $result;
+  }
+
   #[Get('/:id')]
   #[Guard(AuthenticationMiddleware::class)]
   function getOne(Request $request) {
-    $userId = str_replace("/users/", "", $request->getParam('url'));
-
     $result = $this->userService->getById([
-      'id' => $userId,
+      'id' => $request->getParam('id'),
     ]);
 
     return $result;
@@ -73,10 +81,8 @@ class UserController {
   #[Delete('/:id')]
   #[Guard(AuthenticationMiddleware::class)]
   function delete(Request $request) {
-    $userId = str_replace("/users/", "", $request->getParam('url'));
-
     $result = $this->userService->delete([
-      'id' => $userId,
+      'id' => $request->getParam('id'),
     ]);
 
     return $result;
