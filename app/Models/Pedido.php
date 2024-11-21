@@ -46,8 +46,8 @@ class Pedido extends Model
 	#[Column(type: 'string', enumType: TipoEntrega::class)]
 	private TipoEntrega $tipo;
 
-	#[Column(name: 'endereco_entrega')]
-	private string $enderecoEntrega;
+	#[Column(name: 'endereco_entrega', nullable: true)]
+	private ?string $enderecoEntrega;
 
 	#[Column(name: 'taxa_entrega')]
 	private float $taxaEntrega;
@@ -152,12 +152,12 @@ class Pedido extends Model
 	}
 
 	//Endereço de entrega
-	public function getEnderecoEntrega(): string
+	public function getEnderecoEntrega(): ?string
 	{
 		return $this->enderecoEntrega;
 	}
 
-	public function setEnderecoEntrega(string $value)
+	public function setEnderecoEntrega(?string $value)
 	{
 		$this->enderecoEntrega = $value;
 	}
