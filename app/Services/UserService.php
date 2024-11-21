@@ -166,7 +166,7 @@ class UserService
     if ($dto->login) {
       $userWithSameLogin = $this->userRepository->findByLogin($dto->login);
 
-      if ($userWithSameLogin) {
+      if ($userWithSameLogin && $userWithSameLogin->getId() != $dto->id) {
         throw new ValidationException('Não foi possível atualizar o Usuário', [
           [
             'message' => 'Já existe um Usuário com o mesmo login informado',
