@@ -25,7 +25,8 @@ services:
     env_file:
       - ./ExtensaoBaiucasBackEnd/.env
     depends_on:
-      - baiucas-db
+      baiucas-db:
+        condition: service_healthy
     networks:
       - app-network
     volumes:
@@ -45,6 +46,11 @@ services:
       - pgdata:/var/lib/postgresql/data
     networks:
       - app-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 volumes:
   pgdata:
