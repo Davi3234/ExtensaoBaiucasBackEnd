@@ -5,6 +5,7 @@ namespace TestsPerformance;
 require __DIR__ . '/../../initialize.php';
 
 use Core\Managers\RequestManager;
+use Provider\IO\File;
 
 function measurePerformance(callable $handler, int $iterations = 1): array {
   $times = [];
@@ -58,16 +59,22 @@ $requests = [
   ['/categories/1', 'DELETE'],
 ];
 
-array_map(function ($router) {
+$file = new File(path_join(PATH_STORAGE, 'reports'), 'measure-performance-request-' . time() . '.txt');
+
+array_map(function ($router) use ($file) {
   $result = measurePerformance(function () use ($router) {
     $request = new RequestManager([], $router[0], $router[1]);
 
     $request->loadEndpointFromCacheFile();
-  });
+  }, 10);
 
-  echo "Rota: \"$router[0]\" \"$router[1]\"\n";
-  echo "Maior tempo executado: {$result['max_time']} ms\n";
-  echo "Menor tempo executado: {$result['min_time']} ms\n";
-  echo "Média de tempo executado: {$result['average_time']} ms\n";
-  echo "Tempo total executado: {$result['total_time']} ms\n" . PHP_EOL;
+  $reportDate = <<<REPORT
+  Rota: "$router[0]" "$router[1]"
+  Maior tempo executado: {$result['max_time']} ms
+  Menor tempo executado: {$result['min_time']} ms
+  Média de tempo executado: {$result['average_time']} ms
+  Tempo total executado: {$result['total_time']} ms\n\n
+  REPORT;
+
+  $file->write($file->read() . $reportDate);
 }, $requests);
