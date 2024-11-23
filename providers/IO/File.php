@@ -36,6 +36,22 @@ class File implements IFile {
     return $content;
   }
 
+  function delete() {
+    return unlink($this->getFullPath());
+  }
+
+  function copyTo(string $path) {
+    return copy($this->getFullPath(), $path);
+  }
+
+  function getSize() {
+    return filesize($this->getFullPath());
+  }
+
+  function getType() {
+    return filetype($this->getFullPath());
+  }
+
   function isFile() {
     return is_file($this->getFullPath());
   }

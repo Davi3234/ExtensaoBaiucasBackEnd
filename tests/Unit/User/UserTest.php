@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\User;
+namespace TestsUnit\User;
 
 use App\Enums\TipoUsuario;
 use PHPUnit\Framework\TestCase;
@@ -9,12 +9,10 @@ use App\Models\User;
 use App\Services\UserService;
 use App\Repositories\IUserRepository;
 
-class UserTest extends TestCase
-{
+class UserTest extends TestCase {
 
   #[Test]
-  public function deveAcharUsuario()
-  {
+  public function deveAcharUsuario() {
     //Arrange
     $id = 1;
 
@@ -53,8 +51,7 @@ class UserTest extends TestCase
   }
 
   #[Test]
-  public function deveCadastrarUsuario()
-  {
+  public function deveCadastrarUsuario() {
     //Arrange
     $nome = 'Davi';
     $login = 'davi.fadriano@gmail.com';
