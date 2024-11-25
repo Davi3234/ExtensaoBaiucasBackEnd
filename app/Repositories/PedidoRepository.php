@@ -78,4 +78,20 @@ class PedidoRepository extends Repository implements IPedidoRepository
       throw new DatabaseException($e->getMessage());
     }
   }
+
+
+  /**
+   * @return Pedido[]
+   */
+  public function findManyByStatus(string $status): array
+  {
+    try {
+      return $this->entityManager
+        ->createQuery('SELECT p FROM App\Models\Pedido p WHERE p.status = :status')
+        ->setParameter('status', $status)
+        ->getResult();
+    } catch (\Exception $e) {
+      throw new DatabaseException($e->getMessage());
+    }
+  }
 }

@@ -16,15 +16,15 @@ use App\Services\IPedidoItemRepository;
 use App\Repositories\ProdutoRepository;
 use App\Models\PedidoItem;
 
-class PedidoService {
+class PedidoService
+{
 
   public function __construct(
     private readonly IPedidoRepository $pedidoRepository,
     private readonly PedidoItemService $pedidoItemService,
     private readonly IUserRepository $userRepository,
     private readonly IProdutoRepository $produtoRepository
-  ) {
-  }
+  ) {}
 
   /*  public function query()
   {
@@ -50,7 +50,8 @@ class PedidoService {
     return $raw;
   }*/
 
-  public function query() {
+  public function query()
+  {
     $pedidos = $this->pedidoRepository->findMany();
 
     $raw = array_map(function ($pedido) {
@@ -92,7 +93,8 @@ class PedidoService {
    * @return array
    */
 
-  public function getById(array $args) {
+  public function getById(array $args)
+  {
     $getSchema = Z::object([
       'id' => Z::number([
         'required' => 'Id do pedido é obrigatório',
@@ -147,7 +149,45 @@ class PedidoService {
     ];
   }
 
-  public function create(array $args) {
+  public function getPedidosPorStatus(array $args)
+  {
+    $getSchema = Z::object([
+      'status' => Z::enum([
+        'required' => 'Status do pedido é obrigatório',
+        'invalidType' => 'Status do pedido inválido'
+      ])
+    ])->coerce();
+
+    $dto = $getSchema->parseNoSafe($args);
+
+    $pedidos =  $this->pedidoRepository->findManyByStatus($dto->status);
+
+
+    if (!$pedidos)
+      throw new ValidationException('Não foi possível encontrar o Pedido', [
+        [
+          'message' => 'Pedidos com o status informado não encontrado',
+          'origin' => 'status'
+        ]
+      ]);
+
+    array_map(function ($pedido) {
+      return [
+        [
+          'id' => $pedido->getIdPedido(),
+          'data_pedido' => $pedido->getDataPedido(),
+          'valor_total' => $pedido->getValorTotal(),
+          'status' => $pedido->getStatus(),
+          'observacoes' => $pedido->getObservacoes(),
+          'tipo' => $pedido->getTipo(),
+          'id_cliente' => $pedido->getCliente()->getId()
+        ]
+      ];
+    }, $pedidos);
+  }
+
+  public function create(array $args)
+  {
     $createSchema = Z::object([
       'id_cliente' => Z::number(['required' => 'Id do cliente é obrigatório!'])
         ->coerce()->int(),
@@ -224,7 +264,8 @@ class PedidoService {
     return ['message' => 'Pedido inserido com sucesso!'];
   }
 
-  public function update(array $args) {
+  public function update(array $args)
+  {
     $updateSchema = Z::object([
       'id' => Z::number(['required' => 'Id do Pedido é obrigatório!'])->coerce()->int(),
       'id_cliente' => Z::number(['required' => 'Id do cliente é obrigatório!'])
@@ -294,7 +335,8 @@ class PedidoService {
     return ['message' => 'Pedido atualizado com sucesso'];
   }
 
-  public function delete(array $args) {
+  public function delete(array $args)
+  {
     $deleteSchema = Z::object([
       'id' => Z::number([
         'required' => 'Id do Pedido é obrigatório',
