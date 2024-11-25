@@ -10,10 +10,12 @@ use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Provider\JWT\JWT;
 
-class AuthTest extends TestCase {
+class AuthTest extends TestCase
+{
 
   #[Test]
-  public function testDeveEfetuarLogin() {
+  public function testDeveEfetuarLogin()
+  {
     // Arrange
     $login = 'dan@gmail.com';
     $password = 'Abc123!@#';
@@ -51,7 +53,8 @@ class AuthTest extends TestCase {
   }
 
   #[Test]
-  public function testUsuarioNaoEncontrado() {
+  public function testUsuarioNaoEncontrado()
+  {
     // Arrange
     $login = 'dan@gmail.com';
     $password = 'Abc123!@#';
@@ -73,7 +76,8 @@ class AuthTest extends TestCase {
   }
 
   #[Test]
-  public function testSenhaInvalida() {
+  public function testSenhaInvalida()
+  {
     // Arrange
     $login = 'dan@gmail.com';
     $password = 'Abc123!@#';
@@ -106,7 +110,8 @@ class AuthTest extends TestCase {
 
   // Authentication
   #[Test]
-  public function testDevePermitirAutorizarUsuario() {
+  public function testDevePermitirAutorizarUsuario()
+  {
     // Arrange
     $token  = $this->tokenFactory();
     $authorization = "Bearer $token";
@@ -124,7 +129,8 @@ class AuthTest extends TestCase {
   }
 
   #[Test]
-  public function testTokenInvalido_EspacoAMais() {
+  public function testTokenInvalido_EspacoAMais()
+  {
     // Arrange
     $token  = $this->tokenFactory();
     $authorization = "Bearer  $token";
@@ -141,7 +147,8 @@ class AuthTest extends TestCase {
   }
 
   #[Test]
-  public function testTokenInvalido_SemInformarBearer() {
+  public function testTokenInvalido_SemInformarBearer()
+  {
     // Arrange
     $token  = $this->tokenFactory();
     $authorization = $token;
@@ -158,7 +165,8 @@ class AuthTest extends TestCase {
   }
 
   #[Test]
-  public function testTokenInvalido_RandomToken() {
+  public function testTokenInvalido_RandomToken()
+  {
     // Arrange
     $authorization = "Bearer ojisauhdibasjndaioshduaisdna.asdsfvgtrefewdcsfgbcdfg.dsfghnjty56y4grevfd";
 
@@ -174,7 +182,8 @@ class AuthTest extends TestCase {
   }
 
   #[Test]
-  public function testTokenInvalido_BearerInvalido() {
+  public function testTokenInvalido_BearerInvalido()
+  {
     // Arrange
     $token  = $this->tokenFactory();
     $authorization = "Beareer $token";
@@ -190,7 +199,8 @@ class AuthTest extends TestCase {
     ]);
   }
 
-  private function tokenFactory() {
+  private function tokenFactory()
+  {
     $login = 'dan@gmail.com';
     $password = 'Abc123!@#';
 

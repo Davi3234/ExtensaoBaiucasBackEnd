@@ -45,6 +45,19 @@ class PedidoController
     return $result;
   }
 
+  #[Get('/:status')]
+  #[Guard(AuthenticationMiddleware::class)]
+  function getByStatus(Request $request)
+  {
+    $status = $request->getParam('status');
+
+    $result = $this->pedidoService->getPedidosPorStatus([
+      'status' => $status
+    ]);
+
+    return $result;
+  }
+
   #[Get('')]
   #[Guard(AuthenticationMiddleware::class)]
   function getMany(Request $request)
