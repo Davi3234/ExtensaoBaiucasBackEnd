@@ -87,6 +87,8 @@ class UserService
         ->regex('/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/', 'Login inválido'),
       'cpf' => Z::string(['required' => 'CPF é de preenchimento obrigatório'])
         ->trim(),
+      'endereco' => Z::string(['required' => 'Endereço é de preenchimento obrigatório'])
+        ->trim(),
       'password' => Z::string(['required' => 'Senha é de preenchimento obrigatório'])
         ->trim(),
       'confirm_password' => Z::string(['required' => 'Confirmação de senha é de preenchimento obrigatório'])
@@ -145,6 +147,8 @@ class UserService
         ->trim()
         ->regex('/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/', 'Login inválido'),
       'cpf' => Z::string(['required' => 'CPF é de preenchimento obrigatório'])->optional()
+        ->trim(),
+      'endereco' => Z::string(['required' => 'Endereço é de preenchimento obrigatório'])
         ->trim(),
       'password' => Z::string(['required' => 'Senha é de preenchimento obrigatório'])->optional()
         ->trim(),

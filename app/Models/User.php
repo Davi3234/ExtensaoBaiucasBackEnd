@@ -26,18 +26,21 @@ class User extends Model
 	#[Column]
 	private string $cpf;
 	#[Column]
+	private string $endereco;
+	#[Column]
 	private string $password;
 	#[Column(options: ['default' => true])]
 	private bool $active;
 	#[Column(type: 'string', enumType: TipoUsuario::class)]
 	private TipoUsuario $tipo;
 
-	public function __construct($id = 0, $name = '', $login = '', $cpf = '',$password = '', $active = true, $tipo = TipoUsuario::CLIENTE)
+	public function __construct($id = 0, $name = '', $login = '', $cpf = '',$endereco = '',$password = '', $active = true, $tipo = TipoUsuario::CLIENTE)
 	{
 		$this->id = $id;
 		$this->name = $name;
 		$this->login = $login;
 		$this->cpf = $cpf;
+		$this->endereco = $endereco;
 		$this->password = $password;
 		$this->active = $active;
 		$this->tipo = $tipo;
@@ -85,6 +88,15 @@ class User extends Model
 	public function setCpf(string $value)
 	{
 		$this->cpf = $value;
+	}
+
+	public function getEndereco(): string
+	{
+		return $this->endereco;
+	}
+	public function setEndereco(string $value)
+	{
+		$this->endereco = $value;
 	}
 
 	public function getPassword(): string
