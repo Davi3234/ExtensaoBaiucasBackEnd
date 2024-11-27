@@ -26,29 +26,6 @@ class PedidoService
     private readonly IProdutoRepository $produtoRepository
   ) {}
 
-  /*  public function query()
-  {
-    $pedidos = $this->pedidoRepository->findMany();
-
-    $raw = array_map(function ($pedido) {
-      return [
-        'id' => $pedido->getIdPedido(),
-        'data_pedido' => $pedido->getDataPedido(),
-        'cliente' => [
-          'nome' => $pedido->getCliente()->getName(),
-        ],
-        'valor_total' => $pedido->getValorTotal(),
-        'status' => $pedido->getStatus(),
-        'forma_pagamento' => $pedido->getFormaPagamento(),
-        'observacoes' => $pedido->getObservacoes(),
-        'tipo' => $pedido->getTipo(),
-        'endereco_entrega' => $pedido->getEnderecoEntrega(),
-        'taxa_entrega' => $pedido->getTaxaEntrega(),
-      ];
-    }, $pedidos);
-
-    return $raw;
-  }*/
 
   public function query()
   {
@@ -152,15 +129,12 @@ class PedidoService
   public function getPedidosPorStatus(array $args)
   {
     $getSchema = Z::object([
-      'status' => Z::enum([
-        'required' => 'Status do pedido é obrigatório',
-        'invalidType' => 'Status do pedido inválido'
-      ])
+      'statusPedido' => Z::enumNative(StatusPedido::class, ['required' => 'O Status é obrigatório!'])
     ])->coerce();
 
     $dto = $getSchema->parseNoSafe($args);
 
-    $pedidos =  $this->pedidoRepository->findManyByStatus($dto->status);
+    $pedidos =  $this->pedidoRepository->findManyByStatus($dto->statusPedido);
 
 
     if (!$pedidos)
@@ -171,9 +145,9 @@ class PedidoService
         ]
       ]);
 
-    array_map(function ($pedido) {
-      return [
-        [
+    return [
+      'orders' => array_map(function ($pedido) {
+        return [
           'id' => $pedido->getIdPedido(),
           'data_pedido' => $pedido->getDataPedido(),
           'valor_total' => $pedido->getValorTotal(),
@@ -181,9 +155,9 @@ class PedidoService
           'observacoes' => $pedido->getObservacoes(),
           'tipo' => $pedido->getTipo(),
           'id_cliente' => $pedido->getCliente()->getId()
-        ]
-      ];
-    }, $pedidos);
+        ];
+      }, $pedidos),
+    ];
   }
 
   public function create(array $args)
@@ -302,6 +276,10 @@ class PedidoService
       ]);
     }
 
+    if ($pedidoToUpdate->status === StatusPedido::CANCELADO) {
+      throw new ValidationException('Não é possível alterar o status de um pedido cancelado.');
+    }
+
     $cliente = $this->userRepository->findById($dto->id_cliente);
 
     if (!$cliente) {
@@ -334,6 +312,37 @@ class PedidoService
 
     return ['message' => 'Pedido atualizado com sucesso'];
   }
+
+  public function filtrarPedidosPorData($dataInicial, $dataFinal = null)
+  {
+    // Se for fornecida uma data final, busca pelo intervalo de datas
+    if ($dataFinal) {
+      $pedidos = $this->pedidoRepository->findByDateRange($dataInicial, $dataFinal);
+    } else {
+      // Senão, filtra apenas pela data inicial
+      $pedidos = $this->pedidoRepository->findByDate($dataInicial);
+    }
+
+    if (empty($pedidos)) {
+      throw new \Exception('Não existem pedidos para as datas informadas');
+    }
+
+    $resultados = [];
+    foreach ($pedidos as $pedido) {
+      $resultados[] = [
+        'id' => $pedido->getIdPedido(),
+        'data_pedido' => $pedido->getDataPedido(),
+        'cliente' => [
+          'id' => $pedido->getCliente()->getId(),
+          'nome' => $pedido->getCliente()->getName(),
+        ],
+        'valorTotalPedido' => $pedido->getValorTotal(),
+      ];
+    }
+
+    return $resultados;
+  }
+
 
   public function delete(array $args)
   {
