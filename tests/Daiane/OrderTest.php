@@ -18,7 +18,7 @@ use App\Repositories\IProdutoRepository;
 use App\Services\PedidoItemService;
 use Exception\ValidationException;
 
-class DaiUnitarios extends TestCase
+class OrderTest extends TestCase
 {
 
   //Caso de teste 01: Validar se o método GetPedidosPorStatus() retorna corretamente os dados do pedido com status “Em preparo”
