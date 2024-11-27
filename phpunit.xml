@@ -1,9 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <phpunit bootstrap="initialize.php" colors="true">
-
     <testsuites>
-        <testsuite name="Application Test Suite">
-            <directory>tests</directory>
+        <testsuite name="Davi Tests">
+            <directory>tests/Davi</directory>
+        </testsuite>
+        <testsuite name="Daiane Tests">
+            <directory>tests/Daiane</directory>
+        </testsuite>
+        <testsuite name="Danrley Tests">
+            <directory>tests/Danrley</directory>
+        </testsuite>
+        <testsuite name="Luana Tests">
+            <directory>tests/Luana</directory>
         </testsuite>
     </testsuites>
 
@@ -12,5 +20,4 @@
             <directory>src/Model</directory>
         </include>
     </coverage>
-
 </phpunit>

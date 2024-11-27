@@ -1,7 +1,11 @@
 {
   "scripts": {
     "start": "php -S localhost:8080 public/index.php",
-    "tests": "php vendor/bin/phpunit Tests --colors"
+    "tests:all": "php vendor/bin/phpunit Tests --colors",
+    "tests:davi": "php vendor/bin/phpunit Tests/Davi",
+    "tests:daiane": "php vendor/bin/phpunit Tests/Daiane",
+    "tests:danrley": "php vendor/bin/phpunit Tests/Danrley",
+    "tests:luana": "php vendor/bin/phpunit Tests/Luana'"
   },
   "require": {
     "doctrine/orm": "^3",

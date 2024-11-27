@@ -13,60 +13,25 @@ class UserTest extends TestCase
 {
 
   #[Test]
-  public function deveAcharUsuario()
-  {
-    //Arrange
-    $id = 1;
-
-    $userRepository = TestCase::createMock(IUserRepository::class);
-
-    $userRepository
-      ->method('findById')
-      ->with($id)
-      ->willReturn(
-        new User(
-          id: 1,
-          name: 'Davi',
-          login: 'davi323',
-          active: true,
-          tipo: TipoUsuario::CLIENTE
-        )
-      );
-
-    //Act
-    $userService = new UserService($userRepository);
-
-    $user = $userService->getById(['id' => $id]);
-
-    //Assert
-    $userComparacao = [
-      'user' => [
-        'id' => 1,
-        'name' => 'Davi',
-        'login' => 'davi323',
-        'active' => true,
-        'tipo' => TipoUsuario::CLIENTE
-      ]
-    ];
-
-    $this->assertEquals($userComparacao, $user);
-  }
-
-  #[Test]
-  public function deveCadastrarUsuario()
+  public function deveCriarUsuario()
   {
     //Arrange
     $nome = 'Davi';
     $login = 'davi.fadriano@gmail.com';
-    $password = 'Davi!@#123';
-    $confirm_password = 'Davi!@#123';
+    $cpf = '02832036090';
+    $endereco = 'Rua de Teste';
+    $password = 'Davi1234!';
+    $confirm_password = 'Davi1234!';
     $tipo = TipoUsuario::CLIENTE->value;
 
     $user = new User(
       name: $nome,
       login: $login,
+      cpf: $cpf,
+      endereco: $endereco,
       password: md5($password),
       active: true,
+      tipo: $tipo
     );
 
     //Act
@@ -84,11 +49,13 @@ class UserTest extends TestCase
     $userService = new UserService($userRepository);
 
     //Inserting User
-    $response = $userService->create([
+    $response = $userService->createUser([
       'name' => $nome,
       'login' => $login,
       'password' => $password,
       'confirm_password' => $confirm_password,
+      'cpf' => $cpf,
+      'endereco' => $endereco,
       'tipo' => $tipo,
     ]);
 

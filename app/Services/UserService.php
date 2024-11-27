@@ -74,7 +74,7 @@ class UserService
     ];
   }
 
-  public function create(array $args)
+  public function createUser(array $args)
   {
     $createSchema = Z::object([
       'name' => Z::string([

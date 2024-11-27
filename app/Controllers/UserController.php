@@ -49,7 +49,7 @@ class UserController {
 
   #[Post('/', StatusCodeHTTP::CREATED->value)]
   function create(Request $request) {
-    $result = $this->userService->create([
+    $result = $this->userService->createUser([
       'name' => $request->getBody('name'),
       'login' => $request->getBody('login'),
       'password' => $request->getBody('password'),
