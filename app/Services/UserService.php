@@ -124,6 +124,8 @@ class UserService
     $user->setName($dto->name);
     $user->setLogin($dto->login);
     $user->setPassword(md5($dto->password));
+    $user->setCpf($dto->cpf);
+    $user->setEndereco($dto->endereco);
     $user->setActive(true);
     $user->setTipo(TipoUsuario::tryFrom($dto->tipo));
 
