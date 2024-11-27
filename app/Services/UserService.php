@@ -74,7 +74,7 @@ class UserService
     ];
   }
 
-  public function create(array $args)
+  public function createUser(array $args)
   {
     $createSchema = Z::object([
       'name' => Z::string([
@@ -124,6 +124,8 @@ class UserService
     $user->setName($dto->name);
     $user->setLogin($dto->login);
     $user->setPassword(md5($dto->password));
+    $user->setCpf($dto->cpf);
+    $user->setEndereco($dto->endereco);
     $user->setActive(true);
     $user->setTipo(TipoUsuario::tryFrom($dto->tipo));
 
