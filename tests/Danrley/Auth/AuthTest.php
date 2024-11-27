@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Auth;
+namespace Tests\Danrley\Auth;
 
 use App\Models\User;
 use App\Repositories\IUserRepository;
