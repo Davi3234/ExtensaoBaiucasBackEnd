@@ -74,22 +74,26 @@ class UserService
     ];
   }
 
-  public function create(array $args)
+  public function createUser(array $args)
   {
     $createSchema = Z::object([
       'name' => Z::string([
-        'required' => 'Nome é obrigatório'
+        'required' => 'Nome é de preenchimento obrigatório'
       ])
         ->trim()
         ->min(3, 'Nome precisa ter no mínimo 3 caracteres'),
-      'login' => Z::string(['required' => 'Login é obrigatório'])
+      'login' => Z::string(['required' => 'Login é de preenchimento obrigatório'])
         ->trim()
         ->regex('/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/', 'Login inválido'),
-      'password' => Z::string(['required' => 'Senha é obrigatório'])
+      'cpf' => Z::string(['required' => 'CPF é de preenchimento obrigatório'])
         ->trim(),
-      'confirm_password' => Z::string(['required' => 'Confirmação de senha é obrigatório'])
+      'endereco' => Z::string(['required' => 'Endereço é de preenchimento obrigatório'])
         ->trim(),
-      'tipo' => Z::enumNative(TipoUsuario::class, ['required' => 'Tipo é obrigatório'])
+      'password' => Z::string(['required' => 'Senha é de preenchimento obrigatório'])
+        ->trim(),
+      'confirm_password' => Z::string(['required' => 'Confirmação de senha é de preenchimento obrigatório'])
+        ->trim(),
+      'tipo' => Z::enumNative(TipoUsuario::class, ['required' => 'Tipo é de preenchimento obrigatório'])
         ->defaultValue(TipoUsuario::CLIENTE->value)
     ])->coerce();
 
@@ -120,6 +124,8 @@ class UserService
     $user->setName($dto->name);
     $user->setLogin($dto->login);
     $user->setPassword(md5($dto->password));
+    $user->setCpf($dto->cpf);
+    $user->setEndereco($dto->endereco);
     $user->setActive(true);
     $user->setTipo(TipoUsuario::tryFrom($dto->tipo));
 
@@ -135,19 +141,23 @@ class UserService
         ->coerce()
         ->int(),
       'name' => Z::string([
-        'required' => 'Nome é obrigatório'
+        'required' => 'Nome é de preenchimento obrigatório'
       ])->optional()
         ->trim()
         ->min(3, 'Nome precisa ter no mínimo 3 caracteres'),
-      'login' => Z::string(['required' => 'Login é obrigatório'])->optional()
+      'login' => Z::string(['required' => 'Login é de preenchimento obrigatório'])->optional()
         ->trim()
         ->regex('/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/', 'Login inválido'),
-      'password' => Z::string(['required' => 'Senha é obrigatório'])->optional()
+      'cpf' => Z::string(['required' => 'CPF é de preenchimento obrigatório'])->optional()
         ->trim(),
-      'confirm_password' => Z::string(['required' => 'Confirmação de senha é obrigatório'])->optional()
+      'endereco' => Z::string(['required' => 'Endereço é de preenchimento obrigatório'])
         ->trim(),
-      'tipo' => Z::enumNative(TipoUsuario::class, ['required' => 'Tipo é obrigatório'])->optional(),
-      'active' => Z::boolean(['required' => 'Ativo é obrigatório'])
+      'password' => Z::string(['required' => 'Senha é de preenchimento obrigatório'])->optional()
+        ->trim(),
+      'confirm_password' => Z::string(['required' => 'Confirmação de senha é de preenchimento obrigatório'])->optional()
+        ->trim(),
+      'tipo' => Z::enumNative(TipoUsuario::class, ['required' => 'Tipo é de preenchimento obrigatório'])->optional(),
+      'active' => Z::boolean(['required' => 'Ativo é de preenchimento obrigatório'])
     ])->coerce();
 
     $dto = $updateSchema->parseNoSafe($args);
