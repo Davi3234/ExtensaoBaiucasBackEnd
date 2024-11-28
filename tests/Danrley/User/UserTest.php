@@ -90,7 +90,7 @@ class UserTest extends TestCase {
   }
 
   #[Test]
-  public function naoDeveAtualizarUsuarioComSenhaInvalido() {
+  public function naoDeveAtualizarUsuarioComSenhaInvalida() {
     $dto = [
       'id' => 1,
       'name' => 'Dan Ruan',
@@ -125,6 +125,47 @@ class UserTest extends TestCase {
       $userService->update($dto);
     } catch (Exception $err) {
       $this->assertNotEmpty($err->getCausesFromOrigin('password'));
+
+      throw $err;
+    }
+  }
+
+  #[Test]
+  public function naoDeveAtualizarUsuarioComConfirmacaoSenhaInvalida() {
+    $dto = [
+      'id' => 1,
+      'name' => 'Dan Ruan',
+      'login' => '',
+      'cpf' => '645.549.820-84',
+      'endereco' => 'Rua de Teste 2',
+      'password' => 'Davi@432',
+      'confirm_password' => 'Dav',
+    ];
+
+    $userRepository = $this->createMock(IUserRepository::class);
+
+    $userRepository
+      ->method('findById')
+      ->with($dto['id'])
+      ->willReturn(new User(
+        id: 1,
+        name: 'Dan Ruan',
+        login: 'dan@gmail.com',
+        cpf: '489.945.080-07',
+        endereco: 'Rua de Teste',
+        password: 'Dan!@#123',
+        active: true,
+        tipo: TipoUsuario::ADMNISTRADOR,
+      ));
+
+    $userService = new UserService($userRepository);
+
+    $this->expectException(ZodParseException::class);
+
+    try {
+      $userService->update($dto);
+    } catch (Exception $err) {
+      $this->assertNotEmpty($err->getCausesFromOrigin('confirm_password'));
 
       throw $err;
     }

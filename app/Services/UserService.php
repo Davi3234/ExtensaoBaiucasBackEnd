@@ -228,7 +228,7 @@ class UserService {
       ->coerce()
       ->refine(function ($value) {
         return $value->password == $value->confirm_password;
-      }, 'A nova senha deve ser igual a confirmação de senha');
+      }, ['message' => 'A nova senha deve ser igual a confirmação de senha', 'origin' => 'confirm_password']);
 
     $dto = $updateSchema->parseNoSafe($args);
 
