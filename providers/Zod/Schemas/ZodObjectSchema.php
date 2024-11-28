@@ -55,7 +55,7 @@ class ZodObjectSchema extends ZodSchema {
     $this->value = (object) $value;
   }
 
-  protected function parseResolveFieldsSchema() {
+  protected function parseResolveFieldsSchema($_, $attributes) {
     $valueRaw = [];
 
     foreach ($this->fields as $key => $zodSchema) {
@@ -67,7 +67,7 @@ class ZodObjectSchema extends ZodSchema {
         $valueRaw[$key] = $result['data'];
       else {
         foreach ($result['errors'] as $error)
-          $this->addError($error['message'], [$key . ($error['path'] ? '.' . $error['path'][0] : '')]);
+          $this->addError($error['message'], $attributes['origin'] ?? [$key . ($error['origin'] ? '.' . $error['origin'][0] : '')]);
       }
     }
 

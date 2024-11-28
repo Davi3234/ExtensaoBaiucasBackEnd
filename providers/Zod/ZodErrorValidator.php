@@ -9,17 +9,17 @@ class ZodErrorValidator {
   /**
    * @var string[]
    */
-  private readonly array $path;
+  private readonly array $origin;
 
-  function __construct(string $message, string ...$paths) {
+  function __construct(string $message, string ...$origins) {
     $this->message = $message;
-    $this->path = $paths;
+    $this->origin = $origins;
   }
 
   function getError() {
     return [
       'message' => $this->message,
-      'origin' => implode('.', $this->path),
+      'origin' => implode('.', $this->origin),
     ];
   }
 }
