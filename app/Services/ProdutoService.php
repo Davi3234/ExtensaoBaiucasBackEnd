@@ -6,6 +6,7 @@ use App\Repositories\ICategoriaRepository;
 use Exception\ValidationException;
 use Provider\Zod\Z;
 use App\Models\Produto;
+use App\Repositories\IPedidoItemRepository;
 use App\Repositories\IProdutoRepository;
 
 class ProdutoService
@@ -13,7 +14,8 @@ class ProdutoService
 
   public function __construct(
     private readonly IProdutoRepository $produtoRepository,
-    private readonly ICategoriaRepository $categoriaRepository
+    private readonly ICategoriaRepository $categoriaRepository,
+    private readonly IPedidoItemRepository $pedidoItemRepository
   ) {}
 
   public function query()
@@ -78,13 +80,14 @@ class ProdutoService
     ];
   }
 
-  public function create(array $args)
+  public function createProduto(array $args)
   {
     $createSchema = Z::object([
       'nome' => Z::string(['required' => 'Nome é obrigatório']),
       'valor' => Z::number(['required' => 'Valor é obrigatório'])
         ->coerce()
-        ->int(),
+        ->int()
+        ->gt(1, 'O valor deve ser positivo'),
       'descricao' => Z::string(['required' => 'Descrição é obrigatória']),
       'id_categoria' => Z::number(['required' => 'Categoria é obrigatória'])
         ->coerce()
@@ -133,7 +136,7 @@ class ProdutoService
     return ['message' => 'Produto cadastrado com sucesso'];
   }
 
-  public function update(array $args)
+  public function updateProduto(array $args)
   {
     $updateSchema = Z::object([
       'id' => Z::number(['required' => 'Id do produto é obrigatório'])
@@ -160,6 +163,28 @@ class ProdutoService
       throw new ValidationException('Não foi possível atualizar o Produto', [
         [
           'message' => 'Produto não encontrado',
+          'origin' => 'id'
+        ]
+      ]);
+    }
+
+    $itensPedido = $this->pedidoItemRepository->findByIdProdutoAberto($dto->id);
+
+    if(!$itensPedido){
+      throw new ValidationException('Não foi possível atualizar o Produto', [
+        [
+          'message' => 'Possue algum pedido em aberto',
+          'origin' => 'id'
+        ]
+      ]);
+    }
+
+    $itensPedido = $this->pedidoItemRepository->findByIdProdutoAndamento($dto->id);
+
+    if(!$itensPedido){
+      throw new ValidationException('Não foi possível atualizar o Produto', [
+        [
+          'message' => 'Possue algum pedido em andamento',
           'origin' => 'id'
         ]
       ]);

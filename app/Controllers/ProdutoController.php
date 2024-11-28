@@ -48,7 +48,7 @@ class ProdutoController
   #[Post('/', StatusCodeHTTP::CREATED->value)]
   function create(Request $request)
   {
-    $result = $this->produtoService->create([
+    $result = $this->produtoService->createProduto([
       'nome' => $request->getBody('name'),
       'valor' => $request->getBody('value'),
       'descricao' => $request->getBody('description'),
@@ -66,7 +66,7 @@ class ProdutoController
   {
     $id = $request->getParam('id');
 
-    $result = $this->produtoService->update([
+    $result = $this->produtoService->updateProduto([
       'id' => $id,
       'nome' => $request->getBody('name'),
       'valor' => $request->getBody('value'),
