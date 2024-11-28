@@ -101,13 +101,15 @@ class PedidoRepository extends Repository implements IPedidoRepository
     try {
       if ($dataFinal) {
         return $this->entityManager
+
           ->createQuery('SELECT p FROM App\Models\Pedido p WHERE p.data_pedido >= :dataInicial and p.data_pedido <= :dataFinal')
           ->setParameter('dataInicial', $dataInicial)
           ->setParameter('dataFinal', $dataFinal)
           ->getResult();
       } else {
         return $this->entityManager
-          ->createQuery('SELECT p FROM App\Models\Pedido p WHERE p.data_pedido = :dataInicial')
+
+          ->createQuery('SELECT p FROM App\Models\Pedido p WHERE p.data_pedido >= :dataInicial')
           ->setParameter('dataInicial', $dataInicial)
           ->getResult();
       }
