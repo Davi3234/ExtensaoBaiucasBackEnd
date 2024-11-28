@@ -79,16 +79,40 @@ class PedidoRepository extends Repository implements IPedidoRepository
     }
   }
 
-
   /**
    * @return Pedido[]
    */
-  public function findManyByStatus(string $status): array
+  public function findManyByStatus(string $statusPedido): array
   {
     try {
       return $this->entityManager
-        ->createQuery('SELECT p FROM App\Models\Pedido p WHERE p.status = :status')
-        ->setParameter('status', $status)
+        ->createQuery('SELECT p FROM App\Models\Pedido p WHERE p.status = :statusPedido')
+        ->setParameter('statusPedido', $statusPedido)
+        ->getResult();
+    } catch (\Exception $e) {
+      throw new DatabaseException($e->getMessage());
+    }
+  }
+
+  public function findByDateRange(string $dataInicial, string $dataFinal): array
+  {
+    try {
+      return $this->entityManager
+        ->createQuery('SELECT p FROM App\Models\Pedido p WHERE p.data_pedido >= :dataInicial and p.data_pedido <= :dataFinal')
+        ->setParameter('dataInicial', $dataInicial)
+        ->setParameter('dataFinal', $dataFinal)
+        ->getResult();
+    } catch (\Exception $e) {
+      throw new DatabaseException($e->getMessage());
+    }
+  }
+
+  public function findByDate(string $dataInicial): array
+  {
+    try {
+      return $this->entityManager
+        ->createQuery('SELECT p FROM App\Models\Pedido p WHERE p.data_pedido = :dataInicial')
+        ->setParameter('dataInicial', $dataInicial)
         ->getResult();
     } catch (\Exception $e) {
       throw new DatabaseException($e->getMessage());
