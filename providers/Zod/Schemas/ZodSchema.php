@@ -110,12 +110,12 @@ abstract class ZodSchema {
 
   protected function resolveHandleValidator(string $typeStack, string|callable $parser, array $attributes) {
     $response = $this->resolveHandle($parser, $attributes);
+    
+    if (($response === false && $typeStack == 'REFINEEXTRA') || $response['message'])
+      return $response;
 
     if (!$response)
       return null;
-
-    if (($response === false && $typeStack == 'REFINEEXTRA') || $response['message'])
-      return $response;
 
     return null;
   }
