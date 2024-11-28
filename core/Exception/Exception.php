@@ -41,6 +41,12 @@ class Exception extends \Exception {
     return $this->causes;
   }
 
+  function getCausesFromOrigin(string $origin) {
+    return array_filter($this->causes, function ($cause) use ($origin) {
+      return in_array($origin, $cause['origin']);
+    });
+  }
+
   function getCausesAsString() {
     $causes = array_map(function ($cause) {
       $message = $cause['message'];
