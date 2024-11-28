@@ -5,6 +5,7 @@ namespace Tests\Danrley\Auth;
 use App\Models\User;
 use App\Repositories\IUserRepository;
 use App\Services\AuthService;
+use Core\Exception\Exception;
 use Exception\ValidationException;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
@@ -58,7 +59,10 @@ class AuthTest extends TestCase {
 
     $userRepository = TestCase::createMock(IUserRepository::class);
 
-    $userRepository->method('findByLogin')->with($login)->willReturn(null);
+    $userRepository
+      ->method('findByLogin')
+      ->with($login)
+      ->willReturn(null);
 
     // Assertion
     $this->expectException(ValidationException::class);
@@ -66,10 +70,16 @@ class AuthTest extends TestCase {
     // Action
     $authService = new AuthService($userRepository);
 
-    $authService->login([
-      'login' => $login,
-      'password' => $password,
-    ]);
+    try {
+      $authService->login([
+        'login' => $login,
+        'password' => $password,
+      ]);
+    } catch (Exception $err) {
+      $this->assertNotEmpty($err->getCausesFromOrigin('login', 'password'));
+
+      throw $err;
+    }
   }
 
   #[Test]
@@ -98,10 +108,16 @@ class AuthTest extends TestCase {
     // Action
     $authService = new AuthService($userRepository);
 
-    $authService->login([
-      'login' => $login,
-      'password' => $password,
-    ]);
+    try {
+      $authService->login([
+        'login' => $login,
+        'password' => $password,
+      ]);
+    } catch (Exception $err) {
+      $this->assertNotEmpty($err->getCausesFromOrigin('login', 'password'));
+
+      throw $err;
+    }
   }
 
   // Authentication
@@ -135,9 +151,15 @@ class AuthTest extends TestCase {
     $userRepository = TestCase::createMock(IUserRepository::class);
     $authService = new AuthService($userRepository);
 
-    $authService->authorization([
-      'token' => $authorization
-    ]);
+    try {
+      $authService->authorization([
+        'token' => $authorization
+      ]);
+    } catch (Exception $err) {
+      $this->assertNotEmpty($err->getCausesFromOrigin('authorization'));
+
+      throw $err;
+    }
   }
 
   #[Test]
@@ -168,9 +190,15 @@ class AuthTest extends TestCase {
     $userRepository = TestCase::createMock(IUserRepository::class);
     $authService = new AuthService($userRepository);
 
-    $authService->authorization([
-      'token' => $authorization
-    ]);
+    try {
+      $authService->authorization([
+        'token' => $authorization
+      ]);
+    } catch (Exception $err) {
+      $this->assertNotEmpty($err->getCausesFromOrigin('token'));
+
+      throw $err;
+    }
   }
 
   #[Test]

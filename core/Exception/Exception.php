@@ -7,8 +7,7 @@ use Core\Common\Result;
 class Exception extends \Exception {
 
   /** @var array{message: string, origin: string[]}[] */
-  protected array $causes;
-
+  protected readonly array $causes;
 
   /**
    * @param string $message
@@ -41,9 +40,12 @@ class Exception extends \Exception {
     return $this->causes;
   }
 
-  function getCausesFromOrigin(string $origin) {
-    return array_filter($this->causes, function ($cause) use ($origin) {
-      return in_array($origin, $cause['origin']);
+  function getCausesFromOrigin(string ...$origins) {
+    return array_filter($this->causes, function ($cause) use ($origins) {
+      return array_all(
+        $origins,
+        fn($origin) => in_array($origin, $cause['origin'])
+      );
     });
   }
 

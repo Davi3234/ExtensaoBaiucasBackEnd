@@ -65,6 +65,40 @@ function array_find(callable $callback, array $array): mixed {
   return null;
 }
 
+/**
+ * @template TKey of array-key
+ * @template TValue
+ * 
+ * @param array<TKey, TValue> $array
+ * @param (callable(TValue $value): bool)|(callable(TValue $value, TKey $key): bool) $callback
+ * @return bool
+ */
+function array_any(array $array, callable $callback) {
+  foreach ($array as $value) {
+    if ($callback($value))
+      return true;
+  }
+
+  return false;
+}
+
+/**
+ * @template TKey of array-key
+ * @template TValue
+ * 
+ * @param array<TKey, TValue> $array
+ * @param (callable(TValue $value): bool)|(callable(TValue $value, TKey $key): bool) $callback
+ * @return bool
+ */
+function array_all(array $array, callable $callback) {
+  foreach ($array as $value) {
+    if (!$callback($value))
+      return false;
+  }
+
+  return true;
+}
+
 function uuid() {
   return sprintf(
     '%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
