@@ -35,7 +35,7 @@ class Pedido extends Model
 	private float $valorTotal;
 
 	#[Column(type: 'string', enumType: StatusPedido::class)]
-	private StatusPedido $status;
+	public StatusPedido $status;
 
 	#[Column(name: 'forma_pagamento', type: 'string', enumType: FormaPagamento::class)]
 	private FormaPagamento $formaPagamento;

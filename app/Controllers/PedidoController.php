@@ -45,14 +45,14 @@ class PedidoController
     return $result;
   }
 
-  #[Get('/:status')]
+  #[Get('/status/:statusPedido')]
   #[Guard(AuthenticationMiddleware::class)]
   function getByStatus(Request $request)
   {
-    $status = $request->getParam('status');
+    $status = $request->getParam('statusPedido');
 
     $result = $this->pedidoService->getPedidosPorStatus([
-      'status' => $status
+      'statusPedido' => $status
     ]);
 
     return $result;
