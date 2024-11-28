@@ -17,7 +17,7 @@ class UserTest extends TestCase
     //Arrange
     $nome = 'Davi';
     $login = 'davi@gmail.com';
-    $cpf = '02832036090';
+    $cpf = '028.320.360-90';
     $endereco = 'Rua de Teste';
     $password = 'Davi1234!';
     $confirm_password = 'Davi1234!';
@@ -45,7 +45,6 @@ class UserTest extends TestCase
 
     $userService = new UserService($userRepository);
 
-    //Inserting User
     $response = $userService->createUser([
       'name' => $nome,
       'login' => $login,
@@ -67,7 +66,7 @@ class UserTest extends TestCase
     //Arrange
     $nome = '';
     $login = 'davi@gmail.com';
-    $cpf = '02832036090';
+    $cpf = '028.320.360-90';
     $endereco = 'Rua de Teste';
     $password = 'Davi1234!';
     $confirm_password = 'Davi1234!';
@@ -114,7 +113,7 @@ class UserTest extends TestCase
     //Arrange
     $nome = 'Davi';
     $login = 'davi@gmail.com';
-    $cpf = '12312312399';
+    $cpf = '123.123.123-99';
     $endereco = 'Rua de Teste';
     $password = 'Davi1234!';
     $confirm_password = 'Davi1234!';
@@ -161,7 +160,7 @@ class UserTest extends TestCase
     //Arrange
     $nome = 'Davi';
     $login = 'davigmail.com';
-    $cpf = '02832036090';
+    $cpf = '028.320.360-90';
     $endereco = 'Rua de Teste';
     $password = 'Davi1234!';
     $confirm_password = 'Davi1234!';
@@ -208,8 +207,55 @@ class UserTest extends TestCase
     //Arrange
     $nome = 'Davi';
     $login = 'davi@gmail.com';
-    $cpf = '02832036090';
+    $cpf = '028.320.360-90';
     $endereco = 'Rua de Teste';
+    $password = 'davi1234';
+    $confirm_password = 'davi1234';
+
+    $user = new User(
+      name: $nome,
+      login: $login,
+      cpf: $cpf,
+      endereco: $endereco,
+      password: md5($password),
+      active: true
+    );
+
+    //Act
+
+    //Configuração do Mock
+    $userRepository = TestCase::createMock(IUserRepository::class);
+
+    $userRepository->method('create')
+      ->with($user)
+      ->willReturn($user);
+
+    $userRepository->method('findByLogin')
+      ->willReturn(null);
+
+    $userService = new UserService($userRepository);
+
+    //Inserting User
+    $response = $userService->createUser([
+      'name' => $nome,
+      'login' => $login,
+      'password' => $password,
+      'confirm_password' => $confirm_password,
+      'cpf' => $cpf,
+      'endereco' => $endereco
+    ]);
+  }
+
+  #[Test]
+  public function deveDispararExcecaoParaValidarEndereco(){
+
+    $this->expectException(ZodParseException::class);
+
+    //Arrange
+    $nome = 'Davi';
+    $login = 'davi@gmail.com';
+    $cpf = '028.320.360-90';
+    $endereco = '';
     $password = 'davi1234';
     $confirm_password = 'davi1234';
 
