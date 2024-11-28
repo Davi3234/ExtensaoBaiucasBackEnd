@@ -110,12 +110,12 @@ abstract class ZodSchema {
 
   protected function resolveHandleValidator(string $typeStack, string|callable $parser, array $attributes) {
     $response = $this->resolveHandle($parser, $attributes);
+    
+    if (($response === false && $typeStack == 'REFINEEXTRA') || $response['message'])
+      return $response;
 
     if (!$response)
       return null;
-
-    if (($response === false && $typeStack == 'REFINEEXTRA') || $response['message'])
-      return $response;
 
     return null;
   }
@@ -273,7 +273,7 @@ abstract class ZodSchema {
     $this->addRuleValidatorInStack('REFINERULE', $parserRule, $attributes);
   }
 
-  protected function addRefineExtraRule(string $parserRule, array|string $attributes = null) {
+  protected function addRefineExtraRule(string|callable $parserRule, array|string $attributes = null) {
     $this->addRuleValidatorInStack('REFINEEXTRA', $parserRule, $attributes);
   }
 

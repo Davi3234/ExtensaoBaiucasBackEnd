@@ -21,4 +21,6 @@ interface IPedidoItemRepository
    */
   function findManyByIdPedido(int $id_pedido): array;
   function findById(int $id): ?PedidoItem;
+  function findByIdProdutoAberto(int $id_produto): ?array;
+  function findByIdProdutoAndamento(int $id_produto): ?array;
 }
