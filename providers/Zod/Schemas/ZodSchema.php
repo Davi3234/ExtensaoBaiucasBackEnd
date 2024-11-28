@@ -261,19 +261,19 @@ abstract class ZodSchema {
     $this->addRuleValidatorInStack('TRANSFORMINITIAL', $parserRule, $attributes);
   }
 
-  protected function addTypeValidateRule(string $parserRule, array|string $attributes = null) {
+  protected function addTypeValidateRule(string|callable $parserRule, array|string $attributes = null) {
     $this->addRuleValidatorInStack('TYPEVALIDATE', $parserRule, $attributes);
   }
 
-  protected function addTransformRule(string $parserRule, array|string $attributes = null) {
+  protected function addTransformRule(string|callable $parserRule, array|string $attributes = null) {
     $this->addRuleValidatorInStack('TRANSFORM', $parserRule, $attributes);
   }
 
-  protected function addRefineRule(string $parserRule, array|string $attributes = null) {
+  protected function addRefineRule(string|callable $parserRule, array|string $attributes = null) {
     $this->addRuleValidatorInStack('REFINERULE', $parserRule, $attributes);
   }
 
-  protected function addRefineExtraRule(string $parserRule, array|string $attributes = null) {
+  protected function addRefineExtraRule(string|callable $parserRule, array|string $attributes = null) {
     $this->addRuleValidatorInStack('REFINEEXTRA', $parserRule, $attributes);
   }
 
