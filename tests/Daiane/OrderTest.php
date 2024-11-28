@@ -10,6 +10,7 @@ use PHPUnit\Framework\Attributes\Test;
 use App\Models\Pedido;
 use App\Models\User;
 use App\Models\Produto;
+use App\Models\Categoria;
 use App\Models\PedidoItem;
 use App\Services\PedidoService;
 use App\Repositories\IPedidoRepository;
@@ -28,8 +29,17 @@ class OrderTest extends TestCase
     // Arrange
     $pedidoRepositoryMock = $this->createMock(IPedidoRepository::class);
 
-    $userMock = $this->createMock(User::class);
-    $userMock->method('getId')->willReturn(1);
+    $password = 'Dai2349453';
+    $user = new User(
+      id: 1,
+      name: 'Daiane',
+      login: 'daiane@gmail.com',
+      cpf: '111.287.078-91',
+      endereco: 'Rua 25 de janeiro',
+      password: md5($password),
+      active: true
+    );
+
     $pedidoRepositoryMock
       ->method('findManyByStatus')
       ->with(StatusPedido::EM_PREPARO->value)
@@ -39,7 +49,7 @@ class OrderTest extends TestCase
           status: StatusPedido::EM_PREPARO,
           observacoes: '',
           tipo: TipoEntrega::DELIVERY,
-          cliente: $userMock,
+          cliente: $user,
           dataPedido: '2024-10-10',
           valorTotal: 1040
         ),
@@ -48,7 +58,7 @@ class OrderTest extends TestCase
           status: StatusPedido::EM_PREPARO,
           observacoes: 'Sem troco',
           tipo: TipoEntrega::NO_LOCAL,
-          cliente: $userMock,
+          cliente: $user,
           dataPedido: '2024-07-14',
           valorTotal: 101.5
         )
@@ -99,7 +109,6 @@ class OrderTest extends TestCase
       $pedidosRetornados,
       'Os pedidos retornados não correspondem aos pedidos esperados.'
     );
-    echo "Teste finalizado com sucesso! Todos os pedidos estão corretos de acordo com o status EM PREPARO.";
   }
 
   //Caso de teste 02: Validar se o método GetPedidosPorStatus() retorna corretamente os dados do pedido com status “Cancelado”
@@ -109,8 +118,17 @@ class OrderTest extends TestCase
     // Arrange
     $pedidoRepositoryMock = $this->createMock(IPedidoRepository::class);
 
-    $userMock = $this->createMock(User::class);
-    $userMock->method('getId')->willReturn(1);
+    $password = 'Dai2349453';
+    $user = new User(
+      id: 1,
+      name: 'Daiane',
+      login: 'daiane@gmail.com',
+      cpf: '111.287.078-91',
+      endereco: 'Rua 25 de janeiro',
+      password: md5($password),
+      active: true
+    );
+
     $pedidoRepositoryMock
       ->method('findManyByStatus')
       ->with(StatusPedido::CANCELADO->value)
@@ -120,7 +138,7 @@ class OrderTest extends TestCase
           status: StatusPedido::CANCELADO,
           observacoes: 'Cancelado por demora na entrega',
           tipo: TipoEntrega::DELIVERY,
-          cliente: $userMock,
+          cliente: $user,
           dataPedido: '2024-10-26',
           valorTotal: 2345
         ),
@@ -129,7 +147,7 @@ class OrderTest extends TestCase
           status: StatusPedido::CANCELADO,
           observacoes: '',
           tipo: TipoEntrega::NO_LOCAL,
-          cliente: $userMock,
+          cliente: $user,
           dataPedido: '2024-11-27',
           valorTotal: 456
         )
@@ -180,7 +198,6 @@ class OrderTest extends TestCase
       $pedidosRetornados,
       'Os pedidos retornados não correspondem aos pedidos esperados.'
     );
-    echo "Teste finalizado com sucesso! Todos os pedidos estão corretos de acordo com o status CANCELADO.";
   }
 
   //Caso de teste 03: Validar se o método GetPedidosPorStatus() retorna corretamente os dados do pedido com status Finalizado
@@ -190,8 +207,17 @@ class OrderTest extends TestCase
     // Arrange
     $pedidoRepositoryMock = $this->createMock(IPedidoRepository::class);
 
-    $userMock = $this->createMock(User::class);
-    $userMock->method('getId')->willReturn(1);
+    $password = 'Dai2349453';
+    $user = new User(
+      id: 1,
+      name: 'Daiane',
+      login: 'daiane@gmail.com',
+      cpf: '111.287.078-91',
+      endereco: 'Rua 25 de janeiro',
+      password: md5($password),
+      active: true
+    );
+
     $pedidoRepositoryMock
       ->method('findManyByStatus')
       ->with(StatusPedido::FINALIZADO->value)
@@ -201,7 +227,7 @@ class OrderTest extends TestCase
           status: StatusPedido::FINALIZADO,
           observacoes: 'Entrega realizada com sucesso!',
           tipo: TipoEntrega::DELIVERY,
-          cliente: $userMock,
+          cliente: $user,
           dataPedido: '2024-08-10',
           valorTotal: 35
         ),
@@ -210,7 +236,7 @@ class OrderTest extends TestCase
           status: StatusPedido::FINALIZADO,
           observacoes: 'Com gorjeta',
           tipo: TipoEntrega::NO_LOCAL,
-          cliente: $userMock,
+          cliente: $user,
           dataPedido: '2024-05-05',
           valorTotal: 890
         )
@@ -261,7 +287,6 @@ class OrderTest extends TestCase
       $pedidosRetornados,
       'Os pedidos retornados não correspondem aos pedidos esperados.'
     );
-    echo "Teste finalizado com sucesso! Todos os pedidos estão corretos de acordo com o status FINALIZADO.";
   }
 
   //Caso de teste 04: Verificar se o sistema exibe corretamente os itens presentes em um pedido que contém apenas um item
@@ -271,40 +296,56 @@ class OrderTest extends TestCase
     // Arrange
     $pedidoId = 1;
 
-    $produtoMock = $this->createMock(Produto::class);
-    $produtoMock->method('getIdProduto')->willReturn(101);
-    $produtoMock->method('getNome')->willReturn('X BACON');
+    $produto = new Produto(
+      id: 1,
+      nome: 'X-Bacon',
+      descricao: 'X-Bacon Duplo',
+      valor: 30,
+      categoria: new Categoria(id: 1, descricao: "Alimentos"),
+      ativo: true,
+      dataInclusao: '2024-11-27'
+    );
 
-    $itemMock = $this->createMock(PedidoItem::class);
-    $itemMock->method('getId')->willReturn(1);
-    $itemMock->method('getProduto')->willReturn($produtoMock);
-    $itemMock->method('getValorItem')->willReturn(100.00);
-    $itemMock->method('getObservacoesItem')->willReturn('Com bastante bacon');
+    $password = 'Dai2349453';
+    $user = new User(
+      id: 1,
+      name: 'Daiane',
+      login: 'daiane@gmail.com',
+      cpf: '111.287.078-91',
+      endereco: 'Rua 25 de janeiro',
+      password: md5($password),
+      active: true
+    );
 
-    $clienteMock = $this->createMock(User::class);
-    $clienteMock->method('getId')->willReturn(1);
-    $clienteMock->method('getName')->willReturn('Cliente Teste');
+    $pedido = new Pedido(
+      id: $pedidoId,
+      dataPedido: '2024-11-27',
+      cliente: $user,
+      valorTotal: 100.00,
+      status: StatusPedido::EM_PREPARO,
+      formaPagamento: FormaPagamento::CARTAO,
+      observacoes: 'Sem troco',
+      tipo: TipoEntrega::DELIVERY,
+      enderecoEntrega: 'Rua 123, Bairro Centro, Apiúna'
+    );
 
-    $pedidoMock = $this->createMock(Pedido::class);
-    $pedidoMock->method('getIdPedido')->willReturn($pedidoId);
-    $pedidoMock->method('getDataPedido')->willReturn('2024-11-27');
-    $pedidoMock->method('getCliente')->willReturn($clienteMock);
-    $pedidoMock->method('getValorTotal')->willReturn(100.00);
-    $pedidoMock->method('getStatus')->willReturn(StatusPedido::EM_PREPARO);
-    $pedidoMock->method('getFormaPagamento')->willReturn(FormaPagamento::CARTAO);
-    $pedidoMock->method('getObservacoes')->willReturn('Sem troco');
-    $pedidoMock->method('getTipo')->willReturn(TipoEntrega::DELIVERY);
-    $pedidoMock->method('getEnderecoEntrega')->willReturn('Rua 123, Bairro Centro, Apiúna');
+    $pedidoItem = new PedidoItem(
+      id: 1,
+      produto: $produto,
+      pedido: $pedido,
+      valorItem: 100.00,
+      observacoesItem: 'Com bastante bacon'
+    );
 
     $pedidoRepositoryMock = $this->createMock(IPedidoRepository::class);
     $pedidoRepositoryMock->method('findById')
       ->with($pedidoId)
-      ->willReturn($pedidoMock);
+      ->willReturn($pedido);
 
     $pedidoItemServiceMock = $this->createMock(PedidoItemService::class);
     $pedidoItemServiceMock->method('findManyByIdPed')
       ->with($pedidoId)
-      ->willReturn([$itemMock]);
+      ->willReturn([$pedidoItem]);
 
     $pedidoService = new PedidoService(
       $pedidoRepositoryMock,
@@ -323,14 +364,14 @@ class OrderTest extends TestCase
         'date' => '2024-11-27',
         'client' => [
           'id' => 1,
-          'name' => 'Cliente Teste',
+          'name' => 'Daiane',
         ],
         'items' => [
           [
             'id' => 1,
             'product' => [
-              'id' => 101,
-              'name' => 'X BACON',
+              'id' => 1,
+              'name' => 'X-Bacon',
             ],
             'price' => 100.00,
             'observation' => 'Com bastante bacon',
@@ -356,62 +397,89 @@ class OrderTest extends TestCase
     $pedidoRepositoryMock = $this->createMock(IPedidoRepository::class);
     $pedidoItemServiceMock = $this->createMock(PedidoItemService::class);
 
-    $userMock = $this->createMock(User::class);
-    $userMock->method('getId')->willReturn(1);
-    $userMock->method('getName')->willReturn('Iranice Da Silva');
+    $password = 'Dai2349453';
+    $user = new User(
+      id: 1,
+      name: 'Daiane',
+      login: 'daiane@gmail.com',
+      cpf: '111.287.078-91',
+      endereco: 'Rua 25 de janeiro',
+      password: md5($password),
+      active: true
+    );
 
-    $pedidoMock = $this->createMock(Pedido::class);
-    $pedidoMock->method('getIdPedido')->willReturn(1);
-    $pedidoMock->method('getDataPedido')->willReturn('2024-11-27');
-    $pedidoMock->method('getCliente')->willReturn($userMock);
-    $pedidoMock->method('getValorTotal')->willReturn(90.0);
-    $pedidoMock->method('getStatus')->willReturn(StatusPedido::EM_PREPARO);
-    $pedidoMock->method('getFormaPagamento')->willReturn(FormaPagamento::CARTAO);
-    $pedidoMock->method('getObservacoes')->willReturn('No capricho');
-    $pedidoMock->method('getTipo')->willReturn(TipoEntrega::DELIVERY);
-    $pedidoMock->method('getEnderecoEntrega')->willReturn('Rua José Peters, 435, Centro, Apiúna');
+    $pedido = new Pedido(
+      id: 1,
+      dataPedido: '2024-11-27',
+      cliente: $user,
+      valorTotal: 90.0,
+      status: StatusPedido::EM_PREPARO,
+      formaPagamento: FormaPagamento::CARTAO,
+      observacoes: 'No capricho',
+      tipo: TipoEntrega::DELIVERY,
+      enderecoEntrega: 'Rua José Peters, 435, Centro, Apiúna'
+    );
 
-    //Mock dos produtos
-    $produtoMock1 = $this->createMock(Produto::class);
-    $produtoMock1->method('getIdProduto')->willReturn(1);
-    $produtoMock1->method('getNome')->willReturn("Batata com Bacon");
+    $produto1 = new Produto(
+      id: 1,
+      nome: 'Batata com Bacon',
+      valor: 45,
+      categoria: new Categoria(id: 1, descricao: "Alimentos"),
+      ativo: true,
+      dataInclusao: '2024-11-27'
+    );
 
-    $produtoMock2 = $this->createMock(Produto::class);
-    $produtoMock2->method('getIdProduto')->willReturn(2);
-    $produtoMock2->method('getNome')->willReturn("Refrigerante Coca-Cola");
+    $produto2 = new Produto(
+      id: 2,
+      nome: 'Refrigerante Coca-Cola',
+      valor: 45,
+      categoria: new Categoria(id: 2, descricao: "Bebidas"),
+      ativo: true,
+      dataInclusao: '2024-11-27'
+    );
 
-    $produtoMock3 = $this->createMock(Produto::class);
-    $produtoMock3->method('getIdProduto')->willReturn(3);
-    $produtoMock3->method('getNome')->willReturn("X-burguer");
+    $produto3 = new Produto(
+      id: 3,
+      nome: 'X-burguer',
+      valor: 45,
+      categoria: new Categoria(id: 1, descricao: "Alimentos"),
+      ativo: true,
+      dataInclusao: '2024-11-27'
+    );
 
-    //Mock dos itens
-    $itemMock1 = $this->createMock(PedidoItem::class);
-    $itemMock1->method('getId')->willReturn(1);
-    $itemMock1->method('getProduto')->willReturn($produtoMock1);
-    $itemMock1->method('getValorItem')->willReturn(45.0);
-    $itemMock1->method('getObservacoesItem')->willReturn("Com Pouco Bacon");
+    $pedidoItem1 = new PedidoItem(
+      id: 1,
+      produto: $produto1,
+      pedido: $pedido,
+      valorItem: 45.0,
+      observacoesItem: 'Com Pouco Bacon'
+    );
 
-    $itemMock2 = $this->createMock(PedidoItem::class);
-    $itemMock2->method('getId')->willReturn(2);
-    $itemMock2->method('getProduto')->willReturn($produtoMock2);
-    $itemMock2->method('getValorItem')->willReturn(15.0);
-    $itemMock2->method('getObservacoesItem')->willReturn("Copo com limão e gelo");
+    $pedidoItem2 = new PedidoItem(
+      id: 2,
+      produto: $produto2,
+      pedido: $pedido,
+      valorItem: 15.0,
+      observacoesItem: 'Copo com limão e gelo'
+    );
 
-    $itemMock3 = $this->createMock(PedidoItem::class);
-    $itemMock3->method('getId')->willReturn(3);
-    $itemMock3->method('getProduto')->willReturn($produtoMock3);
-    $itemMock3->method('getValorItem')->willReturn(30.0);
-    $itemMock3->method('getObservacoesItem')->willReturn("Com dois hamburguers");
+    $pedidoItem3 = new PedidoItem(
+      id: 3,
+      produto: $produto3,
+      pedido: $pedido,
+      valorItem: 30.0,
+      observacoesItem: 'Com dois hamburguers'
+    );
 
     $pedidoItemServiceMock
       ->method('findManyByIdPed')
       ->with(1)
-      ->willReturn([$itemMock1, $itemMock2, $itemMock3]);
+      ->willReturn([$pedidoItem1, $pedidoItem2, $pedidoItem3]);
 
     $pedidoRepositoryMock
       ->method('findById')
       ->with(1)
-      ->willReturn($pedidoMock);
+      ->willReturn($pedido);
 
     $pedidoService = new PedidoService(
       $pedidoRepositoryMock,
@@ -430,7 +498,7 @@ class OrderTest extends TestCase
         'date' => '2024-11-27',
         'client' => [
           'id' => 1,
-          'name' => 'Iranice Da Silva',
+          'name' => 'Daiane',
         ],
         'items' => [
           [
@@ -439,7 +507,7 @@ class OrderTest extends TestCase
               'id' => 1,
               'name' => 'Batata com Bacon',
             ],
-            'price' => 45,
+            'price' => 45.0,
             'observation' => 'Com Pouco Bacon',
           ],
           [
@@ -448,7 +516,7 @@ class OrderTest extends TestCase
               'id' => 2,
               'name' => 'Refrigerante Coca-Cola',
             ],
-            'price' => 15,
+            'price' => 15.0,
             'observation' => 'Copo com limão e gelo',
           ],
           [
@@ -457,11 +525,11 @@ class OrderTest extends TestCase
               'id' => 3,
               'name' => 'X-burguer',
             ],
-            'price' => 30,
+            'price' => 30.0,
             'observation' => 'Com dois hamburguers',
           ],
         ],
-        'totalPrice' => 90,
+        'totalPrice' => 90.0,
         'state' => StatusPedido::EM_PREPARO,
         'paymentMethod' => FormaPagamento::CARTAO,
         'observation' => 'No capricho',
@@ -482,32 +550,57 @@ class OrderTest extends TestCase
     $pedidoRepositoryMock = $this->createMock(IPedidoRepository::class);
     $pedidoItemServiceMock = $this->createMock(PedidoItemService::class);
 
-    $userMock = $this->createMock(User::class);
-    $userMock->method('getId')->willReturn(1);
-    $userMock->method('getName')->willReturn('Iranice Da Silva');
+    $password = 'Dai2349453';
+    $user = new User(
+      id: 1,
+      name: 'Daiane',
+      login: 'daiane@gmail.com',
+      cpf: '111.287.078-91',
+      endereco: 'Rua 25 de janeiro',
+      password: md5($password),
+      active: true
+    );
 
-    $pedidoMock1 = $this->createMock(Pedido::class);
-    $pedidoMock1->method('getIdPedido')->willReturn(1);
-    $pedidoMock1->method('getDataPedido')->willReturn('2024-11-27');
-    $pedidoMock1->method('getCliente')->willReturn($userMock);
-    $pedidoMock1->method('getValorTotal')->willReturn(100.0);
+    $pedido1 = new Pedido(
+      id: 1,
+      dataPedido: '2024-11-27',
+      cliente: $user,
+      valorTotal: 90.0,
+      status: StatusPedido::EM_PREPARO,
+      formaPagamento: FormaPagamento::CARTAO,
+      observacoes: '',
+      tipo: TipoEntrega::DELIVERY,
+      enderecoEntrega: 'Rua José Peters, 435, Centro, Apiúna'
+    );
 
-    $pedidoMock2 = $this->createMock(Pedido::class);
-    $pedidoMock2->method('getIdPedido')->willReturn(2);
-    $pedidoMock2->method('getDataPedido')->willReturn('2024-11-28');
-    $pedidoMock2->method('getCliente')->willReturn($userMock);
-    $pedidoMock2->method('getValorTotal')->willReturn(50.0);
+    $pedido2 = new Pedido(
+      id: 2,
+      dataPedido: '2024-11-28',
+      cliente: $user,
+      valorTotal: 50.0,
+      status: StatusPedido::EM_PREPARO,
+      formaPagamento: FormaPagamento::CARTAO,
+      observacoes: '',
+      tipo: TipoEntrega::DELIVERY,
+      enderecoEntrega: 'Rua José Peters, 435, Centro, Apiúna'
+    );
 
-    $pedidoMock3 = $this->createMock(Pedido::class);
-    $pedidoMock3->method('getIdPedido')->willReturn(3);
-    $pedidoMock3->method('getDataPedido')->willReturn('2024-11-27');
-    $pedidoMock3->method('getCliente')->willReturn($userMock);
-    $pedidoMock3->method('getValorTotal')->willReturn(150.0);
+    $pedido3 = new Pedido(
+      id: 3,
+      dataPedido: '2024-11-27',
+      cliente: $user,
+      valorTotal: 150.0,
+      status: StatusPedido::EM_PREPARO,
+      formaPagamento: FormaPagamento::CARTAO,
+      observacoes: '',
+      tipo: TipoEntrega::DELIVERY,
+      enderecoEntrega: 'Rua José Peters, 435, Centro, Apiúna'
+    );
 
     $pedidoRepositoryMock
       ->method('findByDate')
       ->with('2024-11-27')
-      ->willReturn([$pedidoMock1, $pedidoMock3]);
+      ->willReturn([$pedido1, $pedido3]);
 
     $pedidoItemServiceMock->method('findManyByIdPed')->willReturn([]);
 
@@ -527,16 +620,16 @@ class OrderTest extends TestCase
         'data_pedido' => '2024-11-27',
         'cliente' => [
           'id' => 1,
-          'nome' => 'Iranice Da Silva',
+          'nome' => 'Daiane',
         ],
-        'valorTotalPedido' => 100.0,
+        'valorTotalPedido' => 90.0,
       ],
       [
         'id' => 3,
         'data_pedido' => '2024-11-27',
         'cliente' => [
           'id' => 1,
-          'nome' => 'Iranice Da Silva',
+          'nome' => 'Daiane',
         ],
         'valorTotalPedido' => 150.0,
       ]
@@ -554,32 +647,57 @@ class OrderTest extends TestCase
     $pedidoRepositoryMock = $this->createMock(IPedidoRepository::class);
     $pedidoItemServiceMock = $this->createMock(PedidoItemService::class);
 
-    $userMock = $this->createMock(User::class);
-    $userMock->method('getId')->willReturn(1);
-    $userMock->method('getName')->willReturn('Iranice Da Silva');
+    $password = 'Dai2349453';
+    $user = new User(
+      id: 1,
+      name: 'Daiane',
+      login: 'daiane@gmail.com',
+      cpf: '111.287.078-91',
+      endereco: 'Rua 25 de janeiro',
+      password: md5($password),
+      active: true
+    );
 
-    $pedidoMock1 = $this->createMock(Pedido::class);
-    $pedidoMock1->method('getIdPedido')->willReturn(1);
-    $pedidoMock1->method('getDataPedido')->willReturn('2024-11-27');
-    $pedidoMock1->method('getCliente')->willReturn($userMock);
-    $pedidoMock1->method('getValorTotal')->willReturn(100.0);
+    $pedido1 = new Pedido(
+      id: 1,
+      dataPedido: '2024-11-27',
+      cliente: $user,
+      valorTotal: 90.0,
+      status: StatusPedido::EM_PREPARO,
+      formaPagamento: FormaPagamento::CARTAO,
+      observacoes: '',
+      tipo: TipoEntrega::DELIVERY,
+      enderecoEntrega: 'Rua José Peters, 435, Centro, Apiúna'
+    );
 
-    $pedidoMock2 = $this->createMock(Pedido::class);
-    $pedidoMock2->method('getIdPedido')->willReturn(2);
-    $pedidoMock2->method('getDataPedido')->willReturn('2024-11-28');
-    $pedidoMock2->method('getCliente')->willReturn($userMock);
-    $pedidoMock2->method('getValorTotal')->willReturn(50.0);
+    $pedido2 = new Pedido(
+      id: 2,
+      dataPedido: '2024-11-28',
+      cliente: $user,
+      valorTotal: 50.0,
+      status: StatusPedido::EM_PREPARO,
+      formaPagamento: FormaPagamento::CARTAO,
+      observacoes: '',
+      tipo: TipoEntrega::DELIVERY,
+      enderecoEntrega: 'Rua José Peters, 435, Centro, Apiúna'
+    );
 
-    $pedidoMock3 = $this->createMock(Pedido::class);
-    $pedidoMock3->method('getIdPedido')->willReturn(3);
-    $pedidoMock3->method('getDataPedido')->willReturn('2024-11-27');
-    $pedidoMock3->method('getCliente')->willReturn($userMock);
-    $pedidoMock3->method('getValorTotal')->willReturn(150.0);
+    $pedido3 = new Pedido(
+      id: 3,
+      dataPedido: '2024-11-27',
+      cliente: $user,
+      valorTotal: 150.0,
+      status: StatusPedido::EM_PREPARO,
+      formaPagamento: FormaPagamento::CARTAO,
+      observacoes: '',
+      tipo: TipoEntrega::DELIVERY,
+      enderecoEntrega: 'Rua José Peters, 435, Centro, Apiúna'
+    );
 
     $pedidoRepositoryMock
       ->method('findByDateRange')
       ->with('2024-11-27', '2024-11-28')
-      ->willReturn([$pedidoMock1, $pedidoMock2, $pedidoMock3]);
+      ->willReturn([$pedido1, $pedido2, $pedido3]);
 
     $pedidoItemServiceMock->method('findManyByIdPed')->willReturn([]);
 
@@ -599,16 +717,16 @@ class OrderTest extends TestCase
         'data_pedido' => '2024-11-27',
         'cliente' => [
           'id' => 1,
-          'nome' => 'Iranice Da Silva',
+          'nome' => 'Daiane',
         ],
-        'valorTotalPedido' => 100.0,
+        'valorTotalPedido' => 90.0,
       ],
       [
         'id' => 2,
         'data_pedido' => '2024-11-28',
         'cliente' => [
           'id' => 1,
-          'nome' => 'Iranice Da Silva',
+          'nome' => 'Daiane',
         ],
         'valorTotalPedido' => 50.0,
       ],
@@ -617,7 +735,7 @@ class OrderTest extends TestCase
         'data_pedido' => '2024-11-27',
         'cliente' => [
           'id' => 1,
-          'nome' => 'Iranice Da Silva',
+          'nome' => 'Daiane',
         ],
         'valorTotalPedido' => 150.0,
       ]
@@ -629,15 +747,11 @@ class OrderTest extends TestCase
 
   //Caso de teste 08: Verificar se o filtro de pedidos por data está funcionando corretamente mostrando um erro ao informar uma data que não possuem pedidos registrados
   #[Test]
-  public function testFiltrarPedidosPorDataQueNaoPossuaPedidos()
+  public function testFiltrarPedidosPorDataSemPedidos()
   {
     // Arrange
     $pedidoRepositoryMock = $this->createMock(IPedidoRepository::class);
     $pedidoItemServiceMock = $this->createMock(PedidoItemService::class);
-
-    $userMock = $this->createMock(User::class);
-    $userMock->method('getId')->willReturn(1);
-    $userMock->method('getName')->willReturn('Iranice Da Silva');
 
     $pedidoRepositoryMock
       ->method('findByDateRange')
@@ -653,13 +767,13 @@ class OrderTest extends TestCase
       $this->createMock(IProdutoRepository::class)
     );
 
-    //Assert
-    $this->expectException(\Exception::class);
-    $this->expectExceptionMessage('Não existem pedidos para as datas informadas');
-
     // Act
-    $pedidoService->filtrarPedidosPorData('2024-11-29', '2024-11-30');
+    $resultado = $pedidoService->filtrarPedidosPorData('2024-11-29', '2024-11-30');
+
+    // Assert
+    $this->assertEmpty($resultado, 'Esperava-se que o resultado fosse vazio para datas sem pedidos.');
   }
+
 
   //Caso de teste 09: Verificar se a atualização do status ocorre corretamente quando o pedido está com status "Em Preparo" e é alterado para "Finalizado"
   #[Test]
@@ -670,10 +784,21 @@ class OrderTest extends TestCase
     $pedidoItemServiceMock = $this->createMock(PedidoItemService::class);
     $userRepositoryMock = $this->createMock(IUserRepository::class);
 
-    $pedidoMock = new Pedido(
+    $password = 'Dai2349453';
+    $user = new User(
+      id: 1,
+      name: 'Daiane',
+      login: 'daiane@gmail.com',
+      cpf: '111.287.078-91',
+      endereco: 'Rua 25 de janeiro',
+      password: md5($password),
+      active: true
+    );
+
+    $pedido = new Pedido(
       id: 1,
       dataPedido: '2024-11-15',
-      cliente: null,
+      cliente: $user,
       valorTotal: 100.00,
       status: StatusPedido::EM_PREPARO,
       formaPagamento: FormaPagamento::PIX,
@@ -683,19 +808,15 @@ class OrderTest extends TestCase
       taxaEntrega: 10.00
     );
 
-    $pedidoRepositoryMock->expects($this->once())
+    $pedidoRepositoryMock
       ->method('findById')
       ->with(1)
-      ->willReturn($pedidoMock);
+      ->willReturn($pedido);
 
-    $userMock = $this->createMock(User::class);
-    $userMock->method('getId')->willReturn(1);
-    $userMock->method('getName')->willReturn('Daiane');
-
-    $userRepositoryMock->expects($this->once())
+    $userRepositoryMock
       ->method('findById')
       ->with(1)
-      ->willReturn($userMock);
+      ->willReturn($user);
 
     $pedidoService = new PedidoService(
       $pedidoRepositoryMock,
@@ -721,7 +842,7 @@ class OrderTest extends TestCase
     $resultados = $pedidoService->update($args);
 
     //Assert
-    $this->assertEquals(StatusPedido::FINALIZADO, $pedidoMock->status);
+    $this->assertEquals(StatusPedido::FINALIZADO, $pedido->status);
     $this->assertEquals(['message' => 'Pedido atualizado com sucesso'], $resultados);
   }
 
@@ -734,10 +855,21 @@ class OrderTest extends TestCase
     $pedidoItemServiceMock = $this->createMock(PedidoItemService::class);
     $userRepositoryMock = $this->createMock(IUserRepository::class);
 
-    $pedidoMock = new Pedido(
+    $password = 'Dai2349453';
+    $user = new User(
+      id: 1,
+      name: 'Daiane',
+      login: 'daiane@gmail.com',
+      cpf: '111.287.078-91',
+      endereco: 'Rua 25 de janeiro',
+      password: md5($password),
+      active: true
+    );
+
+    $pedido = new Pedido(
       id: 1,
       dataPedido: '2024-11-15',
-      cliente: null,
+      cliente: $user,
       valorTotal: 100.00,
       status: StatusPedido::CANCELADO,
       formaPagamento: FormaPagamento::PIX,
@@ -747,10 +879,15 @@ class OrderTest extends TestCase
       taxaEntrega: 10.00
     );
 
-    $pedidoRepositoryMock->expects($this->once())
+    $userRepositoryMock
       ->method('findById')
       ->with(1)
-      ->willReturn($pedidoMock);
+      ->willReturn($user);
+
+    $pedidoRepositoryMock
+      ->method('findById')
+      ->with(1)
+      ->willReturn($pedido);
 
     $pedidoService = new PedidoService(
       $pedidoRepositoryMock,
@@ -787,10 +924,21 @@ class OrderTest extends TestCase
     $pedidoItemServiceMock = $this->createMock(PedidoItemService::class);
     $userRepositoryMock = $this->createMock(IUserRepository::class);
 
-    $pedidoMock = new Pedido(
+    $password = 'Dai2349453';
+    $user = new User(
+      id: 1,
+      name: 'Daiane',
+      login: 'daiane@gmail.com',
+      cpf: '111.287.078-91',
+      endereco: 'Rua 25 de janeiro',
+      password: md5($password),
+      active: true
+    );
+
+    $pedido = new Pedido(
       id: 1,
       dataPedido: '2024-11-15',
-      cliente: null,
+      cliente: $user,
       valorTotal: 100.00,
       status: StatusPedido::EM_PREPARO,
       formaPagamento: FormaPagamento::PIX,
@@ -800,19 +948,15 @@ class OrderTest extends TestCase
       taxaEntrega: 10.00
     );
 
-    $pedidoRepositoryMock->expects($this->once())
+    $userRepositoryMock
       ->method('findById')
       ->with(1)
-      ->willReturn($pedidoMock);
+      ->willReturn($user);
 
-    $userMock = $this->createMock(User::class);
-    $userMock->method('getId')->willReturn(1);
-    $userMock->method('getName')->willReturn('Daiane');
-
-    $userRepositoryMock->expects($this->once())
+    $pedidoRepositoryMock
       ->method('findById')
       ->with(1)
-      ->willReturn($userMock);
+      ->willReturn($pedido);
 
     $pedidoService = new PedidoService(
       $pedidoRepositoryMock,
@@ -837,7 +981,7 @@ class OrderTest extends TestCase
     $resultados = $pedidoService->update($args);
 
     //Assert
-    $this->assertEquals(StatusPedido::CANCELADO, $pedidoMock->status);
+    $this->assertEquals(StatusPedido::CANCELADO, $pedido->status);
     $this->assertEquals(['message' => 'Pedido atualizado com sucesso'], $resultados);
   }
 }
