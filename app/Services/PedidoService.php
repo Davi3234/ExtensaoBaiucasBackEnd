@@ -315,17 +315,8 @@ class PedidoService
 
   public function filtrarPedidosPorData($dataInicial, $dataFinal = null)
   {
-    // Se for fornecida uma data final, busca pelo intervalo de datas
-    if ($dataFinal) {
-      $pedidos = $this->pedidoRepository->findByDateRange($dataInicial, $dataFinal);
-    } else {
-      // Senão, filtra apenas pela data inicial
-      $pedidos = $this->pedidoRepository->findByDate($dataInicial);
-    }
 
-    if (empty($pedidos)) {
-      throw new \Exception('Não existem pedidos para as datas informadas');
-    }
+    $pedidos = $this->pedidoRepository->findByDateRange($dataInicial, $dataFinal);
 
     $resultados = [];
     foreach ($pedidos as $pedido) {

@@ -94,26 +94,21 @@ class PedidoRepository extends Repository implements IPedidoRepository
     }
   }
 
-  public function findByDateRange(string $dataInicial, string $dataFinal): array
+  public function findByDateRange(string $dataInicial, ?string $dataFinal = null): array
   {
     try {
-      return $this->entityManager
-        ->createQuery('SELECT p FROM App\Models\Pedido p WHERE p.data_pedido >= :dataInicial and p.data_pedido <= :dataFinal')
-        ->setParameter('dataInicial', $dataInicial)
-        ->setParameter('dataFinal', $dataFinal)
-        ->getResult();
-    } catch (\Exception $e) {
-      throw new DatabaseException($e->getMessage());
-    }
-  }
-
-  public function findByDate(string $dataInicial): array
-  {
-    try {
-      return $this->entityManager
-        ->createQuery('SELECT p FROM App\Models\Pedido p WHERE p.data_pedido = :dataInicial')
-        ->setParameter('dataInicial', $dataInicial)
-        ->getResult();
+      if ($dataFinal) {
+        return $this->entityManager
+          ->createQuery('SELECT p FROM App\Models\Pedido p WHERE p.data_pedido >= :dataInicial and p.data_pedido <= :dataFinal')
+          ->setParameter('dataInicial', $dataInicial)
+          ->setParameter('dataFinal', $dataFinal)
+          ->getResult();
+      } else {
+        return $this->entityManager
+          ->createQuery('SELECT p FROM App\Models\Pedido p WHERE p.data_pedido >= :dataInicial')
+          ->setParameter('dataInicial', $dataInicial)
+          ->getResult();
+      }
     } catch (\Exception $e) {
       throw new DatabaseException($e->getMessage());
     }
