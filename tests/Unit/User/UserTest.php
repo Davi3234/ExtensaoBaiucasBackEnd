@@ -55,8 +55,10 @@ class UserTest extends TestCase {
     //Arrange
     $nome = 'Davi';
     $login = 'davi.fadriano@gmail.com';
+    $cpf = '953.737.240-50';
     $password = 'Davi!@#123';
     $confirm_password = 'Davi!@#123';
+    $endereco = 'Rua de teste';
     $tipo = TipoUsuario::CLIENTE->value;
 
     $user = new User(
@@ -64,6 +66,8 @@ class UserTest extends TestCase {
       login: $login,
       password: md5($password),
       active: true,
+      cpf: $cpf,
+      endereco: $endereco,
     );
 
     //Act
@@ -81,12 +85,14 @@ class UserTest extends TestCase {
     $userService = new UserService($userRepository);
 
     //Inserting User
-    $response = $userService->create([
+    $response = $userService->createUser([
       'name' => $nome,
       'login' => $login,
       'password' => $password,
       'confirm_password' => $confirm_password,
+      'endereco' => $endereco,
       'tipo' => $tipo,
+      'cpf' => $cpf,
     ]);
 
     //Assert

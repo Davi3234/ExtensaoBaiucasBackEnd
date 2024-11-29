@@ -131,9 +131,9 @@ abstract class ZodSchema {
 
   protected function resolveResultHandleValidator($response, array $attributes) {
     if ($response === false)
-      $this->addError($attributes['message'] ?? 'Value invalid', [$attributes['origin']] ?? []);
+      $this->addError($attributes['message'] ?? 'Value invalid', $attributes['origin'] ? [$attributes['origin']] : []);
     else if ($response && isset($response['message']))
-      $this->addError($response['message'], [$attributes['origin']] ?? []);
+      $this->addError($response['message'], $attributes['origin'] ? [$attributes['origin']] : []);
   }
 
   protected function setup($value = null) {
@@ -222,6 +222,10 @@ abstract class ZodSchema {
     }
   }
 
+  /**
+   * @param string $message
+   * @param string[] $origins
+   */
   protected function addError(string $message, array $origins = []) {
     $this->errors[] = new ZodErrorValidator($message, ...$origins);
   }

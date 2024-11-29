@@ -2,7 +2,9 @@
 
 namespace Tests\Davi\User;
 
+use App\Enums\StatusPedido;
 use App\Models\Categoria;
+use App\Models\Pedido;
 use App\Models\PedidoItem;
 use App\Models\Produto;
 use PHPUnit\Framework\TestCase;
@@ -11,17 +13,15 @@ use App\Models\User;
 use App\Repositories\ICategoriaRepository;
 use App\Repositories\IPedidoItemRepository;
 use App\Repositories\IProdutoRepository;
-use App\Services\UserService;
-use App\Repositories\IUserRepository;
 use App\Services\ProdutoService;
+use Core\Exception\Exception;
 use Exception\ValidationException;
 use Provider\Zod\ZodParseException;
 
-class ProductTest extends TestCase
-{
+class ProductTest extends TestCase {
 
   #[Test]
-  public function deveDispararExcecaoParaNomeInvalido(){
+  public function deveDispararExcecaoParaNomeInvalido() {
 
     $this->expectException(ZodParseException::class);
 
@@ -68,11 +68,10 @@ class ProductTest extends TestCase
       'id_categoria' => $categoria->getId(),
       'ativo' => $ativo
     ]);
-
   }
 
   #[Test]
-  public function deveDispararExcecaoParaDescricaoInvalida(){
+  public function deveDispararExcecaoParaDescricaoInvalida() {
 
     $this->expectException(ZodParseException::class);
 
@@ -119,11 +118,10 @@ class ProductTest extends TestCase
       'id_categoria' => $categoria->getId(),
       'ativo' => $ativo
     ]);
-
   }
 
   #[Test]
-  public function deveDispararExcecaoParaValorInvalido(){
+  public function deveDispararExcecaoParaValorInvalido() {
 
     $this->expectException(ZodParseException::class);
 
@@ -170,13 +168,10 @@ class ProductTest extends TestCase
       'id_categoria' => $categoria->getId(),
       'ativo' => $ativo
     ]);
-
   }
 
   #[Test]
-  public function deveCriarProduto(){
-
-    $this->expectException(ValidationException::class);
+  public function deveCriarProduto() {
 
     //Arrange
     $nome = 'X-Bacon';
@@ -223,11 +218,10 @@ class ProductTest extends TestCase
     ]);
 
     $this->assertTrue(['message' => 'Produto cadastrado com sucesso'] == $response);
-
   }
 
   #[Test]
-  public function deveDispararExcecaoParaProdutoComPedidoEmAberto(){
+  public function deveDispararExcecaoParaProdutoComPedidoEmAberto() {
 
     //Arrange
     $nome = 'X-Bacon';
@@ -237,6 +231,7 @@ class ProductTest extends TestCase
     $ativo = true;
 
     $produto = new Produto(
+      id: 1,
       nome: $nome,
       descricao: $descricao,
       valor: $valor,
@@ -258,10 +253,18 @@ class ProductTest extends TestCase
 
     $pedidoItemRepository->method('findByIdProdutoAberto')
       ->with($produto->getIdProduto())
-      ->willReturn([new PedidoItem(
-        $produto, 
-        null, 
-        0)]);
+      ->willReturn([
+        new PedidoItem(
+          id: 1,
+          produto: $produto,
+          pedido: new Pedido(
+            id: 1,
+            dataPedido: '25-11-2024',
+            cliente: new User(),
+            status: StatusPedido::EM_PREPARO
+          )
+        )
+      ]);
 
     $pedidoItemRepository->method('findByIdProdutoAndamento')
       ->with($produto->getIdProduto())
@@ -271,18 +274,30 @@ class ProductTest extends TestCase
       ->with($produto)
       ->willReturn($produto);
 
+    $produtoRepository->method('findById')
+      ->with($produto->getIdProduto())
+      ->willReturn($produto);
+
     $produtoRepository->method('findByDescription')
       ->willReturn(null);
 
     $produtoService = new ProdutoService($produtoRepository, $categoriaRepository, $pedidoItemRepository);
 
-    $response = $produtoService->updateProduto([
-      'nome' => $nome,
-      'descricao' => $descricao,
-      'valor' => $valor,
-      'id_categoria' => $categoria->getId(),
-      'ativo' => $ativo
-    ]);
+    $this->expectException(ValidationException::class);
 
+    try {
+      $produtoService->updateProduto([
+        'id' => 1,
+        'nome' => $nome,
+        'descricao' => $descricao,
+        'valor' => $valor,
+        'id_categoria' => $categoria->getId(),
+        'ativo' => $ativo
+      ]);
+    } catch (Exception $err) {
+      $this->assertNotEmpty($err->getCausesFromOrigin('status', 'andamento'));
+
+      throw $err;
+    }
   }
 }
