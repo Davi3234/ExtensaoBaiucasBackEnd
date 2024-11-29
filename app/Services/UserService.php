@@ -115,7 +115,8 @@ class UserService {
           'CPF é inválido'
         ),
       'endereco' => Z::string(['required' => 'Endereço é de preenchimento obrigatório'])
-        ->trim(),
+        ->trim()
+        ->min(3, 'Endereço precisa ter no mínimo 3 caracteres'),
       'password' => Z::string(['required' => 'Senha é de preenchimento obrigatório'])
         ->trim()
         ->min(8, 'Utilize ao menos 8 caracteres')
@@ -211,7 +212,8 @@ class UserService {
         ),
       'endereco' => Z::string()
         ->optional()
-        ->trim(),
+        ->trim()
+        ->min(3, 'Endereço precisa ter no mínimo 3 caracteres'),
       'password' => Z::string()
         ->optional()
         ->min(8, 'Utilize ao menos 8 caracteres')
