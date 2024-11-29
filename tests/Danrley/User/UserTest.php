@@ -139,7 +139,7 @@ class UserTest extends TestCase {
       'cpf' => '645.549.820-84',
       'endereco' => 'Rua de Teste 2',
       'password' => 'Davi@432',
-      'confirm_password' => 'Dav',
+      'confirm_password' => 'Davi@43',
     ];
 
     $userRepository = $this->createMock(IUserRepository::class);
