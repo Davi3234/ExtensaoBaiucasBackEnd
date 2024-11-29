@@ -315,7 +315,6 @@ class PedidoService
 
   public function filtrarPedidosPorData($dataInicial, $dataFinal = null)
   {
-
     $pedidos = $this->pedidoRepository->findByDateRange($dataInicial, $dataFinal);
 
     $resultados = [];
@@ -333,7 +332,6 @@ class PedidoService
 
     return $resultados;
   }
-
 
   public function delete(array $args)
   {
