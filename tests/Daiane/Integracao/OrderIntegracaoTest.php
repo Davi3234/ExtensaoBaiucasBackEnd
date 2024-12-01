@@ -21,20 +21,18 @@ use PHPUnit\Framework\Attributes\Test;
 class OrderIntegracaoTest extends TestCase
 {
 
-  ///////////////////////////////////////////Testes de Integração/////////////////////////////////////////////////
-
   #[Test]
   public function CreatePedido()
   {
 
     //Caso de teste 01 (Integração): Garantir que o pedido seja inserido corretamente no banco de dados com todas as informações do pedido informadas
 
+    // Arrange
     $userRepository = new UserRepository();
     $produtoRepository = new ProdutoRepository();
     $pedidoRepository = new PedidoRepository();
     $pedidoItemRepository = new PedidoItemRepository();
 
-    // Arrange
     $name = 'Daiane';
     $login = 'daiane@gmail.com';
     $cpf = '111.287.078-91';
@@ -64,8 +62,6 @@ class OrderIntegracaoTest extends TestCase
       dataInclusao: '2024-11-27'
     );
 
-    $produtoRepository->create($produto);
-
     $pedido = new Pedido(
       dataPedido: '2024-11-27',
       cliente: $user,
@@ -77,8 +73,6 @@ class OrderIntegracaoTest extends TestCase
       enderecoEntrega: 'Rua 123, Bairro Centro, Apiúna'
     );
 
-    $pedidoRepository->create($pedido);
-
     $pedidoItem = new PedidoItem(
       produto: $produto,
       pedido: $pedido,
@@ -86,12 +80,14 @@ class OrderIntegracaoTest extends TestCase
       observacoesItem: 'Com bastante bacon'
     );
 
+    //Act
+    $produtoRepository->create($produto);
+    $pedidoRepository->create($pedido);
     $pedidoItemRepository->create($pedidoItem);
-
-    // Act
     $pedidoAct = $pedidoRepository->findById($pedido->getIdPedido());
 
     // Assert
+    $this->assertEquals($pedido, $pedidoAct, 'Os pedido inserido não confere com os dados informados para inserção');
     $this->assertNotNull($pedidoAct, 'Pedido não encontrado no repositório.');
     $this->assertEquals($pedido->getIdPedido(), $pedidoAct->getIdPedido(), 'O ID do pedido não é o mesmo.');
     $this->assertEquals($pedido->getCliente()->getId(), $pedidoAct->getCliente()->getId(), 'O cliente do pedido não é o mesmo.');

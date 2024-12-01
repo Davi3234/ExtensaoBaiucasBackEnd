@@ -51,9 +51,9 @@ class CategoryIntegracaoTest extends TestCase
         //Act
         $this->$categoriaRepository->deleteById($id);
 
-        $userDeleted = $this->$categoriaRepository->findById($id);
+        $categoriaDeletada = $this->$categoriaRepository->findById($id);
 
         //Assert
-        $this->assertEquals($userDeleted, null);
+        $this->assertEquals($categoriaDeletada, null);
     }
 }
