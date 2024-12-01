@@ -8,14 +8,16 @@ use Doctrine\ORM\ORMSetup;
 use Doctrine\ORM\Tools\SchemaTool;
 use Provider\Database\Enums\Driver;
 
-class EntityManagerCreator {
+class EntityManagerCreator
+{
   protected static $instance;
   private $entityManager;
 
-  private function __construct() {
-    $path = __DIR__ . '/../App/Models';
+  private function __construct()
+  {
+    $path = __DIR__ . '/../../app/Models';
     if (!is_dir($path)) {
-        throw new \RuntimeException("Diretório de modelos não encontrado: " . $path);
+      throw new \RuntimeException("Diretório de modelos não encontrado: " . $path);
     }
 
     $config = ORMSetup::createAttributeMetadataConfiguration(
@@ -30,9 +32,10 @@ class EntityManagerCreator {
     $this->initializeDatabase();
   }
 
-  private function getConnection($config){
+  private function getConnection($config)
+  {
 
-    if(env('DB_DRIVER') == Driver::SQLITE->value){
+    if (env('DB_DRIVER') == Driver::SQLITE->value) {
       return DriverManager::getConnection([
         'driver' => env('DB_DRIVER'),
         'path' => __DIR__ . '/../../database.sqlite',
@@ -50,24 +53,28 @@ class EntityManagerCreator {
     ], $config);
   }
 
-  static function getInstance(): self {
+  static function getInstance(): self
+  {
     if (self::$instance === null) {
       self::$instance = new EntityManagerCreator();
     }
     return self::$instance;
   }
 
-  function getEntityManager(): EntityManager {
+  function getEntityManager(): EntityManager
+  {
     return $this->entityManager;
   }
 
-  private function initializeDatabase(){
-    if(env('DB_ENV') == 'test'){
+  private function initializeDatabase()
+  {
+    if (env('DB_ENV') == 'test') {
       $this->resetDatabase();
     }
   }
 
-  private function resetDatabase(){
+  private function resetDatabase()
+  {
 
     $schemaTool = new SchemaTool($this->entityManager);
 

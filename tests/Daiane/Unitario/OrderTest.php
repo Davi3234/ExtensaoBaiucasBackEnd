@@ -22,7 +22,7 @@ use Exception\ValidationException;
 class OrderTest extends TestCase
 {
 
-  ///////////////////////////////////////////Testes Unitários /////////////////////////////////////////////////
+  ///////////////////////////////////////////Testes Unitários/////////////////////////////////////////////////
 
   #[Test]
   public function GetPedidosPorStatus()
@@ -542,7 +542,7 @@ class OrderTest extends TestCase
     $this->assertEquals($resultadoEsperado, $resultado);
   }
 
-  /*#[Test]
+  #[Test]
   public function FiltrarPedidosPorData()
   {
 
@@ -601,7 +601,7 @@ class OrderTest extends TestCase
 
     $pedidoRepositoryMock
       ->method('findByDateRange')
-      ->with('2024-11-27', $this->isNull())
+      ->with('2024-11-27', '2024-11-27')
       ->willReturn([$pedido1, $pedido3]);
 
     $pedidoItemServiceMock->method('findManyByIdPed')->willReturn([]);
@@ -614,7 +614,7 @@ class OrderTest extends TestCase
     );
 
     // Act
-    $resultados = $pedidoService->filtrarPedidosPorData('2024-11-27', null);
+    $resultados = $pedidoService->filtrarPedidosPorData('2024-11-27', '2024-11-27');
 
     $resultadoEsperado = [
       [
@@ -768,9 +768,7 @@ class OrderTest extends TestCase
 
     // Assert
     $this->assertEmpty($resultado, 'Esperava-se que o resultado fosse vazio para datas sem pedidos.');
-  }*/
-
-
+  }
 
   #[Test]
   public function UpdateStatusPedido()
