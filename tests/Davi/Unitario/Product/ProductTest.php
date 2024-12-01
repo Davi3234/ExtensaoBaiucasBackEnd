@@ -177,8 +177,6 @@ class ProductTest extends TestCase
   public function deveCriarProduto()
   {
 
-    $this->expectException(ValidationException::class);
-
     //Arrange
     $nome = 'X-Bacon';
     $descricao = 'Hambúrguer, queijo, cebola, bacon, alface, tomate e pão';
@@ -230,7 +228,10 @@ class ProductTest extends TestCase
   public function deveDispararExcecaoParaProdutoComPedidoEmAberto()
   {
 
+    $this->expectException(ValidationException::class);
+
     //Arrange
+    $id = 1;
     $nome = 'X-Bacon';
     $descricao = 'Hambúrguer, queijo, cebola, bacon, alface, tomate e pão';
     $valor = 22;
@@ -238,6 +239,7 @@ class ProductTest extends TestCase
     $ativo = true;
 
     $produto = new Produto(
+      id: $id,
       nome: $nome,
       descricao: $descricao,
       valor: $valor,
@@ -269,7 +271,7 @@ class ProductTest extends TestCase
       ->with($produto->getIdProduto())
       ->willReturn([]);
 
-    $produtoRepository->method('create')
+    $produtoRepository->method('update')
       ->with($produto)
       ->willReturn($produto);
 
@@ -279,6 +281,7 @@ class ProductTest extends TestCase
     $produtoService = new ProdutoService($produtoRepository, $categoriaRepository, $pedidoItemRepository);
 
     $response = $produtoService->updateProduto([
+      'id' => $id,
       'nome' => $nome,
       'descricao' => $descricao,
       'valor' => $valor,
