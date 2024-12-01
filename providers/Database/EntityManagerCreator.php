@@ -14,7 +14,7 @@ class EntityManagerCreator {
 
   private function __construct() {
     $config = ORMSetup::createAttributeMetadataConfiguration(
-      paths: [__DIR__ . '/../../App/Models'],
+      paths: [realpath(__DIR__ . '/../../App/Models')],
       isDevMode: true,
     );
 
