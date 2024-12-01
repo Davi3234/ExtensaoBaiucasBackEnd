@@ -13,8 +13,13 @@ class EntityManagerCreator {
   private $entityManager;
 
   private function __construct() {
+    $path = __DIR__ . '/../App/Models';
+    if (!is_dir($path)) {
+        throw new \RuntimeException("Diretório de modelos não encontrado: " . $path);
+    }
+
     $config = ORMSetup::createAttributeMetadataConfiguration(
-      paths: [realpath(__DIR__ . '/../../App/Models')],
+      paths: [realpath($path)],
       isDevMode: true,
     );
 
