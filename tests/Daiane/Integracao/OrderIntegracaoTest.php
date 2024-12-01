@@ -17,7 +17,6 @@ use App\Repositories\PedidoItemRepository;
 use App\Repositories\ProdutoRepository;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\Attributes\Test;
-use PDO;
 
 class OrderIntegracaoTest extends TestCase
 {
@@ -25,8 +24,11 @@ class OrderIntegracaoTest extends TestCase
   ///////////////////////////////////////////Testes de Integração/////////////////////////////////////////////////
 
   #[Test]
-  public function GetPedidos()
+  public function CreatePedido()
   {
+
+    //Caso de teste 01 (Integração): Garantir que o pedido seja inserido corretamente no banco de dados com todas as informações do pedido informadas
+
     $userRepository = new UserRepository();
     $produtoRepository = new ProdutoRepository();
     $pedidoRepository = new PedidoRepository();
@@ -93,19 +95,5 @@ class OrderIntegracaoTest extends TestCase
     $this->assertNotNull($pedidoAct, 'Pedido não encontrado no repositório.');
     $this->assertEquals($pedido->getIdPedido(), $pedidoAct->getIdPedido(), 'O ID do pedido não é o mesmo.');
     $this->assertEquals($pedido->getCliente()->getId(), $pedidoAct->getCliente()->getId(), 'O cliente do pedido não é o mesmo.');
-  }
-
-  //Caso de teste 02 (Integração): Verificar se o pedido com múltiplos itens é recuperado corretamente
-
-
-  //Caso de teste 03 (Integração): Verificar se ao informar um pedido com 0 itens o método retorna erro
-
-
-  #[Test]
-  public function  CreatePedido()
-  {
-
-    //Caso de teste 01 (Integração): Garantir que o pedido seja inserido corretamente no banco de dados com todas as informações do pedido informadas
-
   }
 }
