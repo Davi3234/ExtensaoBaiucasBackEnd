@@ -2,7 +2,8 @@
   "scripts": {
     "start": "php -S localhost:8080 public/index.php",
     "tests:all": "php vendor/bin/phpunit Tests --colors",
-    "tests:davi": "phpunit --testsuite Davi",
+    "tests:davi-unitario": "phpunit --testsuite Davi/Unitario",
+    "tests:davi-integracao": "phpunit --testsuite Davi/Integracao",
     "tests:daiane": "phpunit --testsuite Daiane",
     "tests:danrley": "phpunit --testsuite Danrley",
     "tests:luana": "phpunit --testsuite Luana"

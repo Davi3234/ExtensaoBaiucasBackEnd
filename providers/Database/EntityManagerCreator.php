@@ -5,18 +5,42 @@ namespace Provider\Database;
 use Doctrine\DBAL\DriverManager;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\ORMSetup;
+use Doctrine\ORM\Tools\SchemaTool;
+use Provider\Database\Enums\Driver;
 
 class EntityManagerCreator {
   protected static $instance;
   private $entityManager;
 
   private function __construct() {
+    $path = __DIR__ . '/../App/Models';
+    if (!is_dir($path)) {
+        throw new \RuntimeException("Diretório de modelos não encontrado: " . $path);
+    }
+
     $config = ORMSetup::createAttributeMetadataConfiguration(
-      paths: [__DIR__ . '/../../App/Models'],
+      paths: [realpath($path)],
       isDevMode: true,
     );
 
-    $connection = DriverManager::getConnection([
+    $connection = $this->getConnection($config);
+
+    $this->entityManager = new EntityManager($connection, $config);
+
+    $this->initializeDatabase();
+  }
+
+  private function getConnection($config){
+
+    if(env('DB_DRIVER') == Driver::SQLITE->value){
+      return DriverManager::getConnection([
+        'driver' => env('DB_DRIVER'),
+        'path' => __DIR__ . '/../../database.sqlite',
+        'memory' => true,
+      ], $config);
+    }
+
+    return DriverManager::getConnection([
       'driver' => env('DB_DRIVER'),
       'dbname' => env('DB_DATABASE'),
       'host' => env('DB_HOST'),
@@ -24,8 +48,6 @@ class EntityManagerCreator {
       'user' => env('DB_USERNAME'),
       'password' => env('DB_PASSWORD'),
     ], $config);
-
-    $this->entityManager = new EntityManager($connection, $config);
   }
 
   static function getInstance(): self {
@@ -37,5 +59,22 @@ class EntityManagerCreator {
 
   function getEntityManager(): EntityManager {
     return $this->entityManager;
+  }
+
+  private function initializeDatabase(){
+    if(env('DB_ENV') == 'test'){
+      $this->resetDatabase();
+    }
+  }
+
+  private function resetDatabase(){
+
+    $schemaTool = new SchemaTool($this->entityManager);
+
+    $entities = $this->entityManager->getMetadataFactory()->getAllMetadata();
+
+    $schemaTool->dropSchema($entities);
+
+    $schemaTool->createSchema($entities);
   }
 }
