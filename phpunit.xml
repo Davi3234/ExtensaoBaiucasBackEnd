@@ -13,10 +13,10 @@
             <directory>tests/Davi/Integracao</directory>
         </testsuite>
          <testsuite name="Daiane/Unitario">
-            <directory>tests/Davi/Unitario</directory>
+            <directory>tests/Daiane/Unitario</directory>
         </testsuite>
         <testsuite name="Daiane/Integracao">
-            <directory>tests/Davi/Integracao</directory>
+            <directory>tests/Daiane/Integracao</directory>
         </testsuite>
         <testsuite name="Danrley">
             <directory>tests/Danrley</directory>
