@@ -80,6 +80,56 @@ class PedidoItemRepository extends Repository implements IPedidoItemRepository
     }
   }
 
+  /**
+   * @return PedidoItem[]
+   */
+  public function findByIdProdutoAberto(int $id_produto): ?array
+  {
+    try {
+      return $this->entityManager
+        ->createQuery(
+          "SELECT 
+            p
+          FROM 
+            App\Models\PedidoItem p
+          LEFT JOIN
+            p.pedido pd 
+          WHERE p.id_produto = :id_produto
+            AND pd.status = :status"
+        )
+        ->setParameter('id_produto', $id_produto)
+        ->setParameter('', 'EP')
+        ->getResult();
+    } catch (\Exception $e) {
+      throw new DatabaseException($e->getMessage());
+    }
+  }
+
+  /**
+   * @return PedidoItem[]
+   */
+  public function findByIdProdutoAndamento(int $id_produto): ?array
+  {
+    try {
+      return $this->entityManager
+        ->createQuery(
+          "SELECT 
+            p
+          FROM 
+            App\Models\PedidoItem p
+          LEFT JOIN
+            p.pedido pd 
+          WHERE p.id_produto = :id_produto
+            AND pd.status = :status"
+        )
+        ->setParameter('id_produto', $id_produto)
+        ->setParameter('', 'EE')
+        ->getResult();
+    } catch (\Exception $e) {
+      throw new DatabaseException($e->getMessage());
+    }
+  }
+
   #[\Override]
   public function findById(int $id): ?PedidoItem
   {
