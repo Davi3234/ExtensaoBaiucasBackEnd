@@ -9,37 +9,44 @@ use PHPUnit\Framework\Attributes\Test;
 
 class CategoryIntegracaoTest extends TestCase
 {
+    private CategoriaRepository $categoriaRepository;
+
+    protected function setUp(): void
+    {
+        $this->categoriaRepository  = new CategoriaRepository();
+    }
 
     #[Test]
     public function manterCategorias()
     {
         //Caso de teste 01: Verificar se o sistema insere corretamente as categorias no banco de dados
         //Arrange
-        $categoriaRepository  = new CategoriaRepository();
+        $descricao1 = 'Alimentos';
+        $descricao2 = 'Bebidas';
 
         //Act
-        $this->$categoriaRepository->create(new Categoria(
-            descricao: 'Alimentos'
+        $this->categoriaRepository->create(new Categoria(
+            descricao: $descricao1
         ));
 
-        $this->$categoriaRepository->create(new Categoria(
-            descricao: 'Bebidas'
+        $this->categoriaRepository->create(new Categoria(
+            descricao: $descricao2
         ));
 
-        $categorias = $this->$categoriaRepository->findMany();
+        $categorias = $this->categoriaRepository->findMany();
 
         //Assert
         $this->assertCount(2, $categorias);
-        $this->assertEquals('Alimentos', $categorias[0]->getDescricao());
-        $this->assertEquals('Bebidas', $categorias[1]->getDescricao());
+        $this->assertEquals($descricao1, $categorias[0]->getDescricao());
+        $this->assertEquals($descricao2, $categorias[1]->getDescricao());
 
         //Caso de teste 02: Verificar se o sistema altera corretamente as categorias com as novas descrições informadas
         //Arrange
         $id = 1;
-        $categoriaUpdate = $this->$categoriaRepository->findById($id);
+        $categoriaUpdate = $this->categoriaRepository->findById($id);
 
         //Act
-        $categoriaAlterada = $this->$categoriaRepository->update($categoriaUpdate);
+        $categoriaAlterada = $this->categoriaRepository->update($categoriaUpdate);
 
         //Assert
         $this->assertEquals($categoriaAlterada->getId(), $id);
@@ -49,9 +56,9 @@ class CategoryIntegracaoTest extends TestCase
         $id = 1;
 
         //Act
-        $this->$categoriaRepository->deleteById($id);
+        $this->categoriaRepository->deleteById($id);
 
-        $categoriaDeletada = $this->$categoriaRepository->findById($id);
+        $categoriaDeletada = $this->categoriaRepository->findById($id);
 
         //Assert
         $this->assertEquals($categoriaDeletada, null);
