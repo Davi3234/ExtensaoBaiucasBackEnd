@@ -12,8 +12,11 @@
         <testsuite name="Davi/Integracao">
             <directory>tests/Davi/Integracao</directory>
         </testsuite>
-        <testsuite name="Daiane">
-            <directory>tests/Daiane</directory>
+         <testsuite name="Daiane/Unitario">
+            <directory>tests/Daiane/Unitario</directory>
+        </testsuite>
+        <testsuite name="Daiane/Integracao">
+            <directory>tests/Daiane/Integracao</directory>
         </testsuite>
         <testsuite name="Danrley">
             <directory>tests/Danrley</directory>

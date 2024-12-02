@@ -94,8 +94,6 @@ class PedidoRepository extends Repository implements IPedidoRepository
     }
   }
 
-
-
   public function findByDateRange(string $dataInicial, ?string $dataFinal = null): array
   {
     try {

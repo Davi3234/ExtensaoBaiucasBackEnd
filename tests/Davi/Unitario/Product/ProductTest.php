@@ -21,7 +21,8 @@ class ProductTest extends TestCase
 {
 
   #[Test]
-  public function deveDispararExcecaoParaNomeInvalido(){
+  public function deveDispararExcecaoParaNomeInvalido()
+  {
 
     $this->expectException(ZodParseException::class);
 
@@ -68,11 +69,11 @@ class ProductTest extends TestCase
       'id_categoria' => $categoria->getId(),
       'ativo' => $ativo
     ]);
-
   }
 
   #[Test]
-  public function deveDispararExcecaoParaDescricaoInvalida(){
+  public function deveDispararExcecaoParaDescricaoInvalida()
+  {
 
     $this->expectException(ZodParseException::class);
 
@@ -119,11 +120,11 @@ class ProductTest extends TestCase
       'id_categoria' => $categoria->getId(),
       'ativo' => $ativo
     ]);
-
   }
 
   #[Test]
-  public function deveDispararExcecaoParaValorInvalido(){
+  public function deveDispararExcecaoParaValorInvalido()
+  {
 
     $this->expectException(ZodParseException::class);
 
@@ -170,11 +171,11 @@ class ProductTest extends TestCase
       'id_categoria' => $categoria->getId(),
       'ativo' => $ativo
     ]);
-
   }
 
   #[Test]
-  public function deveCriarProduto(){
+  public function deveCriarProduto()
+  {
 
     //Arrange
     $nome = 'X-Bacon';
@@ -221,11 +222,11 @@ class ProductTest extends TestCase
     ]);
 
     $this->assertTrue(['message' => 'Produto cadastrado com sucesso'] == $response);
-
   }
 
   #[Test]
-  public function deveDispararExcecaoParaProdutoComPedidoEmAberto(){
+  public function deveDispararExcecaoParaProdutoComPedidoEmAberto()
+  {
 
     $this->expectException(ValidationException::class);
 
@@ -261,9 +262,10 @@ class ProductTest extends TestCase
     $pedidoItemRepository->method('findByIdProdutoAberto')
       ->with($produto->getIdProduto())
       ->willReturn([new PedidoItem(
-        $produto, 
-        null, 
-        0)]);
+        $produto,
+        null,
+        0
+      )]);
 
     $pedidoItemRepository->method('findByIdProdutoAndamento')
       ->with($produto->getIdProduto())
@@ -286,6 +288,5 @@ class ProductTest extends TestCase
       'id_categoria' => $categoria->getId(),
       'ativo' => $ativo
     ]);
-
   }
 }
