@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Order;
+namespace Tests\Daiane\Integracao;
 
 use App\Enums\FormaPagamento;
 use App\Enums\TipoUsuario;

@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Davi\User;
+namespace Tests\Davi\Unitario\User;
 
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\Attributes\Test;

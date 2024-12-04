@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Daiane\Unitario;
+namespace Tests\Daiane\Order;
 
 use App\Enums\FormaPagamento;
 use App\Enums\StatusPedido;
@@ -19,18 +19,11 @@ use App\Repositories\IProdutoRepository;
 use App\Services\PedidoItemService;
 use Exception\ValidationException;
 
-class OrderTest extends TestCase
-{
+class OrderTest extends TestCase {
 
-  ///////////////////////////////////////////Testes Unitários/////////////////////////////////////////////////
-
+  //Caso de teste 01: Validar se o método GetPedidosPorStatus() retorna corretamente os dados do pedido com status “Em preparo”
   #[Test]
-  public function GetPedidosPorStatus()
-  {
-
-    //Caso de teste 01 (Unitário): Validar se o método GetPedidosPorStatus() retorna corretamente os dados do pedido com status “Em preparo”
-
-
+  public function GetPedidosPorStatusEmPreparo() {
     // Arrange
     $pedidoRepositoryMock = $this->createMock(IPedidoRepository::class);
 
@@ -81,7 +74,6 @@ class OrderTest extends TestCase
     );
 
     // Act
-
     $pedidosRetornados = $pedidoService->getPedidosPorStatus([
       'statusPedido' => StatusPedido::EM_PREPARO->value
     ]);
@@ -110,15 +102,16 @@ class OrderTest extends TestCase
     ];
 
     //Assert
-
     $this->assertEquals(
       $pedidosEsperados,
       $pedidosRetornados,
       'Os pedidos retornados não correspondem aos pedidos esperados.'
     );
+  }
 
-    //Caso de teste 02 (Unitário): Validar se o método GetPedidosPorStatus() retorna corretamente os dados do pedido com status “Cancelado”
-
+  //Caso de teste 02: Validar se o método GetPedidosPorStatus() retorna corretamente os dados do pedido com status “Cancelado”
+  #[Test]
+  public function GetPedidosPorStatusCancelado() {
     // Arrange
     $pedidoRepositoryMock = $this->createMock(IPedidoRepository::class);
 
@@ -202,9 +195,11 @@ class OrderTest extends TestCase
       $pedidosRetornados,
       'Os pedidos retornados não correspondem aos pedidos esperados.'
     );
+  }
 
-    //Caso de teste 03 (Unitário): Validar se o método GetPedidosPorStatus() retorna corretamente os dados do pedido com status Finalizado
-
+  //Caso de teste 03: Validar se o método GetPedidosPorStatus() retorna corretamente os dados do pedido com status Finalizado
+  #[Test]
+  public function GetPedidosPorStatusFinalizado() {
     // Arrange
     $pedidoRepositoryMock = $this->createMock(IPedidoRepository::class);
 
@@ -290,12 +285,9 @@ class OrderTest extends TestCase
     );
   }
 
+  //Caso de teste 04: Verificar se o sistema exibe corretamente os itens presentes em um pedido que contém apenas um item
   #[Test]
-  public function ExibirItensPedido()
-  {
-
-    //Caso de teste 01 (Unitário): Verificar se o sistema exibe corretamente os itens presentes em um pedido que contém apenas um item
-
+  public function testGetByIdRetornaPedidoComUmItem() {
     // Arrange
     $pedidoId = 1;
 
@@ -390,9 +382,11 @@ class OrderTest extends TestCase
     ];
 
     $this->assertEquals($esperado, $resultado, 'Os dados do pedido retornados não estão corretos.');
+  }
 
-    //Caso de teste 02 (Unitário): Verificar se o sistema exibe corretamente os itens presentes em um pedido que contém três itens
-
+  //Caso de teste 05: Verificar se o sistema exibe corretamente os itens presentes em um pedido que contém três itens
+  #[Test]
+  public function testExibirItensPedidoComTresItens() {
     // Arrange
     $pedidoRepositoryMock = $this->createMock(IPedidoRepository::class);
     $pedidoItemServiceMock = $this->createMock(PedidoItemService::class);
@@ -542,12 +536,9 @@ class OrderTest extends TestCase
     $this->assertEquals($resultadoEsperado, $resultado);
   }
 
+  //Caso de teste 06: Verificar se o filtro de pedidos por data está funcionando corretamente trazendo somente os pedidos da data informada
   #[Test]
-  public function FiltrarPedidosPorData()
-  {
-
-    //Caso de teste 01 (Unitário): Verificar se o filtro de pedidos por data está funcionando corretamente trazendo somente os pedidos da data informada
-
+  public function testFiltrarPedidosPorData() {
     // Arrange
     $pedidoRepositoryMock = $this->createMock(IPedidoRepository::class);
     $pedidoItemServiceMock = $this->createMock(PedidoItemService::class);
@@ -601,7 +592,7 @@ class OrderTest extends TestCase
 
     $pedidoRepositoryMock
       ->method('findByDateRange')
-      ->with('2024-11-27', '2024-11-27')
+      ->with('2024-11-27')
       ->willReturn([$pedido1, $pedido3]);
 
     $pedidoItemServiceMock->method('findManyByIdPed')->willReturn([]);
@@ -614,7 +605,7 @@ class OrderTest extends TestCase
     );
 
     // Act
-    $resultados = $pedidoService->filtrarPedidosPorData('2024-11-27', '2024-11-27');
+    $resultados = $pedidoService->filtrarPedidosPorData('2024-11-27');
 
     $resultadoEsperado = [
       [
@@ -639,9 +630,11 @@ class OrderTest extends TestCase
 
     // Assert
     $this->assertEquals($resultadoEsperado, $resultados);
+  }
 
-    //Caso de teste 02 (Unitário): Verificar se o filtro de pedidos por data está funcionando corretamente trazendo somente os pedidos informados no intervalo de datas
-
+  //Caso de teste 07: Verificar se o filtro de pedidos por data está funcionando corretamente trazendo somente os pedidos informados no intervalo de datas
+  #[Test]
+  public function testFiltrarPedidosPorDatas() {
     // Arrange
     $pedidoRepositoryMock = $this->createMock(IPedidoRepository::class);
     $pedidoItemServiceMock = $this->createMock(PedidoItemService::class);
@@ -742,9 +735,11 @@ class OrderTest extends TestCase
 
     // Assert
     $this->assertEquals($resultadoEsperado, $resultados);
+  }
 
-    //Caso de teste 03 (Unitário): Verificar se o filtro de pedidos por data está funcionando corretamente mostrando um erro ao informar uma data que não possuem pedidos registrados
-
+  //Caso de teste 08: Verificar se o filtro de pedidos por data está funcionando corretamente mostrando um erro ao informar uma data que não possuem pedidos registrados
+  #[Test]
+  public function testFiltrarPedidosPorDataSemPedidos() {
     // Arrange
     $pedidoRepositoryMock = $this->createMock(IPedidoRepository::class);
     $pedidoItemServiceMock = $this->createMock(PedidoItemService::class);
@@ -770,12 +765,10 @@ class OrderTest extends TestCase
     $this->assertEmpty($resultado, 'Esperava-se que o resultado fosse vazio para datas sem pedidos.');
   }
 
+
+  //Caso de teste 09: Verificar se a atualização do status ocorre corretamente quando o pedido está com status "Em Preparo" e é alterado para "Finalizado"
   #[Test]
-  public function UpdateStatusPedido()
-  {
-
-    //Caso de teste 01 (Unitário): Verificar se a atualização do status ocorre corretamente quando o pedido está com status "Em Preparo" e é alterado para "Finalizado"
-
+  public function UpdateStatusPedidoParaFinalizado() {
     // Arrange
     $pedidoRepositoryMock = $this->createMock(IPedidoRepository::class);
     $pedidoItemServiceMock = $this->createMock(PedidoItemService::class);
@@ -841,9 +834,11 @@ class OrderTest extends TestCase
     //Assert
     $this->assertEquals(StatusPedido::FINALIZADO, $pedido->status);
     $this->assertEquals(['message' => 'Pedido atualizado com sucesso'], $resultados);
+  }
 
-    //Caso de teste 02 (Unitário): Verificar se a tentativa de atualizar o status de um pedido com status "Cancelado" para novo status "Em Preparo" resulta em erro
-
+  //Caso de teste 10: Verificar se a tentativa de atualizar o status de um pedido com status "Cancelado" para novo status "Em Preparo" resulta em erro
+  #[Test]
+  public function UpdateStatusPedido_CanceladoParaEmPreparo_DeveRetornarErro() {
     // Arrange
     $pedidoRepositoryMock = $this->createMock(IPedidoRepository::class);
     $pedidoItemServiceMock = $this->createMock(PedidoItemService::class);
@@ -907,9 +902,11 @@ class OrderTest extends TestCase
     $this->expectExceptionMessage('Não é possível alterar o status de um pedido cancelado.');
 
     $pedidoService->update($args);
+  }
 
-    //Caso de teste 03 (Unitário): Verificar se a atualização de status de um pedido com status "Em Preparo" para "Cancelado" é realizada corretamente
-
+  //Caso de teste 11: Verificar se a atualização de status de um pedido com status "Em Preparo" para "Cancelado" é realizada corretamente
+  #[Test]
+  public function UpdateStatusPedidoParaCancelado() {
     // Arrange
     $pedidoRepositoryMock = $this->createMock(IPedidoRepository::class);
     $pedidoItemServiceMock = $this->createMock(PedidoItemService::class);

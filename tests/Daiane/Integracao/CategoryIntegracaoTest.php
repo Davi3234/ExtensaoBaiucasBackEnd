@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Categoria;
+namespace Tests\Daiane\Integracao;
 
 use PHPUnit\Framework\TestCase;
 use App\Models\Categoria;

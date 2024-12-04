@@ -38,7 +38,7 @@ class EntityManagerCreator
     if (env('DB_DRIVER') == Driver::SQLITE->value) {
       return DriverManager::getConnection([
         'driver' => env('DB_DRIVER'),
-        'path' => __DIR__ . '/../../database.sqlite',
+        'path' => PATH_STORAGE . '/app/database/database.sqlite',
         'memory' => true,
       ], $config);
     }
