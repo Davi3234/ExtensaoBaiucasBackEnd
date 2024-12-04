@@ -55,7 +55,7 @@ class UserTest extends TestCase
     ]);
 
     //Assert
-    $this->assertTrue(['message' => 'Usuário cadastrado com sucesso'] == $response);
+    $this->assertEquals(['message' => 'Usuário cadastrado com sucesso'], $response);
   }
 
   #[Test]
@@ -83,7 +83,7 @@ class UserTest extends TestCase
     //Act
 
     //Configuração do Mock
-    $userRepository = TestCase::createMock(IUserRepository::class);
+    $userRepository = $this->createMock(IUserRepository::class);
 
     $userRepository->method('create')
       ->with($user)
@@ -130,7 +130,7 @@ class UserTest extends TestCase
     //Act
 
     //Configuração do Mock
-    $userRepository = TestCase::createMock(IUserRepository::class);
+    $userRepository = $this->createMock(IUserRepository::class);
 
     $userRepository->method('create')
       ->with($user)
@@ -177,7 +177,7 @@ class UserTest extends TestCase
     //Act
 
     //Configuração do Mock
-    $userRepository = TestCase::createMock(IUserRepository::class);
+    $userRepository = $this->createMock(IUserRepository::class);
 
     $userRepository->method('create')
       ->with($user)
@@ -224,7 +224,7 @@ class UserTest extends TestCase
     //Act
 
     //Configuração do Mock
-    $userRepository = TestCase::createMock(IUserRepository::class);
+    $userRepository = $this->createMock(IUserRepository::class);
 
     $userRepository->method('create')
       ->with($user)
@@ -271,7 +271,7 @@ class UserTest extends TestCase
     //Act
 
     //Configuração do Mock
-    $userRepository = TestCase::createMock(IUserRepository::class);
+    $userRepository = $this->createMock(IUserRepository::class);
 
     $userRepository->method('create')
       ->with($user)

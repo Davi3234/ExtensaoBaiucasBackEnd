@@ -11,8 +11,6 @@ use App\Models\User;
 use App\Repositories\ICategoriaRepository;
 use App\Repositories\IPedidoItemRepository;
 use App\Repositories\IProdutoRepository;
-use App\Services\UserService;
-use App\Repositories\IUserRepository;
 use App\Services\ProdutoService;
 use Exception\ValidationException;
 use Provider\Zod\ZodParseException;
@@ -21,8 +19,7 @@ class ProductTest extends TestCase
 {
 
   #[Test]
-  public function deveDispararExcecaoParaNomeInvalido()
-  {
+  public function deveDispararExcecaoParaNomeInvalido(){
 
     $this->expectException(ZodParseException::class);
 
@@ -69,11 +66,11 @@ class ProductTest extends TestCase
       'id_categoria' => $categoria->getId(),
       'ativo' => $ativo
     ]);
+
   }
 
   #[Test]
-  public function deveDispararExcecaoParaDescricaoInvalida()
-  {
+  public function deveDispararExcecaoParaDescricaoInvalida(){
 
     $this->expectException(ZodParseException::class);
 
@@ -120,11 +117,11 @@ class ProductTest extends TestCase
       'id_categoria' => $categoria->getId(),
       'ativo' => $ativo
     ]);
+
   }
 
   #[Test]
-  public function deveDispararExcecaoParaValorInvalido()
-  {
+  public function deveDispararExcecaoParaValorInvalido(){
 
     $this->expectException(ZodParseException::class);
 
@@ -171,11 +168,11 @@ class ProductTest extends TestCase
       'id_categoria' => $categoria->getId(),
       'ativo' => $ativo
     ]);
+
   }
 
   #[Test]
-  public function deveCriarProduto()
-  {
+  public function deveCriarProduto(){
 
     //Arrange
     $nome = 'X-Bacon';
@@ -222,11 +219,11 @@ class ProductTest extends TestCase
     ]);
 
     $this->assertTrue(['message' => 'Produto cadastrado com sucesso'] == $response);
+
   }
 
   #[Test]
-  public function deveDispararExcecaoParaProdutoComPedidoEmAberto()
-  {
+  public function deveDispararExcecaoParaProdutoComPedidoEmAberto(){
 
     $this->expectException(ValidationException::class);
 
@@ -288,5 +285,6 @@ class ProductTest extends TestCase
       'id_categoria' => $categoria->getId(),
       'ativo' => $ativo
     ]);
+
   }
 }

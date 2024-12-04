@@ -3,6 +3,8 @@
     "start": "php -S localhost:8080 public/index.php",
     "tests:all": "php vendor/bin/phpunit Tests --colors",
     "tests:davi-unitario": "phpunit --testsuite Davi/Unitario",
+    "tests:davi-unitario:user": "phpunit --testsuite Davi/Unitario/User",
+    "tests:davi-unitario:produto": "phpunit --testsuite Davi/Unitario/Produto",
     "tests:davi-integracao": "phpunit --testsuite Davi/Integracao",
     "tests:daiane-unitario": "phpunit --testsuite Daiane/Unitario",
     "tests:daiane-integracao": "phpunit --testsuite Daiane/Integracao",

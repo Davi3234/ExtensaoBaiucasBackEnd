@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<phpunit bootstrap="initialize.php" colors="true">
+<phpunit
+    bootstrap="initialize.php"
+    colors="true">
+
     <php>
         <env name="DB_DRIVER" value="pdo_sqlite"/>
         <env name="DB_DATABASE" value=":memory:"/>
@@ -8,6 +11,12 @@
     <testsuites>
         <testsuite name="Davi/Unitario">
             <directory>tests/Davi/Unitario</directory>
+        </testsuite>
+        <testsuite name="Davi/Unitario/User">
+            <directory>tests/Davi/Unitario/User</directory>
+        </testsuite>
+        <testsuite name="Davi/Unitario/Produto">
+            <directory>tests/Davi/Unitario/Product</directory>
         </testsuite>
         <testsuite name="Davi/Integracao">
             <directory>tests/Davi/Integracao</directory>
