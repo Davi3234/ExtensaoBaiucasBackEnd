@@ -34,7 +34,7 @@ class PedidoItem extends Model {
 	#[Column(name: 'observacoes_item', type: 'string', nullable: true)]
 	public ?string $observacoesItem;
 
-	public function __construct($id = null, $produto = null, $pedido  = null, $valorItem = 0, $observacoesItem = null) {
+	public function __construct($id = 0, $produto = null, $pedido  = null, $valorItem = 0, $observacoesItem = null) {
 		$this->id = $id;
 		$this->produto = $produto;
 		$this->pedido  = $pedido;

@@ -2,9 +2,7 @@
 
 namespace Tests\Davi\User;
 
-use App\Enums\StatusPedido;
 use App\Models\Categoria;
-use App\Models\Pedido;
 use App\Models\PedidoItem;
 use App\Models\Produto;
 use PHPUnit\Framework\TestCase;
@@ -13,15 +11,18 @@ use App\Models\User;
 use App\Repositories\ICategoriaRepository;
 use App\Repositories\IPedidoItemRepository;
 use App\Repositories\IProdutoRepository;
+use App\Services\UserService;
+use App\Repositories\IUserRepository;
 use App\Services\ProdutoService;
-use Core\Exception\Exception;
 use Exception\ValidationException;
 use Provider\Zod\ZodParseException;
 
-class ProductTest extends TestCase {
+class ProductTest extends TestCase
+{
 
   #[Test]
-  public function deveDispararExcecaoParaNomeInvalido() {
+  public function deveDispararExcecaoParaNomeInvalido()
+  {
 
     $this->expectException(ZodParseException::class);
 
@@ -71,7 +72,8 @@ class ProductTest extends TestCase {
   }
 
   #[Test]
-  public function deveDispararExcecaoParaDescricaoInvalida() {
+  public function deveDispararExcecaoParaDescricaoInvalida()
+  {
 
     $this->expectException(ZodParseException::class);
 
@@ -121,7 +123,8 @@ class ProductTest extends TestCase {
   }
 
   #[Test]
-  public function deveDispararExcecaoParaValorInvalido() {
+  public function deveDispararExcecaoParaValorInvalido()
+  {
 
     $this->expectException(ZodParseException::class);
 
@@ -171,7 +174,8 @@ class ProductTest extends TestCase {
   }
 
   #[Test]
-  public function deveCriarProduto() {
+  public function deveCriarProduto()
+  {
 
     //Arrange
     $nome = 'X-Bacon';
@@ -221,9 +225,13 @@ class ProductTest extends TestCase {
   }
 
   #[Test]
-  public function deveDispararExcecaoParaProdutoComPedidoEmAberto() {
+  public function deveDispararExcecaoParaProdutoComPedidoEmAberto()
+  {
+
+    $this->expectException(ValidationException::class);
 
     //Arrange
+    $id = 1;
     $nome = 'X-Bacon';
     $descricao = 'Hambúrguer, queijo, cebola, bacon, alface, tomate e pão';
     $valor = 22;
@@ -231,7 +239,7 @@ class ProductTest extends TestCase {
     $ativo = true;
 
     $produto = new Produto(
-      id: 1,
+      id: $id,
       nome: $nome,
       descricao: $descricao,
       valor: $valor,
@@ -253,29 +261,18 @@ class ProductTest extends TestCase {
 
     $pedidoItemRepository->method('findByIdProdutoAberto')
       ->with($produto->getIdProduto())
-      ->willReturn([
-        new PedidoItem(
-          id: 1,
-          produto: $produto,
-          pedido: new Pedido(
-            id: 1,
-            dataPedido: '25-11-2024',
-            cliente: new User(),
-            status: StatusPedido::EM_PREPARO
-          )
-        )
-      ]);
+      ->willReturn([new PedidoItem(
+        $produto,
+        null,
+        0
+      )]);
 
     $pedidoItemRepository->method('findByIdProdutoAndamento')
       ->with($produto->getIdProduto())
       ->willReturn([]);
 
-    $produtoRepository->method('create')
+    $produtoRepository->method('update')
       ->with($produto)
-      ->willReturn($produto);
-
-    $produtoRepository->method('findById')
-      ->with($produto->getIdProduto())
       ->willReturn($produto);
 
     $produtoRepository->method('findByDescription')
@@ -283,21 +280,13 @@ class ProductTest extends TestCase {
 
     $produtoService = new ProdutoService($produtoRepository, $categoriaRepository, $pedidoItemRepository);
 
-    $this->expectException(ValidationException::class);
-
-    try {
-      $produtoService->updateProduto([
-        'id' => 1,
-        'nome' => $nome,
-        'descricao' => $descricao,
-        'valor' => $valor,
-        'id_categoria' => $categoria->getId(),
-        'ativo' => $ativo
-      ]);
-    } catch (Exception $err) {
-      $this->assertNotEmpty($err->getCausesFromOrigin('status', 'andamento'));
-
-      throw $err;
-    }
+    $response = $produtoService->updateProduto([
+      'id' => $id,
+      'nome' => $nome,
+      'descricao' => $descricao,
+      'valor' => $valor,
+      'id_categoria' => $categoria->getId(),
+      'ativo' => $ativo
+    ]);
   }
 }

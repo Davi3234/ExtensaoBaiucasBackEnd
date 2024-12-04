@@ -1,11 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <phpunit bootstrap="initialize.php" colors="true">
+    <php>
+        <env name="DB_DRIVER" value="pdo_sqlite"/>
+        <env name="DB_DATABASE" value=":memory:"/>
+        <env name="DB_ENV" value="test"/>
+    </php>
     <testsuites>
-        <testsuite name="Davi">
-            <directory>tests/Davi</directory>
+        <testsuite name="Davi/Unitario">
+            <directory>tests/Davi/Unitario</directory>
         </testsuite>
-        <testsuite name="Daiane">
-            <directory>tests/Daiane</directory>
+        <testsuite name="Davi/Integracao">
+            <directory>tests/Davi/Integracao</directory>
+        </testsuite>
+         <testsuite name="Daiane/Unitario">
+            <directory>tests/Daiane/Unitario</directory>
+        </testsuite>
+        <testsuite name="Daiane/Integracao">
+            <directory>tests/Daiane/Integracao</directory>
         </testsuite>
         <testsuite name="Danrley">
             <directory>tests/Danrley</directory>
