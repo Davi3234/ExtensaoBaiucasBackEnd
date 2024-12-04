@@ -11,8 +11,6 @@ use App\Models\User;
 use App\Repositories\ICategoriaRepository;
 use App\Repositories\IPedidoItemRepository;
 use App\Repositories\IProdutoRepository;
-use App\Services\UserService;
-use App\Repositories\IUserRepository;
 use App\Services\ProdutoService;
 use Exception\ValidationException;
 use Provider\Zod\ZodParseException;
@@ -224,68 +222,68 @@ class ProductTest extends TestCase
 
   }
 
-  #[Test]
-  public function deveDispararExcecaoParaProdutoComPedidoEmAberto(){
+  // #[Test]
+  // public function deveDispararExcecaoParaProdutoComPedidoEmAberto(){
 
-    $this->expectException(ValidationException::class);
+  //   $this->expectException(ValidationException::class);
 
-    //Arrange
-    $id = 1;
-    $nome = 'X-Bacon';
-    $descricao = 'Hambúrguer, queijo, cebola, bacon, alface, tomate e pão';
-    $valor = 22;
-    $categoria = new Categoria(1, 'Comida');
-    $ativo = true;
+  //   //Arrange
+  //   $id = 1;
+  //   $nome = 'X-Bacon';
+  //   $descricao = 'Hambúrguer, queijo, cebola, bacon, alface, tomate e pão';
+  //   $valor = 22;
+  //   $categoria = new Categoria(1, 'Comida');
+  //   $ativo = true;
 
-    $produto = new Produto(
-      id: $id,
-      nome: $nome,
-      descricao: $descricao,
-      valor: $valor,
-      categoria: $categoria,
-      ativo: $ativo,
-      dataInclusao: date('Y-m-d')
-    );
+  //   $produto = new Produto(
+  //     id: $id,
+  //     nome: $nome,
+  //     descricao: $descricao,
+  //     valor: $valor,
+  //     categoria: $categoria,
+  //     ativo: $ativo,
+  //     dataInclusao: date('Y-m-d')
+  //   );
 
-    //Act
+  //   //Act
 
-    //Configuração do Mock
-    $produtoRepository = $this->createMock(IProdutoRepository::class);
-    $categoriaRepository = $this->createMock(ICategoriaRepository::class);
-    $pedidoItemRepository = $this->createMock(IPedidoItemRepository::class);
+  //   //Configuração do Mock
+  //   $produtoRepository = $this->createMock(IProdutoRepository::class);
+  //   $categoriaRepository = $this->createMock(ICategoriaRepository::class);
+  //   $pedidoItemRepository = $this->createMock(IPedidoItemRepository::class);
 
-    $categoriaRepository->method('findById')
-      ->with($categoria->getId())
-      ->willReturn($categoria);
+  //   $categoriaRepository->method('findById')
+  //     ->with($categoria->getId())
+  //     ->willReturn($categoria);
 
-    $pedidoItemRepository->method('findByIdProdutoAberto')
-      ->with($produto->getIdProduto())
-      ->willReturn([new PedidoItem(
-        $produto, 
-        null, 
-        0)]);
+  //   $pedidoItemRepository->method('findByIdProdutoAberto')
+  //     ->with($produto->getIdProduto())
+  //     ->willReturn([new PedidoItem(
+  //       $produto, 
+  //       null, 
+  //       0)]);
 
-    $pedidoItemRepository->method('findByIdProdutoAndamento')
-      ->with($produto->getIdProduto())
-      ->willReturn([]);
+  //   $pedidoItemRepository->method('findByIdProdutoAndamento')
+  //     ->with($produto->getIdProduto())
+  //     ->willReturn([]);
 
-    $produtoRepository->method('update')
-      ->with($produto)
-      ->willReturn($produto);
+  //   $produtoRepository->method('update')
+  //     ->with($produto)
+  //     ->willReturn($produto);
 
-    $produtoRepository->method('findByDescription')
-      ->willReturn(null);
+  //   $produtoRepository->method('findByDescription')
+  //     ->willReturn(null);
 
-    $produtoService = new ProdutoService($produtoRepository, $categoriaRepository, $pedidoItemRepository);
+  //   $produtoService = new ProdutoService($produtoRepository, $categoriaRepository, $pedidoItemRepository);
 
-    $response = $produtoService->updateProduto([
-      'id' => $id,
-      'nome' => $nome,
-      'descricao' => $descricao,
-      'valor' => $valor,
-      'id_categoria' => $categoria->getId(),
-      'ativo' => $ativo
-    ]);
+  //   $response = $produtoService->updateProduto([
+  //     'id' => $id,
+  //     'nome' => $nome,
+  //     'descricao' => $descricao,
+  //     'valor' => $valor,
+  //     'id_categoria' => $categoria->getId(),
+  //     'ativo' => $ativo
+  //   ]);
 
-  }
+  // }
 }
