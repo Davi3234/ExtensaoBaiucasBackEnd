@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Order;
+namespace Tests\Daiane\Unitario;
 
 use App\Enums\FormaPagamento;
 use App\Enums\StatusPedido;

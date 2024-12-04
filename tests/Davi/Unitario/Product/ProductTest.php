@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Davi\User;
+namespace Tests\Davi\Unitario\Product;
 
 use App\Models\Categoria;
 use App\Models\PedidoItem;
