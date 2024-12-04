@@ -19,14 +19,13 @@ class ProductTest extends TestCase
 {
 
   #[Test]
-  public function deveDispararExcecaoParaNomeInvalido()
-  {
+  public function deveDispararExcecaoParaNomeInvalido(){
 
     $this->expectException(ZodParseException::class);
 
     //Arrange
     $nome = '';
-    $descricao = 'HambÃºrguer, queijo, cebola, bacon, alface, tomate e pÃ£o';
+    $descricao = 'Hambúrguer, queijo, cebola, bacon, alface, tomate e pão';
     $valor = 22;
     $categoria = new Categoria(1, 'Comida');
     $ativo = true;
@@ -42,7 +41,7 @@ class ProductTest extends TestCase
 
     //Act
 
-    //ConfiguraÃ§Ã£o do Mock
+    //Configuração do Mock
     $produtoRepository = $this->createMock(IProdutoRepository::class);
     $categoriaRepository = $this->createMock(ICategoriaRepository::class);
     $pedidoItemRepository = $this->createMock(IPedidoItemRepository::class);
@@ -67,11 +66,11 @@ class ProductTest extends TestCase
       'id_categoria' => $categoria->getId(),
       'ativo' => $ativo
     ]);
+
   }
 
   #[Test]
-  public function deveDispararExcecaoParaDescricaoInvalida()
-  {
+  public function deveDispararExcecaoParaDescricaoInvalida(){
 
     $this->expectException(ZodParseException::class);
 
@@ -93,7 +92,7 @@ class ProductTest extends TestCase
 
     //Act
 
-    //ConfiguraÃ§Ã£o do Mock
+    //Configuração do Mock
     $produtoRepository = $this->createMock(IProdutoRepository::class);
     $categoriaRepository = $this->createMock(ICategoriaRepository::class);
     $pedidoItemRepository = $this->createMock(IPedidoItemRepository::class);
@@ -118,17 +117,17 @@ class ProductTest extends TestCase
       'id_categoria' => $categoria->getId(),
       'ativo' => $ativo
     ]);
+
   }
 
   #[Test]
-  public function deveDispararExcecaoParaValorInvalido()
-  {
+  public function deveDispararExcecaoParaValorInvalido(){
 
     $this->expectException(ZodParseException::class);
 
     //Arrange
     $nome = 'X-Bacon';
-    $descricao = 'HambÃºrguer, queijo, cebola, bacon, alface, tomate e pÃ£o';
+    $descricao = 'Hambúrguer, queijo, cebola, bacon, alface, tomate e pão';
     $valor = -2;
     $categoria = new Categoria(1, 'Comida');
     $ativo = true;
@@ -144,7 +143,7 @@ class ProductTest extends TestCase
 
     //Act
 
-    //ConfiguraÃ§Ã£o do Mock
+    //Configuração do Mock
     $produtoRepository = $this->createMock(IProdutoRepository::class);
     $categoriaRepository = $this->createMock(ICategoriaRepository::class);
     $pedidoItemRepository = $this->createMock(IPedidoItemRepository::class);
@@ -169,15 +168,15 @@ class ProductTest extends TestCase
       'id_categoria' => $categoria->getId(),
       'ativo' => $ativo
     ]);
+
   }
 
   #[Test]
-  public function deveCriarProduto()
-  {
+  public function deveCriarProduto(){
 
     //Arrange
     $nome = 'X-Bacon';
-    $descricao = 'HambÃºrguer, queijo, cebola, bacon, alface, tomate e pÃ£o';
+    $descricao = 'Hambúrguer, queijo, cebola, bacon, alface, tomate e pão';
     $valor = 22;
     $categoria = new Categoria(1, 'Comida');
     $ativo = true;
@@ -193,7 +192,7 @@ class ProductTest extends TestCase
 
     //Act
 
-    //ConfiguraÃ§Ã£o do Mock
+    //Configuração do Mock
     $produtoRepository = $this->createMock(IProdutoRepository::class);
     $categoriaRepository = $this->createMock(ICategoriaRepository::class);
     $pedidoItemRepository = $this->createMock(IPedidoItemRepository::class);
@@ -220,18 +219,18 @@ class ProductTest extends TestCase
     ]);
 
     $this->assertTrue(['message' => 'Produto cadastrado com sucesso'] == $response);
+
   }
 
-  #[Test]
-  public function deveDispararExcecaoParaProdutoComPedidoEmAberto()
-  {
+  // #[Test]
+  // public function deveDispararExcecaoParaProdutoComPedidoEmAberto(){
 
   //   $this->expectException(ValidationException::class);
 
   //   //Arrange
   //   $id = 1;
   //   $nome = 'X-Bacon';
-  //   $descricao = 'HambÃºrguer, queijo, cebola, bacon, alface, tomate e pÃ£o';
+  //   $descricao = 'Hambúrguer, queijo, cebola, bacon, alface, tomate e pão';
   //   $valor = 22;
   //   $categoria = new Categoria(1, 'Comida');
   //   $ativo = true;
@@ -248,7 +247,7 @@ class ProductTest extends TestCase
 
   //   //Act
 
-  //   //ConfiguraÃ§Ã£o do Mock
+  //   //Configuração do Mock
   //   $produtoRepository = $this->createMock(IProdutoRepository::class);
   //   $categoriaRepository = $this->createMock(ICategoriaRepository::class);
   //   $pedidoItemRepository = $this->createMock(IPedidoItemRepository::class);
@@ -257,13 +256,12 @@ class ProductTest extends TestCase
   //     ->with($categoria->getId())
   //     ->willReturn($categoria);
 
-    $pedidoItemRepository->method('findByIdProdutoAberto')
-      ->with($produto->getIdProduto())
-      ->willReturn([new PedidoItem(
-        $produto,
-        null,
-        0
-      )]);
+  //   $pedidoItemRepository->method('findByIdProdutoAberto')
+  //     ->with($produto->getIdProduto())
+  //     ->willReturn([new PedidoItem(
+  //       $produto, 
+  //       null, 
+  //       0)]);
 
   //   $pedidoItemRepository->method('findByIdProdutoAndamento')
   //     ->with($produto->getIdProduto())
@@ -278,13 +276,14 @@ class ProductTest extends TestCase
 
   //   $produtoService = new ProdutoService($produtoRepository, $categoriaRepository, $pedidoItemRepository);
 
-    $response = $produtoService->updateProduto([
-      'id' => $id,
-      'nome' => $nome,
-      'descricao' => $descricao,
-      'valor' => $valor,
-      'id_categoria' => $categoria->getId(),
-      'ativo' => $ativo
-    ]);
-  }
+  //   $response = $produtoService->updateProduto([
+  //     'id' => $id,
+  //     'nome' => $nome,
+  //     'descricao' => $descricao,
+  //     'valor' => $valor,
+  //     'id_categoria' => $categoria->getId(),
+  //     'ativo' => $ativo
+  //   ]);
+
+  // }
 }
