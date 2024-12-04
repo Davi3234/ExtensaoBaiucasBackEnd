@@ -16,5 +16,6 @@ interface IPedidoRepository
    */
   function findMany(): array;
   function findById(int $id): ?Pedido;
+  function findByDateRange(string $dataInicial, string $dataFinal): array;
   function findManyByStatus(string $status): array;
 }

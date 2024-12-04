@@ -6,7 +6,8 @@
     "tests:davi-unitario:user": "phpunit --testsuite Davi/Unitario/User",
     "tests:davi-unitario:produto": "phpunit --testsuite Davi/Unitario/Produto",
     "tests:davi-integracao": "phpunit --testsuite Davi/Integracao",
-    "tests:daiane": "phpunit --testsuite Daiane",
+    "tests:daiane-unitario": "phpunit --testsuite Daiane/Unitario",
+    "tests:daiane-integracao": "phpunit --testsuite Daiane/Integracao",
     "tests:danrley": "phpunit --testsuite Danrley",
     "tests:luana": "phpunit --testsuite Luana"
   },
