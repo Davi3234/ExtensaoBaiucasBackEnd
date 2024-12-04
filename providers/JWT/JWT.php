@@ -37,7 +37,13 @@ class JWT {
   /**
    * Returns the body of the JWT token 
    * @param string $token Token JWT
-   * @param array{key: string, alg: ?string} $options {"key": "Secret key", "alg": "Algorithm of the token (default = HS256)"}
+   * @param array{key: string, alg: ?string} $options
+   * ```json
+   * {
+   *  "key": "", // Secret key
+   *  "alg": "HS256" // Algorithm of the token (default = HS256)
+   * }
+   * ```
    * @return object Payload token
    */
   static function decode(string $token, array $options) {

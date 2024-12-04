@@ -9,15 +9,14 @@ use App\Models\User;
 use App\Repositories\IUserRepository;
 use Provider\Database\DatabaseException;
 
-class UserService
-{
+class UserService {
 
   public function __construct(
     private readonly IUserRepository $userRepository
-  ) {}
+  ) {
+  }
 
-  public function query()
-  {
+  public function query() {
     $users = $this->userRepository->findMany();
 
     $raw = array_map(function ($user) {
@@ -38,8 +37,7 @@ class UserService
    * @throws \Exception\ValidationException
    * @return array{user: array{ active: bool, id: int, login: string, name: string, tipo: string}}
    */
-  public function getById(array $args)
-  {
+  public function getById(array $args) {
     $getSchema = Z::object([
       'id' => Z::number([
         'required' => 'Id do Usuário é obrigatório',
@@ -74,8 +72,7 @@ class UserService
     ];
   }
 
-  public function createUser(array $args)
-  {
+  public function createUser(array $args) {
     $createSchema = Z::object([
       'name' => Z::string([
         'required' => 'Nome é de preenchimento obrigatório'
@@ -88,7 +85,7 @@ class UserService
       'cpf' => Z::string(['required' => 'CPF é de preenchimento obrigatório'])
         ->trim()
         ->refine(
-          function($cpf){
+          function ($cpf) {
             $cpf = preg_replace('/\D/', '', $cpf);
 
             if (strlen($cpf) != 11) {
@@ -114,9 +111,12 @@ class UserService
             }
 
             return true;
-          }, 'CPF é inválido'),
+          },
+          'CPF é inválido'
+        ),
       'endereco' => Z::string(['required' => 'Endereço é de preenchimento obrigatório'])
-        ->trim(),
+        ->trim()
+        ->min(3, 'Endereço precisa ter no mínimo 3 caracteres'),
       'password' => Z::string(['required' => 'Senha é de preenchimento obrigatório'])
         ->trim()
         ->min(8, 'Utilize ao menos 8 caracteres')
@@ -164,31 +164,73 @@ class UserService
     return ['message' => 'Usuário cadastrado com sucesso'];
   }
 
-  public function update(array $args)
-  {
+  public function update(array $args) {
     $updateSchema = Z::object([
       'id' => Z::number(['required' => 'Id do Usuário é obrigatório'])
         ->coerce()
         ->int(),
-      'name' => Z::string([
-        'required' => 'Nome é de preenchimento obrigatório'
-      ])->optional()
+      'name' => Z::string()
+        ->optional()
         ->trim()
         ->min(3, 'Nome precisa ter no mínimo 3 caracteres'),
-      'login' => Z::string(['required' => 'Login é de preenchimento obrigatório'])->optional()
+      'login' => Z::string(['required' => 'Login é de preenchimento obrigatório'])
+        ->optional()
         ->trim()
         ->regex('/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/', 'Login inválido'),
-      'cpf' => Z::string(['required' => 'CPF é de preenchimento obrigatório'])->optional()
+      'cpf' => Z::string()
+        ->optional()
+        ->trim()
+        ->refine(
+          function ($cpf) {
+            $cpf = preg_replace('/\D/', '', $cpf);
+
+            if (strlen($cpf) != 11) {
+              return false;
+            }
+
+            if (preg_match('/^(\d)\1*$/', $cpf)) {
+              return false;
+            }
+
+            for ($t = 9; $t < 11; $t++) {
+              $soma = 0;
+              for ($i = 0; $i < $t; $i++) {
+                $soma += $cpf[$i] * (($t + 1) - $i);
+              }
+
+              $digito = ($soma * 10) % 11;
+              $digito = ($digito == 10 || $digito == 11) ? 0 : $digito;
+
+              if ($digito != $cpf[$t]) {
+                return false;
+              }
+            }
+
+            return true;
+          },
+          'CPF é inválido'
+        ),
+      'endereco' => Z::string()
+        ->optional()
+        ->trim()
+        ->min(3, 'Endereço precisa ter no mínimo 3 caracteres'),
+      'password' => Z::string()
+        ->optional()
+        ->min(8, 'Utilize ao menos 8 caracteres')
+        ->regex('/^(?=.*[A-Z])(?=.*\d)(?=.*[@#$%^&+=!]).*$/', 'Utilize ao menos um símbolo especial, uma letra maiúscula e um número'),
+      'confirm_password' => Z::string()
+        ->optional()
         ->trim(),
-      'endereco' => Z::string(['required' => 'Endereço é de preenchimento obrigatório'])
-        ->trim(),
-      'password' => Z::string(['required' => 'Senha é de preenchimento obrigatório'])->optional()
-        ->trim(),
-      'confirm_password' => Z::string(['required' => 'Confirmação de senha é de preenchimento obrigatório'])->optional()
-        ->trim(),
-      'tipo' => Z::enumNative(TipoUsuario::class, ['required' => 'Tipo é de preenchimento obrigatório'])->optional(),
-      'active' => Z::boolean(['required' => 'Ativo é de preenchimento obrigatório'])
-    ])->coerce();
+      'tipo' => Z::enumNative(TipoUsuario::class)
+        ->optional(),
+      'active' => Z::boolean()
+        ->coerce()
+        ->optional()
+    ])
+      ->coerce()
+      ->refine(function ($value) {
+        return $value->password == $value->confirm_password;
+      }, ['message' => 'A nova senha deve ser igual a confirmação de senha', 'origin' => 'confirm_password']);
 
     $dto = $updateSchema->parseNoSafe($args);
 
@@ -210,23 +252,15 @@ class UserService
         throw new ValidationException('Não foi possível atualizar o Usuário', [
           [
             'message' => 'Já existe um Usuário com o mesmo login informado',
-            'origin' => 'user'
+            'origin' => 'login'
           ]
         ]);
       }
+
       $user->setLogin($dto->login);
     }
 
     if ($dto->password) {
-      if ($dto->password != $dto->confirm_password) {
-        throw new ValidationException('Não foi possível atualizar o Usuário', [
-          [
-            'message' => 'A nova senha deve ser igual a confirmação de senha',
-            'origin' => 'password'
-          ]
-        ]);
-      }
-
       $user->setPassword($dto->password);
     }
 
@@ -248,8 +282,7 @@ class UserService
   }
 
 
-  public function delete(array $args)
-  {
+  public function delete(array $args) {
     $deleteSchema = Z::object([
       'id' => Z::number([
         'required' => 'Id do Usuário é obrigatório',

@@ -89,70 +89,70 @@ class ZodNumberSchema extends ZodSchema {
 
     $type = gettype($value);
 
-    $this->addError($attributes['invalidType'] ?? "Expect an \"integer\" received \"$type\"");
+    $this->addError($attributes['invalidType'] ?? "Expect an \"integer\" received \"$type\"", $attributes['origin'] ?? []);
   }
 
   protected function parseGt($value, array $attributes) {
     if ($value > $this->gt)
       return;
 
-    $this->addError($attributes['message'] ?? "Number must to be greater than \"$this->gt\"");
+    $this->addError($attributes['message'] ?? "Number must to be greater than \"$this->gt\"", $attributes['origin'] ?? []);
   }
 
   protected function parseGte($value, array $attributes) {
     if ($value >= $this->gte)
       return;
 
-    $this->addError($attributes['message'] ?? "Number must to be greater or equal than \"$this->gte\"");
+    $this->addError($attributes['message'] ?? "Number must to be greater or equal than \"$this->gte\"", $attributes['origin'] ?? []);
   }
 
   protected function parseLt($value, array $attributes) {
     if ($value < $this->lt)
       return;
 
-    $this->addError($attributes['message'] ?? "Number must to be less than \"$this->lt\"");
+    $this->addError($attributes['message'] ?? "Number must to be less than \"$this->lt\"", $attributes['origin'] ?? []);
   }
 
   protected function parseLte($value, array $attributes) {
     if ($value <= $this->lte)
       return;
 
-    $this->addError($attributes['message'] ?? "Number must to be less or equal than \"$this->lte\"");
+    $this->addError($attributes['message'] ?? "Number must to be less or equal than \"$this->lte\"", $attributes['origin'] ?? []);
   }
 
   protected function parsePositive($value, array $attributes) {
     if ($value > 0)
       return;
 
-    $this->addError($attributes['message'] ?? "Number must be positive");
+    $this->addError($attributes['message'] ?? "Number must be positive", $attributes['origin'] ?? []);
   }
 
   protected function parseNonpositive($value, array $attributes) {
     if ($value <= 0)
       return;
 
-    $this->addError($attributes['message'] ?? "Number cannot be positive");
+    $this->addError($attributes['message'] ?? "Number cannot be positive", $attributes['origin'] ?? []);
   }
 
   protected function parseNegative($value, array $attributes) {
     if ($value < 0)
       return;
 
-    $this->addError($attributes['message'] ?? "Number must be negative");
+    $this->addError($attributes['message'] ?? "Number must be negative", $attributes['origin'] ?? []);
   }
 
   protected function parseNonnegative($value, array $attributes) {
     if ($value >= 0)
       return;
 
-    $this->addError($attributes['message'] ?? "Number cannot be negative");
+    $this->addError($attributes['message'] ?? "Number cannot be negative", $attributes['origin'] ?? []);
   }
 
   protected function parseMultipleOf($value, array $attributes) {
     if ($value % $this->multipleOf == 0)
       return;
 
-    $this->addError($attributes['message'] ?? "Number must be a multiple of \"$this->multipleOf\"");
+    $this->addError($attributes['message'] ?? "Number must be a multiple of \"$this->multipleOf\"", $attributes['origin'] ?? []);
   }
 
   #[\Override]

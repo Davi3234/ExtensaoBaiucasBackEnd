@@ -109,49 +109,49 @@ class ZodStringSchema extends ZodSchema {
     if ($value === strtolower($value))
       return;
 
-    $this->addError($attributes['message'] ?? "The value must be in lowercase letters");
+    $this->addError($attributes['message'] ?? "The value must be in lowercase letters", $attributes['origin'] ?? []);
   }
 
   protected function parseUpperCase($value, array $attributes) {
     if ($value === strtoupper($value))
       return;
 
-    $this->addError($attributes['message'] ?? "The value must be in capital letters");
+    $this->addError($attributes['message'] ?? "The value must be in capital letters", $attributes['origin'] ?? []);
   }
 
   protected function parseLength($value, array $attributes) {
     if (strlen($value) == $this->length)
       return;
 
-    $this->addError($attributes['message'] ?? "Value must have $this->length characters");
+    $this->addError($attributes['message'] ?? "Value must have $this->length characters", $attributes['origin'] ?? []);
   }
 
   protected function parseMin($value, array $attributes) {
     if (strlen($value) >= $this->min)
       return;
 
-    $this->addError($attributes['message'] ?? "Value must have at least $this->min characters");
+    $this->addError($attributes['message'] ?? "Value must have at least $this->min characters", $attributes['origin'] ?? []);
   }
 
   protected function parseMax($value, array $attributes) {
     if (strlen($value) <= $this->max)
       return;
 
-    $this->addError($attributes['message'] ?? "Value must have a maximum of $this->max characters");
+    $this->addError($attributes['message'] ?? "Value must have a maximum of $this->max characters", $attributes['origin'] ?? []);
   }
 
   protected function parseIncludes($value, array $attributes) {
     if (strpos($value, $this->includes) !== false)
       return;
 
-    $this->addError($attributes['message'] ?? "Value must contain the text \"$this->includes\"");
+    $this->addError($attributes['message'] ?? "Value must contain the text \"$this->includes\"", $attributes['origin'] ?? []);
   }
 
   protected function parseStartsWith($value, array $attributes) {
     if (strpos($value, $this->startsWith) === 0)
       return;
 
-    $this->addError($attributes['message'] ?? "Value must starts with \"$this->startsWith\"");
+    $this->addError($attributes['message'] ?? "Value must starts with \"$this->startsWith\"", $attributes['origin'] ?? []);
   }
 
   protected function parseEndsWith($value, array $attributes) {
@@ -160,14 +160,14 @@ class ZodStringSchema extends ZodSchema {
     if (!$length || substr($value, -$length) === $this->endsWith)
       return;
 
-    $this->addError($attributes['message'] ?? "Value must ends with \"$this->endsWith\"");
+    $this->addError($attributes['message'] ?? "Value must ends with \"$this->endsWith\"", $attributes['origin'] ?? []);
   }
 
   protected function parseRegex($value, array $attributes) {
     if (preg_match($this->regex, $value))
       return;
 
-    $this->addError($attributes['message'] ?? 'Value invalid');
+    $this->addError($attributes['message'] ?? 'Value invalid', $attributes['origin'] ?? []);
   }
 
   #[\Override]

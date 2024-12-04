@@ -29,13 +29,13 @@
       "Exception\\": "exceptions/",
       "Provider\\": "providers/",
       "Public\\": "public/",
-      "Util\\": "util/",
-      "Tests\\": "tests/"
+      "Util\\": "util/"
     }
   },
   "autoload-dev": {
     "psr-4": {
-      "Tests\\": "tests/"
+      "TestsUnit\\": "tests/Unit",
+      "TestsPerformance\\": "tests/Performance"
     }
   }
 }

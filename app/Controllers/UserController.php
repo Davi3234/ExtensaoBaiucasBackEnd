@@ -54,7 +54,9 @@ class UserController {
       'login' => $request->getBody('login'),
       'password' => $request->getBody('password'),
       'confirm_password' => $request->getBody('confirmPassword'),
-      'tipo' => $request->getBody('tipo')
+      'tipo' => $request->getBody('tipo'),
+      'cpf' => $request->getBody('cpf'),
+      'endereco' => $request->getBody('endereco'),
     ]);
 
     return $result;

@@ -71,7 +71,7 @@ abstract class ZodSchema {
   }
 
   /**
-   * @return array{data: ?TSchemaType, errors: ?array<string|int, array{message: mixed, path: mixed}>}
+   * @return array{data: ?TSchemaType, errors: ?array<string|int, array{message: mixed, origin: mixed}>}
    */
   function parseSafe($value): array {
     $this->setup($value);
@@ -110,7 +110,7 @@ abstract class ZodSchema {
 
   protected function resolveHandleValidator(string $typeStack, string|callable $parser, array $attributes) {
     $response = $this->resolveHandle($parser, $attributes);
-    
+
     if (($response === false && $typeStack == 'REFINEEXTRA') || $response['message'])
       return $response;
 
@@ -131,9 +131,9 @@ abstract class ZodSchema {
 
   protected function resolveResultHandleValidator($response, array $attributes) {
     if ($response === false)
-      $this->addError($attributes['message'] ?? 'Value invalid');
+      $this->addError($attributes['message'] ?? 'Value invalid', $attributes['origin'] ? [$attributes['origin']] : []);
     else if ($response && isset($response['message']))
-      $this->addError($response['message']);
+      $this->addError($response['message'], $attributes['origin'] ? [$attributes['origin']] : []);
   }
 
   protected function setup($value = null) {
@@ -187,7 +187,7 @@ abstract class ZodSchema {
       return;
 
     if (!$this->isOptional)
-      $this->addError('Value is required');
+      $this->addError('Value is required', $attributes['origin'] ?? []);
 
     $this->stop();
   }
@@ -205,7 +205,7 @@ abstract class ZodSchema {
 
     $type = gettype($value);
 
-    $this->addError($attributes['invalidType'] ?? "Expect an \"$this->type\" received \"$type\"");
+    $this->addError($attributes['invalidType'] ?? "Expect an \"$this->type\" received \"$type\"", $attributes['origin'] ?? []);
     $this->stop();
   }
 
@@ -222,12 +222,16 @@ abstract class ZodSchema {
     }
   }
 
-  protected function addError(string $message, array $paths = []) {
-    $this->errors[] = new ZodErrorValidator($message, ...$paths);
+  /**
+   * @param string $message
+   * @param string[] $origins
+   */
+  protected function addError(string $message, array $origins = []) {
+    $this->errors[] = new ZodErrorValidator($message, ...$origins);
   }
 
   /**
-   * @return array{data: ?TSchemaType, errors: ?array<string|int, array{message: mixed, path: mixed}>}
+   * @return array{data: ?TSchemaType, errors: ?array<string|int, array{message: mixed, origin: mixed}>}
    */
   protected function getParseResult() {
     $value = $this->value;
@@ -261,15 +265,15 @@ abstract class ZodSchema {
     $this->addRuleValidatorInStack('TRANSFORMINITIAL', $parserRule, $attributes);
   }
 
-  protected function addTypeValidateRule(string $parserRule, array|string $attributes = null) {
+  protected function addTypeValidateRule(string|callable $parserRule, array|string $attributes = null) {
     $this->addRuleValidatorInStack('TYPEVALIDATE', $parserRule, $attributes);
   }
 
-  protected function addTransformRule(string $parserRule, array|string $attributes = null) {
+  protected function addTransformRule(string|callable $parserRule, array|string $attributes = null) {
     $this->addRuleValidatorInStack('TRANSFORM', $parserRule, $attributes);
   }
 
-  protected function addRefineRule(string $parserRule, array|string $attributes = null) {
+  protected function addRefineRule(string|callable $parserRule, array|string $attributes = null) {
     $this->addRuleValidatorInStack('REFINERULE', $parserRule, $attributes);
   }
 

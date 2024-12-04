@@ -1,0 +1,175 @@
+{
+	"info": {
+		"_postman_id": "83805c92-d21c-410e-a7d5-25ac3c86c608",
+		"name": "Dan - Tests Integration",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "27637177",
+		"_collection_link": "https://warped-shadow-254780.postman.co/workspace/ExtensaoBaiucas~40ef2807-1b38-47b4-a429-10672173d1eb/collection/27637177-83805c92-d21c-410e-a7d5-25ac3c86c608?action=share&source=collection_link&creator=27637177"
+	},
+	"item": [
+		{
+			"name": "/auth",
+			"item": [
+				{
+					"name": "Não deve encontrar um usuário com login não cadastrado",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const responseJson = pm.response.json()\r",
+									"\r",
+									"pm.test(\"Status Code é 400\", function () {\r",
+									"    pm.response.to.have.status(400)\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Retorno de erro indicando Login ou Senha Inválida\", function () {\r",
+									"    const responseJson = pm.response.json()\r",
+									"\r",
+									"    pm.expect(responseJson.ok).to.eq(false)\r",
+									"    pm.expect(responseJson.status).to.eq(400)\r",
+									"    pm.expect(responseJson.value).to.be.null\r",
+									"    pm.expect(responseJson.error.causes).to.be.a('array')\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"login\": \"email.nao.cadastrado@gmail.com\",\r\n    \"password\": \"Dan!@#123\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost/auth/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Deve encontrar o usuário pelo login, porém com senha informada inválida",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const responseJson = pm.response.json()\r",
+									"\r",
+									"pm.test(\"Status Code é 400\", function () {\r",
+									"    pm.response.to.have.status(400)\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Retorno de erro indicando Login ou Senha Inválida\", function () {\r",
+									"    const responseJson = pm.response.json()\r",
+									"\r",
+									"    pm.expect(responseJson.ok).to.eq(false)\r",
+									"    pm.expect(responseJson.status).to.eq(400)\r",
+									"    pm.expect(responseJson.value).to.be.null\r",
+									"    pm.expect(responseJson.error.causes).to.be.a('array')\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"login\": \"dan@gmail.com\",\r\n    \"password\": \"dan432\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost/auth/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Deve Encontrar o usuário pelo login e senha informado Copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const responseJson = pm.response.json()\r",
+									"\r",
+									"pm.test(\"Status Code é 200\", function () {\r",
+									"    pm.response.to.have.status(200)\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Retorno possua um token\", function () {\r",
+									"    const responseJson = pm.response.json()\r",
+									"\r",
+									"    pm.expect(responseJson.ok).to.eq(true)\r",
+									"    pm.expect(responseJson.status).to.eq(200)\r",
+									"    pm.expect(responseJson.error).to.be.null\r",
+									"    pm.expect(responseJson.value.token).to.be.a('string')\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"login\": \"dan@gmail.com\",\r\n    \"password\": \"Dan!@#123\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost/auth/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

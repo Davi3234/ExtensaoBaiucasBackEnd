@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Davi\User;
+namespace Tests\Davi\Integracao;
 
 use App\Enums\TipoUsuario;
 use PHPUnit\Framework\TestCase;
