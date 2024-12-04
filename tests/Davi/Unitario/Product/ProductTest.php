@@ -261,11 +261,11 @@ class ProductTest extends TestCase
 
     $pedidoItemRepository->method('findByIdProdutoAberto')
       ->with($produto->getIdProduto())
-      ->willReturn([new PedidoItem(
-        $produto,
-        null,
-        0
-      )]);
+      ->willReturn([
+        new PedidoItem(
+          produto: $produto
+        )
+      ]);
 
     $pedidoItemRepository->method('findByIdProdutoAndamento')
       ->with($produto->getIdProduto())
